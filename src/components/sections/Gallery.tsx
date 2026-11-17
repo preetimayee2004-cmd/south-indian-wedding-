@@ -5,8 +5,8 @@ import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Container } from "@/components/layout/Container";
 import { JourneyMap } from "./gallery/JourneyMap";
-import { EdgeFade } from "@/components/ui/EdgeFade";
 import { Lightbox } from "./gallery/Lightbox";
+import { artProps } from "@/lib/art";
 
 type Category = NonNullable<GalleryImage["category"]>;
 const FILTER_LABELS: Record<Category, string> = {
@@ -89,11 +89,10 @@ export function Gallery() {
     <section id="gallery" aria-labelledby="gallery-heading" className="relative isolate">
       {/* ── Banner ── */}
       <div ref={banner} className="relative overflow-hidden" style={{ height: "min(78svh, 720px)" }}>
-        <EdgeFade top />
         <div ref={art} className="absolute inset-0">
-          <img src={media.gallery} alt="" aria-hidden loading="lazy" className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl md:block" />
+          <img {...artProps(media.gallery)} alt="" aria-hidden loading="lazy" className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl md:block" />
           <img
-            src={media.gallery}
+            {...artProps(media.gallery)}
             alt="Dancers in silk performing before a carved gopuram"
             loading="lazy"
             decoding="async"

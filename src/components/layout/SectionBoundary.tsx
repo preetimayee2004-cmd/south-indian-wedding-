@@ -1,9 +1,9 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
 /**
- * Isolates each section: if one throws (bad config value, missing asset,
- * a browser quirk), only that section disappears — the rest of the
- * invitation keeps working.
+ * Wraps each section: draws the gold dividing line between neighbouring
+ * sections (CSS .sec, skipping sections that render nothing), and isolates
+ * failures — if one section throws, only that section disappears.
  */
 export class SectionBoundary extends Component<{ id: string; children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
@@ -17,6 +17,6 @@ export class SectionBoundary extends Component<{ id: string; children: ReactNode
   }
 
   render() {
-    return this.state.failed ? null : this.props.children;
+    return <div className="sec" data-section={this.props.id}>{this.state.failed ? null : this.props.children}</div>;
   }
 }

@@ -1,6 +1,7 @@
 import { forwardRef, useCallback, useLayoutEffect, useRef, useState } from "react";
 import type { GalleryImage } from "@/config/types";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { artProps } from "@/lib/art";
 
 const SHAPES = [
   { frame: "rounded-t-[999px]", aspect: "4 / 5" }, // arch
@@ -120,7 +121,7 @@ export const JourneyMap = forwardRef<HTMLOListElement, Props>(function JourneyMa
                   <span className={`stop-frame block overflow-hidden border border-gold/50 bg-paper p-[4px] shadow-[0_10px_30px_rgb(42_36_33/0.10)] ${shape.frame}`}>
                     <span className={`stop-iris block overflow-hidden ${shape.frame}`} style={{ aspectRatio: shape.aspect }}>
                       <img
-                        src={img.src}
+                        {...artProps(img.src, "(min-width: 768px) 22rem, 64vw")}
                         alt={img.alt}
                         loading="lazy"
                         decoding="async"

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "@fontsource/great-vibes/400.css";
 import "@fontsource/eb-garamond/400.css";
 import "@fontsource/eb-garamond/500.css";
+import "@fontsource/eb-garamond/700.css";
 import "@fontsource/eb-garamond/400-italic.css";
 import "./styles/index.css";
 import weddingConfig from "@/config/wedding.config";

@@ -4,6 +4,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
 import { Scene } from "../Scene";
+import { artProps } from "@/lib/art";
 
 const MAX = 9;
 const TILT = [-4, 3, -2, 4, -3, 2, -5, 3, -2];
@@ -63,7 +64,7 @@ export function GalleryScene() {
                 className="group block w-full bg-paper p-3 pb-4 shadow-[0_18px_40px_-18px_rgb(42_36_33/0.45)] transition-[transform,box-shadow] duration-500 ease-silk hover:-translate-y-1.5 hover:rotate-0 hover:shadow-[0_26px_50px_-18px_rgb(42_36_33/0.5)]"
               >
                 <span className="block aspect-[4/3] overflow-hidden bg-[#efe4cf]">
-                  <img src={g.src} alt={g.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" draggable={false} />
+                  <img {...artProps(g.src, "20rem")} alt={g.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" draggable={false} />
                 </span>
                 <span className="mt-3 block truncate font-script text-[1.7rem] leading-none text-accent">{g.caption ?? " "}</span>
               </button>

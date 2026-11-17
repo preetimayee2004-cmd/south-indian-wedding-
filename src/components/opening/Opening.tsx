@@ -6,6 +6,7 @@ import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Threads, knotScale } from "./Threads";
 import { T } from "./timing";
 import { desktopArt } from "@/components/desktop/art";
+import { artProps } from "@/lib/art";
 
 interface OpeningProps {
   /** Called once the page underneath should become visible/interactive. */
@@ -237,7 +238,7 @@ export function Opening({ onReveal, onDone, desktop = false }: OpeningProps) {
     <div className="absolute inset-0 bg-ivory">
       {desktop ? (
         <img
-          src={doorDesk.src}
+          {...artProps(doorDesk.src)}
           alt=""
           className="absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: `50% ${(doorDesk.focus ?? 0.3) * 100}%` }}
@@ -245,7 +246,7 @@ export function Opening({ onReveal, onDone, desktop = false }: OpeningProps) {
         />
       ) : (
         <img
-          src={media.opening}
+          {...artProps(media.opening)}
           alt=""
           className="absolute top-0 h-full max-w-none object-cover"
           style={{ aspectRatio: "768 / 1376", [side]: "max(0px, calc(50vw - 27.907svh))" }}
@@ -266,9 +267,9 @@ export function Opening({ onReveal, onDone, desktop = false }: OpeningProps) {
       {/* ── Stage B (behind the doors): sky, names, gopuram ── */}
       <div ref={stageB} className="invisible absolute inset-0 overflow-hidden bg-[#5f9fdc]">
         <div ref={dive} className="absolute inset-0 will-change-transform">
-          <img src={media.openingReveal} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl" />
+          <img {...artProps(media.openingReveal)} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl" />
           <div ref={sky} className="absolute bottom-0 left-1/2 h-full will-change-transform" style={{ aspectRatio: "768 / 1376" }}>
-            <img src={media.openingReveal} alt="" className="h-full w-full object-cover" draggable={false} />
+            <img {...artProps(media.openingReveal)} alt="" className="h-full w-full object-cover" draggable={false} />
           </div>
         </div>
         <div ref={names} className="absolute inset-x-0 top-[13%] px-gutter text-center text-white [text-shadow:0_2px_18px_rgb(30_60_110/0.35)]">

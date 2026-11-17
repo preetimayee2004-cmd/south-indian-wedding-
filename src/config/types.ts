@@ -107,7 +107,7 @@ export interface ThemeTokens {
 }
 
 /** Desktop (≥1024px) journey scenes that take their own artwork. */
-export type DesktopSlot = "opening" | "hero" | "invitation" | "couple" | "events" | "gallery" | "family" | "rsvp" | "thankYou";
+export type DesktopSlot = "opening" | "hero" | "heroReveal" | "invitation" | "couple" | "events" | "gallery" | "family" | "rsvp" | "thankYou";
 
 export interface DesktopArt {
   src: string;
@@ -172,6 +172,14 @@ export interface WeddingConfig {
   };
   media: {
     /**
+     * The temple frame that holds the invitation and events. `top` px of the art
+     * (roof, capitals, one carved niche) and `bottom` px (pillar bases) are drawn
+     * once; between them the pillar shafts are painted and grow with the content.
+     * `side` = width of each pillar band, `clip` = sky trimmed at each edge,
+     * `contentTop` = where the text starts on the cream.
+     */
+    frame: { src: string; width: number; height: number; top: number; bottom: number; side: number; clip: number; contentTop: number };
+    /**
      * Laptop/desktop artwork per scene (landscape, ideally 1920×1080 or larger).
      * Any slot left out falls back to the mobile artwork above.
      */
@@ -182,10 +190,6 @@ export interface WeddingConfig {
     rsvpLamps: [number, number][];
     /** Parchment area of the family gateway art, in % of the image; it continues below as a scroll. */
     familyParchment: { left: number; width: number; top: number; color: string };
-    /** Clear area between the pillars of the events background, in % of the image. */
-    eventsFrame: { top: number; left: number; width: number; height: number };
-    /** Clear area inside the couple background's arch, in % of the image (content is placed here). */
-    coupleArch: { top: number; left: number; width: number; height: number };
     /** Symmetrical entrance art behind the threads; splits open like doors. */
     opening: string;
     /** Sky + gopuram the camera tilts down and dives through. Doorway must sit bottom-centre. */
@@ -193,6 +197,8 @@ export interface WeddingConfig {
     /** Vertical position (0–1) of the gopuram doorway in openingReveal — the dive target. */
     openingDoorY: number;
     invitation: string;
+    /** The hero zooms into its gopuram and dissolves into this (same gopuram, wider view, e.g. with dancers). */
+    heroReveal: string;
     couple: string;
     events: string;
     family: string;

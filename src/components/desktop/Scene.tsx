@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { gsap } from "@/lib/gsap";
 import type { DesktopArt } from "@/config/types";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { artProps } from "@/lib/art";
 
 interface SceneProps {
   id?: string;
@@ -24,7 +25,7 @@ const OVERLAP = "18vh";
  * dissolves over the previous one, and its [data-reveal] content rises in.
  * Consistency is the point — the journey should feel like one continuous film.
  */
-export function Scene({ id, labelledBy, art, overlap = true, veil = "none", className = "", children }: SceneProps) {
+export function Scene({ id, labelledBy, art, overlap = false, veil = "none", className = "", children }: SceneProps) {
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
   const img = useRef<HTMLImageElement>(null);
@@ -85,7 +86,7 @@ export function Scene({ id, labelledBy, art, overlap = true, veil = "none", clas
         {art ? (
           <img
             ref={img}
-            src={art.src}
+            {...artProps(art.src)}
             alt=""
             loading="lazy"
             decoding="async"

@@ -2,8 +2,8 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
-import { EdgeFade } from "@/components/ui/EdgeFade";
 import { RsvpPanel, useRsvpUsable } from "./rsvp/RsvpPanel";
+import { artProps } from "@/lib/art";
 
 const IMG_RATIO = "768 / 1376";
 
@@ -41,11 +41,10 @@ export function Rsvp() {
     <section id="rsvp" aria-label="RSVP" className="relative isolate">
       <h2 className="sr-only">RSVP</h2>
       <div ref={wrap} className="relative overflow-hidden bg-[#f3ece0]" style={{ height: "max(100svh, 760px)" }}>
-        <EdgeFade top bottom />
-        <img src={media.rsvp} alt="" aria-hidden loading="lazy" className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl md:block" />
+        <img {...artProps(media.rsvp)} alt="" aria-hidden loading="lazy" className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-2xl md:block" />
         <div className="absolute left-1/2 top-0 h-full -translate-x-1/2" style={{ aspectRatio: IMG_RATIO }}>
           <img
-            src={media.rsvp}
+            {...artProps(media.rsvp)}
             alt="A carved stone arch hung with flower garlands, brass lamps and a flower rangoli, titled RSVP, Venue and Muhurtham"
             loading="lazy"
             decoding="async"

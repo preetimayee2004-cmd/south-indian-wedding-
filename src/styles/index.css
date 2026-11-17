@@ -73,6 +73,21 @@
 }
 
 @layer components {
+  /* Crisp gold band between sections ("frame ends here"). */
+  .section-rule,
+  .sec:not(:empty) ~ .sec:not(:empty)::before {
+    content: "";
+    position: relative;
+    z-index: 6;
+    display: block;
+    height: 7px;
+    background:
+      linear-gradient(#6b4a1a, #6b4a1a) top / 100% 1px no-repeat,
+      linear-gradient(90deg, #a87a2c, #f3d68e 50%, #a87a2c) center / 100% 3px no-repeat,
+      linear-gradient(#6b4a1a, #6b4a1a) bottom / 100% 1px no-repeat,
+      #f7f2eb;
+  }
+
   /* Small-caps label above headings */
   .eyebrow {
     @apply font-body text-eyebrow uppercase text-ink-soft;
@@ -81,6 +96,12 @@
   .script-heading {
     @apply font-script font-normal text-accent;
   }
+}
+
+@keyframes chevron {
+  0% { transform: translateY(-3px); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translateY(7px); opacity: 0; }
 }
 
 @keyframes marquee {

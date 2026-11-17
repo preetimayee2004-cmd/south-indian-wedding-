@@ -3,8 +3,8 @@ import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Container } from "@/components/layout/Container";
-import { EdgeFade } from "@/components/ui/EdgeFade";
 import { Ornament } from "@/components/ui/Ornament";
+import { artProps } from "@/lib/art";
 
 const IMG_RATIO = 1376 / 768;
 const PETALS = 9;
@@ -85,10 +85,9 @@ export function ThankYou() {
     <section ref={root} id="thankYou" aria-labelledby="thanks-heading" className="relative isolate pb-section">
       {/* ── Panning scene ── */}
       <div ref={band} className="relative overflow-hidden bg-[#a9cdee]" style={{ height: "min(72svh, 640px)" }}>
-        <EdgeFade top />
         <img
           ref={img}
-          src={media.thankYou}
+          {...artProps(media.thankYou)}
           alt={`${first.name} and ${second.name} exchanging garlands in a temple courtyard`}
           loading="lazy"
           decoding="async"

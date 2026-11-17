@@ -5,6 +5,7 @@ import type { FamilySide } from "@/config/types";
 import { useWedding } from "@/context/WeddingContext";
 import { useIsTablet, usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { FamilyPanel } from "./family/FamilyPanel";
+import { artProps } from "@/lib/art";
 
 type Key = "bride" | "groom";
 const IMG_RATIO = 1200 / 896;
@@ -108,7 +109,7 @@ export function Family() {
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: GATE_W, aspectRatio: String(IMG_RATIO) }}>
         <div ref={gate} className="absolute inset-0">
         <img
-          src={media.family}
+          {...artProps(media.family)}
           alt="A painted temple gateway crowned with Ganesha, Murugan with his consorts, and Lakshmi"
           loading="lazy"
           decoding="async"

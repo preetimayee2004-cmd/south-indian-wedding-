@@ -3,23 +3,26 @@ import type { SectionId } from "@/config/types";
 import { useWedding } from "@/context/WeddingContext";
 import { SECTION_REGISTRY } from "@/components/sections";
 import { SectionBoundary } from "@/components/layout/SectionBoundary";
+import { InvitationFrame } from "@/components/frame/InvitationFrame";
+import { CoupleFrame } from "@/components/sections/CoupleFrame";
 import { HeroScene } from "./scenes/HeroScene";
-import { CountdownScene, InvitationScene } from "./scenes/InvitationScene";
-import { CoupleScene } from "./scenes/CoupleScene";
-import { EventsScene } from "./scenes/EventsScene";
 import { GalleryScene } from "./scenes/GalleryScene";
 import { FamilyScene } from "./scenes/FamilyScene";
 import { ContactScene, LoveNoteScene, RsvpScene, ThankYouScene, TravelScene, WishesScene } from "./scenes/ClosingScenes";
 
-/** Desktop scenes per section (a section not listed falls back to its mobile layout). */
+/** The sharp gold line under the dancers, before the temple frame begins. */
+const Rule: ComponentType = () => <div className="section-rule" aria-hidden />;
+const InsideFrame: ComponentType = () => null;
+
+/** Laptop scenes per section (a section not listed falls back to its phone layout). */
 const DESKTOP_SCENES: Partial<Record<SectionId, ComponentType[]>> = {
-  invitation: [HeroScene, InvitationScene, CountdownScene],
-  couple: [CoupleScene],
-  events: [EventsScene],
+  invitation: [HeroScene, Rule, InvitationFrame],
+  events: [InsideFrame], // shown inside the temple frame
+  couple: [CoupleFrame],
   gallery: [GalleryScene],
   family: [FamilyScene],
-  wishingWall: [WishesScene],
   rsvp: [RsvpScene],
+  wishingWall: [WishesScene],
   travelStay: [TravelScene],
   contact: [ContactScene],
   thankYou: [ThankYouScene],
@@ -27,9 +30,8 @@ const DESKTOP_SCENES: Partial<Record<SectionId, ComponentType[]>> = {
 };
 
 /**
- * Laptop/desktop (≥1024px): the invitation as one continuous, full-screen
- * camera journey of scenes that dissolve into each other. Same config,
- * same order and visibility as mobile.
+ * Laptop/desktop (≥1024px): the same order as phones, each section a
+ * full-screen scene ending on a crisp gold line.
  */
 export function DesktopJourney() {
   const { sections } = useWedding();

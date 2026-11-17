@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { GalleryImage } from "@/config/types";
+import { artProps } from "@/lib/art";
 
 interface Props {
   images: GalleryImage[];
@@ -100,7 +101,7 @@ export function Lightbox({ images, index, onIndex, onClose }: Props) {
       >
         <img
           key={img.src}
-          src={img.src}
+          {...artProps(img.src)}
           alt={img.alt}
           className="max-h-full max-w-full select-none rounded-sm object-contain shadow-2xl animate-[lbIn_0.45s_cubic-bezier(0.22,1,0.36,1)]"
           draggable={false}

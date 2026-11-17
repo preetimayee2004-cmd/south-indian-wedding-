@@ -13,6 +13,7 @@ export function desktopArt(config: WeddingConfig, slot: DesktopSlot): DesktopArt
   const fallback: Record<DesktopSlot, DesktopArt> = {
     opening: { src: m.opening, ratio: PORTRAIT, focus: 0.3 },
     hero: { src: m.invitation, ratio: PORTRAIT, focus: 0.4 },
+    heroReveal: { src: m.heroReveal, ratio: PORTRAIT, focus: 0.9 },
     invitation: { src: m.couple, ratio: PORTRAIT, focus: 0.55 },
     couple: { src: m.gallery, ratio: PORTRAIT, focus: 0.62 },
     events: { src: m.events, ratio: PORTRAIT, focus: 0.5 },

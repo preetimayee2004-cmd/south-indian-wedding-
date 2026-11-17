@@ -163,6 +163,7 @@ const weddingConfig: WeddingConfig = {
   },
 
   media: {
+    frame: { src: "/media/gopuram-frame.webp", width: 1200, height: 896, top: 805, bottom: 91, side: 215, clip: 62, contentTop: 405 },
     // Laptop/desktop scenes. Add landscape art here when ready, e.g.
     // hero: { src: "/media/desktop/hero.webp", ratio: 16 / 9, focus: 0.4 },
     desktop: {},
@@ -171,10 +172,9 @@ const weddingConfig: WeddingConfig = {
     openingReveal: "/media/gopuram-sky.webp",
     openingDoorY: 0.945,
     invitation: "/media/gopuram-sky.webp",
-    couple: "/media/mandapam-arch.webp",
-    coupleArch: { top: 25, left: 24, width: 52, height: 44 },
+    heroReveal: "/media/temple-dancers.webp",
+    couple: "/media/couple-garland.webp",
     events: "/media/pillar-frame.webp",
-    eventsFrame: { top: 15, left: 19, width: 62, height: 70 },
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
     rsvp: "/media/stone-arch.webp",
@@ -208,13 +208,13 @@ const weddingConfig: WeddingConfig = {
   },
 
   sections: [
-    { id: "invitation", enabled: true },
+    { id: "invitation", enabled: true }, // hero + temple frame with the invitation
+    { id: "events", enabled: true }, // shown inside the temple frame, under the invitation
     { id: "couple", enabled: true },
-    { id: "events", enabled: true },
     { id: "gallery", enabled: true },
     { id: "family", enabled: true },
-    { id: "wishingWall", enabled: true },
     { id: "rsvp", enabled: true },
+    { id: "wishingWall", enabled: true },
     { id: "travelStay", enabled: true },
     { id: "contact", enabled: true },
     { id: "thankYou", enabled: true },
