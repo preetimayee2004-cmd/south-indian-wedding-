@@ -1,0 +1,17 @@
+# dependencies & build output
+node_modules
+dist
+*.tsbuildinfo
+
+# secrets — Supabase keys live in .env.local (see .env.example)
+.env
+*.local
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+
+# Claude Code personal settings (launch.json is shared)
+.claude/settings.local.json

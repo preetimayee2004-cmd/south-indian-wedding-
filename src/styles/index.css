@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Default token values (the sample wedding's palette). ThemeProvider overwrites
+ * the colour/font vars at runtime from wedding.config.ts → theme.
+ * Colours are stored as "R G B" triplets so Tailwind's /opacity syntax works.
+ */
+:root {
+  --c-accent: 202 76 61; /* #ca4c3d */
+  --c-ink: 42 36 33;
+  --c-ink-soft: 107 94 86;
+  --c-ivory: 247 242 235; /* #f7f2eb */
+  --c-paper: 255 253 249;
+  --c-gold: 184 138 62;
+  --c-teal: 31 107 104;
+  --c-maroon: 122 46 42;
+  --c-leaf: 78 122 60;
+  --c-line: 228 216 200;
+
+  --font-script: "Great Vibes", cursive;
+  --font-body: "EB Garamond", Georgia, serif;
+
+  /* Layout rhythm — one source for every section */
+  --space-gutter: 1.25rem; /* 20px side padding on phones */
+  --space-section: 5.5rem; /* vertical padding between sections */
+  --w-content: 30rem; /* 480px reading column on phones */
+}
+
+@media (min-width: 768px) {
+  :root {
+    --space-gutter: 2.5rem;
+    --space-section: 7rem;
+    --w-content: 42rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --space-gutter: 4rem;
+    --space-section: 8.5rem;
+    --w-content: 72rem;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  html,
+  body {
+    overflow-x: clip; /* never horizontal scroll */
+  }
+  body {
+    @apply bg-ivory font-body text-ink antialiased;
+    font-size: 1.0625rem; /* 17px: EB Garamond runs small */
+    line-height: 1.65;
+    min-height: 100svh;
+  }
+  ::selection {
+    @apply bg-accent/20;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+    outline-style: solid;
+  }
+  img {
+    @apply select-none;
+  }
+}
+
+@layer components {
+  /* Small-caps label above headings */
+  .eyebrow {
+    @apply font-body text-eyebrow uppercase text-ink-soft;
+  }
+  /* Cursive heading — the one script font, always accent-coloured */
+  .script-heading {
+    @apply font-script font-normal text-accent;
+  }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes leafIn {
+  from { transform: translateY(-24px) scale(0.92); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes petal {
+  0% { transform: translate(0, 0) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+}
+
+@keyframes lbIn {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes tick {
+  from { transform: translateY(55%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes cue {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+  22% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  41% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); }
+  63% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.04); }
+  80% { opacity: 0.78; transform: translate(-50%, -50%) scale(0.98); }
+}
+
+@keyframes dotIn {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: none; }
+}
+svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
