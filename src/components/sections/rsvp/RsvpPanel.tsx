@@ -6,6 +6,7 @@ import { backendReady } from "@/lib/supabase";
 import { readSaved, type SavedRsvp } from "@/lib/rsvp";
 import { formatDayMonth, waLink } from "@/lib/format";
 import { RsvpForm } from "./RsvpForm";
+import { burstHearts } from "@/lib/hearts";
 import { RsvpConfirmation } from "./RsvpConfirmation";
 
 /** RSVP can work: a backend to save to, or at least a WhatsApp contact. */
@@ -21,7 +22,20 @@ export function useRsvpUsable(): boolean {
  */
 export function RsvpPanel() {
   const { id: weddingId, rsvp, wedding, contacts, couple } = useWedding();
-  const { guestName } = useGuest();
+  const { guestName, isPersonalized } = useGuest();
+  const { events } = useWedding();
+  // "13 – 14 FEBRUARY 2027 · MADURAI": the days of the celebrations
+  const span = (() => {
+    const ds = [...events.map((e) => e.startISO), wedding.dateISO].map((d) => new Date(d).getTime()).sort((a, b) => a - b);
+    if (!ds.length) return "";
+    const f = (t: number, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, ...o }).format(t);
+    const a = ds[0], b = ds[ds.length - 1];
+    const sameMonth = f(a, { month: "long", year: "numeric" }) === f(b, { month: "long", year: "numeric" });
+    const range = sameMonth && f(a, { day: "numeric" }) !== f(b, { day: "numeric" })
+      ? `${f(a, { day: "numeric" })} – ${f(b, { day: "numeric", month: "long", year: "numeric" })}`
+      : f(b, { day: "numeric", month: "long", year: "numeric" });
+    return `${range} · ${wedding.city.split(",")[0]}`;
+  })();
   const reduced = usePrefersReducedMotion();
   const [saved, setSaved] = useState<SavedRsvp | null>(() => readSaved(weddingId));
   const [editing, setEditing] = useState(false);
@@ -65,6 +79,7 @@ export function RsvpPanel() {
         initial={saved}
         reduced={reduced}
         onSaved={(s) => {
+          if (s.attending) burstHearts(null);
           setSaved(s);
           setEditing(false);
         }}
@@ -76,17 +91,24 @@ export function RsvpPanel() {
     // No backend: a real message to the family instead of a fake "saved".
     return (
       <div className="flex flex-col items-center text-center">
-        <p className="script-heading text-[2.2rem] leading-tight">Dear {guestName},</p>
-        <p className="mt-1 text-[1.1rem] italic text-ink">will you join us?</p>
+        <p className="text-[0.7rem] font-bold uppercase tracking-[0.4em] text-maroon">R · S · V · P</p>
+        <p className="mt-1 text-[0.95rem] text-ink">Dear {isPersonalized ? guestName : "Family & Friends"}</p>
+        <p className="script-heading text-[2.1rem] leading-tight">Will You Join Us?</p>
+        <p className="mt-1 max-w-[17rem] text-[0.88rem] italic leading-snug text-ink">
+          Your presence is the greatest blessing we could ask for. Come celebrate the union of {couple.bride.name} &amp; {couple.groom.name} with our
+          families in {wedding.cityNickname ?? wedding.city.split(",")[0]}.
+        </p>
+        {span && <p className="mt-1.5 text-[0.62rem] font-bold uppercase tracking-[0.22em] text-maroon">{span}</p>}
         {deadlineLabel && <p className="mt-2 text-[0.66rem] uppercase tracking-[0.24em] text-ink-soft">Kindly respond by {deadlineLabel}</p>}
         <div className="mt-6 flex w-full max-w-[17rem] flex-col gap-3">
           <a
             href={waLink(wa.phone!, waText(true))}
+            onClick={(e) => burstHearts(e.currentTarget)}
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-accent px-5 py-3 text-[0.74rem] uppercase tracking-[0.2em] text-paper shadow-[0_6px_18px_rgb(202_76_61/0.28)]"
           >
-            Joyfully accept
+            Joyfully Accept
           </a>
           <a
             href={waLink(wa.phone!, waText(false))}

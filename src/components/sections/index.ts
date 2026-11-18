@@ -10,6 +10,7 @@ import { TravelStay } from "./TravelStay";
 import { Contact } from "./Contact";
 import { ThankYou } from "./ThankYou";
 import { LoveNote } from "./LoveNote";
+import { ClosingScene } from "@/components/scenes/ClosingScene";
 
 /** Events live inside the invitation's temple frame, so they have no section of their own. */
 const InsideFrame: ComponentType = () => null;
@@ -27,4 +28,5 @@ export const SECTION_REGISTRY: Record<SectionId, ComponentType> = {
   contact: Contact,
   thankYou: ThankYou,
   loveNote: LoveNote,
+  closing: ClosingScene,
 };

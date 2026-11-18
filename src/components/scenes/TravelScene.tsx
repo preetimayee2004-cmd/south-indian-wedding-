@@ -20,6 +20,8 @@ export function TravelScene() {
   const shortDate = new Intl.DateTimeFormat("en-GB", { timeZone: tz, day: "2-digit", month: "2-digit", year: "2-digit" }).format(d).replace(/\//g, "·");
   const city = wedding.city.split(",")[0];
   const initials = `${couple.bride.name[0]} & ${couple.groom.name[0]}`;
+  const longDate = new Intl.DateTimeFormat("en-GB", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d).replace(",", ",");
+  const startTime = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true }).format(d).toUpperCase();
 
   const win = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -53,10 +55,15 @@ export function TravelScene() {
         <div ref={win} className="parchment frieze-border relative w-full overflow-hidden rounded-[6px]">
           <div ref={track} data-layer className="px-3.5 pb-8 pt-5">
             <div ref={head} className="text-center">
-              <p className="text-eyebrow uppercase text-ink">Getting there</p>
-              <h2 id="travel-heading" className="script-heading mt-1 text-[clamp(2.4rem,10vw,3.6rem)] leading-none">
-                Travel &amp; Stay
+              <p className="text-[0.95rem] tracking-[0.2em] text-maroon">विवाह स्थल</p>
+              <h2 id="travel-heading" className="mt-1 text-[0.85rem] font-bold uppercase tracking-[0.34em] text-ink">
+                The Venue
               </h2>
+              <p className="mt-2 font-script text-[clamp(2.2rem,9vw,3.2rem)] leading-none text-accent">{venue.name}</p>
+              <p className="mt-1 text-[0.95rem] text-ink">{wedding.city}</p>
+              <p className="mt-1 text-[0.85rem] italic text-ink">
+                Muhurtham · {longDate} · {startTime}
+              </p>
             </div>
 
             <div className="mt-5 grid grid-cols-2 items-start gap-3">

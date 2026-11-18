@@ -18,14 +18,16 @@ interface OpeningProps {
 const POCKET = "h-[13.5rem] md:h-[15rem]";
 
 /**
- * The first thing a guest sees: a full-screen overlay on the hero's cobalt sky with the
- * sealed envelope. Tap → the kumkum wax seal lifts, the flap swings open,
- * the envelope grows towards you and fades, revealing the hero underneath.
+ * The first thing a guest sees (as in the reference): "Welcome to <city>" on
+ * the hero's cobalt sky and the sealed envelope, addressed to the guest. Tap →
+ * the wax seal cracks into two pieces, the flap swings open, the card rises
+ * out, zooms to fill the screen and its paper turns into the sky — the hero.
  * Skip is always there. Reduced motion → a simple fade.
  */
 export function Opening({ onReveal, onDone }: OpeningProps) {
-  const { couple, wedding, opening } = useWedding();
-  const { guestName } = useGuest();
+  const { couple, wedding, opening, loveStory } = useWedding();
+  const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
+  const { guestName, isPersonalized } = useGuest();
   const { start: startMusic, playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
@@ -33,7 +35,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const root = useRef<HTMLDivElement>(null);
   const env = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
-  const seal = useRef<HTMLSpanElement>(null);
+  const sealL = useRef<HTMLSpanElement>(null);
+  const sealR = useRef<HTMLSpanElement>(null);
+  const zoom = useRef<HTMLDivElement>(null);
+  const sky = useRef<HTMLDivElement>(null);
   const letter = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLParagraphElement>(null);
   const finished = useRef(false);
@@ -73,18 +78,35 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       return;
     }
     gsap.killTweensOf(hint.current);
+    // the seal cracks into two pieces, the flap opens, the card rises out, then
+    // zooms to fill the screen and its paper turns into the sky — the hero
+    const toCard = () => {
+      const r = letter.current!.getBoundingClientRect();
+      gsap.set(zoom.current, { autoAlpha: 1, x: r.left, y: r.top, width: r.width, height: r.height, scaleX: 1, scaleY: 1 });
+      gsap.set(env.current, { autoAlpha: 0 });
+    };
     tl.current = gsap
       .timeline({ onComplete: finish })
       .to(hint.current, { autoAlpha: 0, duration: 0.2 })
-      .to(seal.current, { scale: 1.35, autoAlpha: 0, duration: 0.35, ease: "power2.in" }, 0)
-      .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.2)
+      .to(sealL.current, { x: -26, y: 34, rotate: -28, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
+      .to(sealR.current, { x: 26, y: 38, rotate: 30, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
+      .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.25)
       .set(flap.current, { zIndex: 1 })
-      .to(letter.current, { yPercent: -42, duration: 0.6, ease: "power2.out" }, 0.75)
-      .add(() => onReveal(), 1.05)
-      .to(env.current, { scale: 1.6, autoAlpha: 0, duration: 0.9, ease: "power2.in" }, 1.1)
-      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.1)
-      .to(root.current, { backgroundColor: "rgb(0 77 183 / 0)", duration: 0.8, ease: "power1.inOut" }, 1.3)
-      .to(root.current, { autoAlpha: 0, duration: 0.3 }, ">-0.1");
+      .to(letter.current, { yPercent: -42, duration: 0.6, ease: "power2.out" }, 0.8)
+      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.2)
+      .to(letter.current!.firstElementChild, { opacity: 0, duration: 0.2 }, 1.2)
+      .add(toCard, 1.4)
+      .to(zoom.current, {
+        x: 0,
+        y: 0,
+        scaleX: () => window.innerWidth / Math.max(1, zoom.current!.offsetWidth),
+        scaleY: () => window.innerHeight / Math.max(1, zoom.current!.offsetHeight),
+        duration: 0.9,
+        ease: "power3.inOut",
+      }, 1.4)
+      .to(sky.current, { opacity: 1, duration: 0.5, ease: "power1.in" }, 1.85)
+      .add(() => onReveal(), 2.3)
+      .to(root.current, { autoAlpha: 0, duration: 0.45 }, 2.35);
   }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
 
   const skip = useCallback(() => {
@@ -105,8 +127,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       aria-modal="true"
       aria-label="Wedding invitation"
     >
-      {wedding.blessing && <p className="open-fade text-[0.8rem] tracking-[0.32em] text-[#fbf2dc]">{wedding.blessing}</p>}
-      <p className="open-fade mt-2 font-script text-[clamp(2rem,9vw,2.8rem)] leading-none text-[#f3cf73]">Dear {guestName},</p>
+      {wedding.invocation && <p className="open-fade text-[0.8rem] tracking-[0.3em] text-[#f3cf73]">{wedding.invocation}</p>}
+      <p className="open-fade mt-2 font-script text-[clamp(2.2rem,10vw,3.2rem)] leading-none text-[#fbf2dc]">Welcome to {city}</p>
 
       <button
         type="button"
@@ -134,6 +156,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
                 "linear-gradient(to top right, #ecdcb8 49.6%, transparent 50%) left bottom / 51% 100% no-repeat, linear-gradient(to top left, #ecdcb8 49.6%, transparent 50%) right bottom / 51% 100% no-repeat, linear-gradient(to top, #f0e2c2 0 46%, transparent 46%)",
             }}
           />
+          {/* addressed to the guest */}
+          <p className="pointer-events-none absolute inset-x-0 bottom-[9%] z-[22] text-center font-script text-[clamp(1.5rem,6.5vw,2rem)] leading-none text-maroon">
+            Dear {isPersonalized ? guestName : "Family & Friends"}
+          </p>
           {/* flap, hinged at the top edge, with the wax seal */}
           <div className="absolute inset-0 z-[25] [transform-style:preserve-3d]">
             <div
@@ -141,16 +167,28 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
               className="absolute inset-x-0 top-0 h-[58%] origin-top"
               style={{ clipPath: "polygon(0 0, 100% 0, 50% 100%)", background: "linear-gradient(to bottom, #e3cf9f, #d6bd88)" }}
             />
-            <span
-              ref={seal}
-              className="absolute left-1/2 top-[58%] grid h-16 w-16 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#9e2f28] font-script text-[1.45rem] text-[#fbe9c8] shadow-[0_4px_10px_rgb(122_46_42/0.5),inset_0_-3px_6px_rgb(0_0_0/0.25),inset_0_2px_3px_rgb(255_255_255/0.2)]"
-              style={{ borderRadius: "48% 52% 50% 50% / 52% 48% 52% 48%" }}
-            >
-              {initials}
-            </span>
+            {/* the wax seal, as two pieces that crack apart */}
+            {[
+              { ref: sealL, clip: "polygon(0 0, 54% 0, 47% 38%, 55% 60%, 46% 100%, 0 100%)" },
+              { ref: sealR, clip: "polygon(54% 0, 100% 0, 100% 100%, 46% 100%, 55% 60%, 47% 38%)" },
+            ].map(({ ref, clip }, i) => (
+              <span key={i} ref={ref} className="absolute left-1/2 top-[58%] -ml-8 -mt-8 block h-16 w-16">
+                <span
+                  className="grid h-full w-full place-items-center bg-[#9e2f28] font-script text-[1.45rem] text-[#fbe9c8] shadow-[inset_0_-3px_6px_rgb(0_0_0/0.25),inset_0_2px_3px_rgb(255_255_255/0.2)]"
+                  style={{ borderRadius: "48% 52% 50% 50% / 52% 48% 52% 48%", clipPath: clip }}
+                >
+                  {initials}
+                </span>
+              </span>
+            ))}
           </div>
         </div>
       </button>
+
+      {/* the card that grows to fill the screen; its paper turns into the hero's sky */}
+      <div ref={zoom} aria-hidden className="invisible fixed left-0 top-0 z-20 origin-top-left rounded-sm bg-[#fbf2dc]">
+        <div ref={sky} className="absolute inset-0 opacity-0" style={{ backgroundColor: "#004DB7" }} />
+      </div>
 
       <p ref={hint} className="open-fade mt-7 text-[0.74rem] font-bold uppercase tracking-[0.3em] text-[#fbf2dc]">
         {opening.tapLabel}

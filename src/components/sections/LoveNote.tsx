@@ -33,22 +33,22 @@ export function LoveNote() {
 
   if (!loveNote) return null;
 
-  const greeting = isPersonalized ? `Dear ${guestName},` : "Dear friend,";
+  const greeting = isPersonalized ? `Dear ${guestName},` : "Dear Family & Friends,";
   const signature = loveNote.signature ?? `${couple.bride.name} & ${couple.groom.name}`;
 
   return (
     <section ref={root} id="loveNote" aria-labelledby="note-heading" className="relative isolate py-section">
       <Container>
         <div className="text-center">
-          <p className="note-in eyebrow !text-ink">Before you go</p>
-          <h2 id="note-heading" className="note-in script-heading mt-2 text-script-lg">
-            A Note of Love
+          <p className="note-in text-[0.95rem] tracking-[0.2em] text-maroon">प्रेम पत्र</p>
+          <h2 id="note-heading" className="note-in mt-2 text-[0.85rem] font-bold uppercase tracking-[0.34em] text-ink">
+            A Note from our Hearts
           </h2>
         </div>
         <div className="note-in mx-auto mt-8 max-w-[21rem] rounded-sm border border-gold/50 bg-[#fbf2dc] px-6 pb-7 pt-7 text-center shadow-[0_10px_30px_rgb(74_40_20/0.14)]">
           <p className="font-script text-[1.9rem] leading-none text-accent">{greeting}</p>
           <p className="mx-auto mt-4 max-w-[17rem] text-[1.08rem] italic leading-relaxed text-ink [text-wrap:pretty]">{loveNote.text}</p>
-          <p className="mt-5 text-[0.62rem] uppercase tracking-[0.26em] text-ink">With all our love</p>
+          <p className="mt-5 text-[0.95rem] italic text-ink">With all our love,</p>
           <p className="mt-1 font-script text-[2.2rem] leading-none text-accent">{signature}</p>
         </div>
       </Container>

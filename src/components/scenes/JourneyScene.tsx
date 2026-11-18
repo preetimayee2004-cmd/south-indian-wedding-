@@ -1,73 +1,92 @@
-import { useMemo, useRef, useState } from "react";
-import { gsap } from "@/lib/gsap";
-import type { GalleryImage } from "@/config/types";
+import { useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
 import { artProps } from "@/lib/art";
 
-type Category = NonNullable<GalleryImage["category"]>;
-const FILTER_LABELS: Record<Category, string> = {
-  couple: "Couple",
-  "pre-wedding": "Pre-wedding",
-  family: "Family",
-  traditional: "Traditions",
-};
+const PLANE_SVG = (
+  <svg viewBox="0 0 48 32" className="h-full w-full" aria-hidden>
+    <path d="M2 16 46 2 30 30 22 19Z" fill="#fbf2dc" stroke="#b88a3e" strokeWidth="1.5" strokeLinejoin="round" />
+    <path d="M22 19 46 2 18 17Z" fill="#e9d6a8" stroke="#b88a3e" strokeWidth="1.2" strokeLinejoin="round" />
+  </svg>
+);
 
-// where each polaroid flies in from (cycled) and its resting tilt
-const FROM = [
-  { x: -120, y: 10 },
-  { x: 120, y: -10 },
-  { x: -30, y: 90 },
-  { x: 40, y: -80 },
-  { x: 110, y: 60 },
-  { x: -110, y: -50 },
-];
-const tilt = (i: number) => ((i * 7919) % 13) - 6; // stable "random" −6…6°
+/** Catmull-Rom point and tangent angle through `pts` at t ∈ [0, 1]. */
+function along(pts: { x: number; y: number }[], t: number) {
+  const n = pts.length - 1;
+  const f = Math.min(n - 1e-6, Math.max(0, t * n));
+  const i = Math.floor(f);
+  const u = f - i;
+  const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(n, i + 2)];
+  const c = (a: number, b: number, c2: number, d: number) =>
+    0.5 * (2 * b + (-a + c2) * u + (2 * a - 5 * b + 4 * c2 - d) * u * u + (-a + 3 * b - 3 * c2 + d) * u * u * u);
+  const dc = (a: number, b: number, c2: number, d: number) =>
+    0.5 * (-a + c2 + 2 * (2 * a - 5 * b + 4 * c2 - d) * u + 3 * (-a + 3 * b - 3 * c2 + d) * u * u);
+  return { x: c(p0.x, p1.x, p2.x, p3.x), y: c(p0.y, p1.y, p2.y, p3.y), a: Math.atan2(dc(p0.y, p1.y, p2.y, p3.y), dc(p0.x, p1.x, p2.x, p3.x)) };
+}
+
+function City({ lead, city, native, line }: { lead: string; city: string; native?: string; line: string }) {
+  return (
+    <div data-stop className="flex w-[78vw] max-w-[22rem] shrink-0 flex-col items-center justify-center text-center">
+      <p className="text-[0.68rem] font-bold uppercase tracking-[0.34em] text-[#fbf2dc]">{lead}</p>
+      <p className="mt-2 text-[clamp(2.2rem,11vw,3.4rem)] font-bold uppercase leading-none tracking-[0.12em] text-[#f3cf73]">{city}</p>
+      {native && <p className="mt-1 text-[1.2rem] text-[#fbf2dc]">{native}</p>}
+      <p className="mt-2 font-script text-[1.7rem] leading-none text-[#fbf2dc]">{line}</p>
+    </div>
+  );
+}
 
 /**
- * Scene 7 — Our Journey. Polaroids on the cobalt sky, each flying in from a
- * different side with a small tilt, staggered with the scroll. Two columns
- * drift up at slightly different speeds. Tap a photo for the lightbox.
+ * Meet the Bride & Groom — our love story (as in the reference runway). While
+ * the page scrolls past, the stage stays on screen (sticky) and the photos
+ * travel from right to left along a gold line, from the city where it began
+ * to the city it lives on in; a paper plane flies along a smooth curve that
+ * swoops towards each photo, tilting with the curve (scrolling back runs it in
+ * reverse and the plane turns round). Tap a photo to open it large.
  */
 export function JourneyScene() {
-  const { gallery } = useWedding();
-  const [filter, setFilter] = useState<Category | "all">("all");
+  const { gallery, loveStory } = useWedding();
   const [open, setOpen] = useState<number | null>(null);
-  const categories = useMemo(() => [...new Set(gallery.map((g) => g.category).filter(Boolean))] as Category[], [gallery]);
-  const images = useMemo(() => (filter === "all" ? gallery : gallery.filter((g) => g.category === filter)), [gallery, filter]);
-  const cols = [images.filter((_, i) => i % 2 === 0), images.filter((_, i) => i % 2 === 1)];
-
+  const track = useRef<HTMLDivElement>(null);
+  const plane = useRef<HTMLDivElement>(null);
+  const line = useRef<SVGPathElement>(null);
   const head = useRef<HTMLDivElement>(null);
-  const win = useRef<HTMLDivElement>(null);
-  const colEls = useRef<(HTMLElement | null)[]>([]);
 
   if (gallery.length === 0) return null;
 
   const build: Build = (tl) => {
-    tl.from(head.current!.children, { autoAlpha: 0, y: 20, duration: 0.3, stagger: 0.08, ease: "power2.out" }, 0);
-    const shots = gsap.utils.toArray<HTMLElement>("[data-shot]", win.current!);
-    // fly in, in reading order, each from its own side
-    shots
-      .sort((a, b) => Number(a.dataset.i) - Number(b.dataset.i))
-      .forEach((el, k) => {
-        const i = Number(el.dataset.i);
-        const f = FROM[i % FROM.length];
-        tl.fromTo(
-          el,
-          { xPercent: f.x, yPercent: f.y, rotate: tilt(i) * 3, autoAlpha: 0 },
-          { xPercent: 0, yPercent: 0, rotate: tilt(i), autoAlpha: 1, duration: 0.5, ease: "power2.out" },
-          0.25 + k * 0.22,
-        );
-      });
-    // columns drift up at different speeds (further if they don't fit)
-    const over = (el: HTMLElement | null) => () => -Math.max(0, (el?.offsetHeight ?? 0) - (win.current?.clientHeight ?? 0)) - window.innerHeight * 0.06;
-    const span = Math.max(1, 0.25 + shots.length * 0.22 + 0.4);
-    tl.to(colEls.current[0], { y: over(colEls.current[0]), duration: span }, 0.2).to(
-      colEls.current[1],
-      { y: () => over(colEls.current[1])() * 1.18 - window.innerHeight * 0.03, duration: span },
-      0.2,
-    );
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const tr = track.current!;
+    const travel = Math.max(0, tr.scrollWidth - vw);
+    // waypoints (track px): the opening city, a swoop up to each photo, the closing city
+    const base = tr.getBoundingClientRect();
+    const stops = [...tr.querySelectorAll("[data-stop]")].map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left - base.left + r.width / 2, top: r.top - base.top, h: r.height };
+    });
+    const lineY = base.height * 0.5;
+    const pts = stops.map((s, i) => ({ x: s.x, y: i === 0 || i === stops.length - 1 ? lineY : s.top - 18 }));
+    if (line.current && pts.length > 1) line.current.setAttribute("d", `M${pts[0].x},${lineY} L${pts[pts.length - 1].x},${lineY}`);
+
+    const T = Math.max(1.2, travel / vh); // about 1:1 with the scroll
+    tl.from(head.current!.children, { opacity: 0, y: 18, duration: 0.25, stagger: 0.08 }, 0).fromTo(tr, { x: 0 }, { x: -travel, duration: T, ease: "none" }, 0.15);
+
+    // the plane: under the middle of the screen, on the curve
+    const state = { p: 0 };
+    let lastX = -1;
+    let facing = 1;
+    const place = () => {
+      if (pts.length < 2 || !plane.current) return;
+      const x = vw * 0.5 + travel * state.p;
+      const t = Math.min(1, Math.max(0, (x - pts[0].x) / (pts[pts.length - 1].x - pts[0].x)));
+      const q = along(pts, t);
+      if (lastX >= 0 && Math.abs(q.x - lastX) > 0.5) facing = q.x >= lastX ? 1 : -1;
+      lastX = q.x;
+      plane.current.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${q.a.toFixed(3)}rad) scaleX(${facing})`;
+    };
+    place();
+    tl.fromTo(state, { p: 0 }, { p: 1, duration: T, ease: "none", onUpdate: place }, 0.15).to({}, { duration: 0.3 });
   };
 
   return (
@@ -76,65 +95,46 @@ export function JourneyScene() {
       labelledBy="gallery-heading"
       className="cobalt"
       build={build}
-      deps={[images]}
       edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
     >
-      <div className="flex h-full flex-col px-gutter pt-[max(1.5rem,5svh)]">
-        <div ref={head} className="text-center">
-          <p className="text-eyebrow uppercase text-[#fbf2dc]">Moments</p>
-          <h2 id="gallery-heading" className="mt-1 font-script font-normal text-[#f3cf73] text-[clamp(2.6rem,11vw,4rem)] leading-none">
-            Our Journey
+      <div className="flex h-full flex-col">
+        <div ref={head} className="px-gutter pt-[max(1.5rem,6svh)] text-center">
+          <h2 id="gallery-heading" className="font-script text-[clamp(2.4rem,10vw,3.6rem)] font-normal leading-none text-[#f3cf73]">
+            Meet the Bride &amp; Groom
           </h2>
-          {categories.length > 1 && (
-            <div role="group" aria-label="Filter photos" className="-mx-gutter mt-4 flex gap-2 overflow-x-auto px-gutter pb-1 [scrollbar-width:none]">
-              {(["all", ...categories] as const).map((c) => {
-                const active = filter === c;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() => setFilter(c)}
-                    className={`shrink-0 rounded-full border px-3.5 py-1.5 text-[0.66rem] uppercase tracking-[0.18em] transition-colors duration-300 ${
-                      active ? "border-accent bg-accent text-paper" : "border-gold/60 bg-paper/70 text-ink"
-                    }`}
-                  >
-                    {c === "all" ? "All" : FILTER_LABELS[c]}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+          <p className="mt-2 text-[0.72rem] font-bold uppercase tracking-[0.36em] text-[#fbf2dc]">Our love story</p>
         </div>
 
-        <div ref={win} className="relative mt-5 flex-1 overflow-hidden">
-          <div className="grid grid-cols-2 gap-3">
-            {cols.map((col, c) => (
-              <ul key={c} ref={(el) => void (colEls.current[c] = el)} data-layer className={`flex flex-col gap-5 ${c === 1 ? "pt-14" : ""}`}>
-                {col.map((g) => {
-                  const i = images.indexOf(g);
-                  return (
-                    <li key={`${g.src}-${i}`} data-shot data-i={i} data-layer>
-                      <button
-                        type="button"
-                        onClick={() => setOpen(i)}
-                        className="block w-full bg-[#fbf3df] p-2 pb-1 text-left shadow-[0_10px_24px_rgb(74_40_20/0.22)] ring-1 ring-[#e0cc9f]"
-                        aria-label={`Open photo: ${g.caption ?? g.alt}`}
-                      >
-                        <span className="block aspect-[4/5] overflow-hidden bg-[#e9dcc0]">
-                          <img {...artProps(g.src, "45vw")} alt={g.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" draggable={false} />
-                        </span>
-                        {g.caption && <span className="mt-1 block text-center font-script text-[1.3rem] leading-[1.05] text-maroon">{g.caption}</span>}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
+        <div className="relative min-h-0 flex-1 overflow-hidden">
+          <div ref={track} data-layer className="absolute inset-y-0 left-0 flex items-center gap-[10vw] px-[11vw]">
+            <svg className="pointer-events-none absolute inset-0 h-full w-full overflow-visible" aria-hidden>
+              <path ref={line} fill="none" stroke="#d9b25f" strokeWidth="2" strokeDasharray="2 7" strokeLinecap="round" />
+            </svg>
+            {loveStory && <City lead="began in" city={loveStory.began.city} native={loveStory.began.native} line={loveStory.began.line} />}
+            {gallery.map((g, i) => (
+              <button
+                key={`${g.src}-${i}`}
+                data-stop
+                type="button"
+                onClick={() => setOpen(i)}
+                className="relative w-[58vw] max-w-[17rem] shrink-0 bg-[#fbf3df] p-2 pb-1 text-left shadow-[0_14px_30px_rgb(5_15_45/0.4)] ring-1 ring-[#e0cc9f]"
+                style={{ rotate: `${i % 2 ? 2.5 : -2.5}deg` }}
+                aria-label={`Open photo: ${g.caption ?? g.alt}`}
+              >
+                <span className="block aspect-[4/5] overflow-hidden bg-[#e9dcc0]">
+                  <img {...artProps(g.src, "60vw")} alt={g.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" draggable={false} />
+                </span>
+                {g.caption && <span className="mt-1 block text-center font-script text-[1.35rem] leading-[1.05] text-maroon">{g.caption}</span>}
+              </button>
             ))}
+            {loveStory && <City lead="and our love story still lives on in" city={loveStory.livesOn.city} native={loveStory.livesOn.native} line={loveStory.livesOn.line} />}
+            <div ref={plane} aria-hidden className="pointer-events-none absolute left-0 top-0 z-10 h-7 w-10">
+              {PLANE_SVG}
+            </div>
           </div>
         </div>
       </div>
-      {open !== null && <Lightbox images={images} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      {open !== null && <Lightbox images={gallery} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </Scene>
   );
 }

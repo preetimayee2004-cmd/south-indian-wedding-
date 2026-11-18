@@ -5,12 +5,14 @@ import { WishingWall } from "@/components/sections/WishingWall";
 import { Contact } from "@/components/sections/Contact";
 import { LoveNote } from "@/components/sections/LoveNote";
 import { InvitationStage } from "./InvitationStage";
+import { EventsSlider } from "./EventsSlider";
 import { CoupleScene } from "./CoupleScene";
 import { JourneyScene } from "./JourneyScene";
 import { FamiliesScene } from "./FamiliesScene";
 import { RsvpScene } from "./RsvpScene";
 import { TravelScene } from "./TravelScene";
 import { ThankYouScene } from "./ThankYouScene";
+import { ClosingScene } from "./ClosingScene";
 
 /** A normal-scrolling section: a parchment card on the hero's cobalt sky, led in by a scalloped hem. */
 function sheet(Component: ComponentType): ComponentType {
@@ -26,7 +28,6 @@ function sheet(Component: ComponentType): ComponentType {
   return Sheet;
 }
 
-const None: ComponentType = () => null;
 
 export interface SceneEntry {
   Component: ComponentType;
@@ -42,15 +43,16 @@ export interface SceneEntry {
  * comes from config.sections.
  */
 export const SCENES: Record<SectionId, SceneEntry> = {
-  invitation: { Component: InvitationStage, enter: "flow", z: 10 }, // hero → gopuram → dancers → arch + invitation → events
-  events: { Component: None, enter: "flow", z: 10 }, // inside the invitation stage
-  couple: { Component: CoupleScene, enter: "lift", z: 5 },
-  gallery: { Component: JourneyScene, enter: "cover", z: 20 },
-  family: { Component: FamiliesScene, enter: "cover", z: 30 },
+  invitation: { Component: InvitationStage, enter: "flow", z: 10 }, // hero → the arch with the invitation, countdown, destination
+  events: { Component: EventsSlider, enter: "flow", z: 12 }, // one event at a time, sliding sideways
+  couple: { Component: CoupleScene, enter: "flow", z: 14 }, // the couple glide down and come to rest
+  gallery: { Component: JourneyScene, enter: "flow", z: 18 }, // the love-story runway
+  family: { Component: FamiliesScene, enter: "flow", z: 16 }, // scrolls normally; lotus plants grow
   rsvp: { Component: RsvpScene, enter: "cover", z: 40 },
   wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },
-  travelStay: { Component: TravelScene, enter: "flow", z: 60 },
-  contact: { Component: sheet(Contact), enter: "cover", z: 70 },
-  thankYou: { Component: ThankYouScene, enter: "flow", z: 80 },
+  travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue
+  contact: { Component: sheet(Contact), enter: "flow", z: 55 },
+  thankYou: { Component: ThankYouScene, enter: "cover", z: 80 }, // thank you, save the date, replay
   loveNote: { Component: sheet(LoveNote), enter: "cover", z: 90 },
+  closing: { Component: ClosingScene, enter: "flow", z: 92 },
 };

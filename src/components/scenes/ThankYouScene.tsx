@@ -1,20 +1,34 @@
 import { useRef } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
-import { Ornament } from "@/components/ui/Ornament";
 import { art2x } from "@/lib/art";
 import { Petals, addPetals } from "./CoupleScene";
 
 /**
- * Scene 11 — Thank You. The couple picture again, cropped to the couple,
+ * Scene 11 — Thank You (with Save the Date, Add to Calendar and Replay
+ * Invitation, as in the reference). The couple picture again, cropped to the couple,
  * easing back from 1 to 0.9 as you scroll while petals fall; "Thank You"
  * fades in above them and the rest of the words follow. Monogram + footer
  * come after.
  */
 export function ThankYouScene() {
-  const { thankYou, couple, wedding, media } = useWedding();
+  const { thankYou, couple, wedding, media, events, venue } = useWedding();
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
+  const tz = wedding.timeZone;
+  const d = new Date(wedding.dateISO);
+  const part = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: tz, ...o }).format(d);
+  const saveDate = `${part({ day: "2-digit" })} · ${part({ month: "2-digit" })} · ${part({ year: "numeric" })}`;
+  const weekday = part({ weekday: "long" });
+  // Google Calendar: the muhurtham (with its end time when known)
+  const muh = events.find((e) => e.startISO === wedding.dateISO);
+  const end = muh?.endISO ? new Date(muh.endISO) : new Date(d.getTime() + 90 * 60000);
+  const stamp = (t: Date) => t.toISOString().replace(/[-:]/g, "").replace(/.d{3}/, "");
+  const calendarUrl =
+    "https://calendar.google.com/calendar/render?action=TEMPLATE" +
+    `&text=${encodeURIComponent(`${first.name} weds ${second.name} – Wedding`)}` +
+    `&dates=${stamp(d)}/${stamp(end)}` +
+    `&location=${encodeURIComponent(`${venue.name}, ${venue.address}`)}`;
   const pic = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const words = useRef<HTMLDivElement>(null);
@@ -37,10 +51,10 @@ export function ThankYouScene() {
     >
       <div className="relative mx-auto flex h-full max-w-[34rem] flex-col items-center px-gutter pb-[max(1rem,2svh)] pt-[max(1.25rem,4svh)] text-center">
         <div ref={head}>
-          <p className="text-eyebrow uppercase text-[#fbf2dc]">With gratitude</p>
-          <h2 id="thanks-heading" className="mt-1 font-script font-normal text-[#f3cf73] text-[clamp(2.8rem,13vw,4.6rem)] leading-none">
+          <h2 id="thanks-heading" className="font-script font-normal text-[#f3cf73] text-[clamp(2.8rem,13vw,4.6rem)] leading-none">
             Thank You
           </h2>
+          <p className="mt-1 text-[1rem] italic text-[#fbf2dc]">{thankYou.message}</p>
         </div>
 
         {/* the couple, cropped; the layer is a little larger than its window so easing back to 0.9 never shows an edge */}
@@ -58,16 +72,30 @@ export function ThankYouScene() {
           </div>
         </div>
 
-        <div ref={words} className="mt-3">
-          <p className="mx-auto max-w-[21rem] text-[1.05rem] leading-snug text-[#fbf2dc] [text-wrap:balance]">{thankYou.message}</p>
-          <div className="mt-1.5 flex justify-center">
-            <Ornament className="text-[#f3cf73]" />
+        {/* save the date (as in the reference): the day, add to calendar, replay the invitation */}
+        <div ref={words} className="mt-3 w-full">
+          <div className="parchment frieze-border mx-auto max-w-[22rem] rounded-[6px] px-4 pb-3 pt-3">
+            <p className="text-[0.66rem] font-bold uppercase tracking-[0.4em] text-maroon">Save the Date</p>
+            <p className="mt-1 text-[clamp(1.6rem,7vw,2.1rem)] tabular-nums leading-none tracking-[0.08em] text-accent">{saveDate}</p>
+            <p className="mt-1 text-[0.66rem] font-bold uppercase tracking-[0.28em] text-ink">
+              {weekday} · {wedding.city.split(",")[0]}
+            </p>
+            <a
+              href={calendarUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2.5 inline-block rounded-full bg-maroon px-5 py-2 text-[0.66rem] uppercase tracking-[0.2em] text-[#fbf2dc]"
+            >
+              Add to Calendar
+            </a>
           </div>
-          <p className="mt-1 font-script text-[clamp(2rem,9vw,3rem)] leading-none text-[#f3cf73]">
-            {first.name} &amp; {second.name}
-          </p>
-          {thankYou.quote && <p className="mx-auto mt-1.5 max-w-[19rem] text-[0.95rem] italic leading-snug text-[#fbf2dc]">“{thankYou.quote}”</p>}
-          {wedding.blessing && <p className="mt-1.5 text-[0.75rem] tracking-[0.3em] text-[#fbf2dc]">{wedding.blessing}</p>}
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event("invitation:replay"))}
+            className="mt-3 rounded-full border border-[#fbf2dc]/50 px-5 py-2 text-[0.66rem] uppercase tracking-[0.24em] text-[#fbf2dc]"
+          >
+            Replay Invitation
+          </button>
         </div>
       </div>
       <Petals refs={petals} z="z-30" />

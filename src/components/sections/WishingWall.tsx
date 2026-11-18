@@ -7,6 +7,7 @@ import { fetchWishes, subscribeWishes, type Wish } from "@/lib/wishes";
 import { Container } from "@/components/layout/Container";
 import { WishRows } from "./wishes/WishRows";
 import { WishComposer } from "./wishes/WishComposer";
+import { burstHearts } from "@/lib/hearts";
 
 type Load = "loading" | "ready" | "error";
 
@@ -88,12 +89,12 @@ export function WishingWall() {
     <section id="wishingWall" aria-labelledby="wishes-heading" className="relative isolate overflow-x-clip py-section">
       <Container>
         <div ref={head} className="text-center">
-          <p className="eyebrow">Blessings</p>
+          <p className="text-[0.95rem] tracking-[0.2em] text-maroon">शुभकामनाएँ</p>
           <h2 id="wishes-heading" className="script-heading mt-2 text-script-lg">
             Wishing Wall
           </h2>
-          <p className="mx-auto mt-3 max-w-[20rem] italic text-ink-soft md:max-w-[28rem]">
-            Leave a few words for {couple.bride.name} &amp; {couple.groom.name}. Every blessing is kept.
+          <p className="mx-auto mt-3 max-w-[20rem] italic text-ink md:max-w-[28rem]">
+            Leave your blessings for {couple.bride.name} &amp; {couple.groom.name}
           </p>
         </div>
 
@@ -129,7 +130,7 @@ export function WishingWall() {
         </div>
 
         <div className="mt-12">
-          <WishComposer weddingId={weddingId} onSent={(w) => add(w, true)} disabled={!backendReady} />
+          <WishComposer weddingId={weddingId} onSent={(w) => (add(w, true), burstHearts(document.activeElement, { puff: true }))} disabled={!backendReady} />
         </div>
       </Container>
     </section>

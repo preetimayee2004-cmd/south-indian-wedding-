@@ -60,13 +60,10 @@ export function Contact() {
     <section ref={root} id="contact" aria-labelledby="contact-heading" className="relative isolate py-section">
       <Container>
         <div className="contact-head text-center">
-          <p className="eyebrow">Need a hand?</p>
-          <h2 id="contact-heading" className="script-heading mt-2 text-script-lg">
-            Reach Us
+          <p className="text-[0.95rem] tracking-[0.2em] text-maroon">संपर्क करें</p>
+          <h2 id="contact-heading" className="mt-2 text-[0.85rem] font-bold uppercase tracking-[0.34em] text-ink">
+            For any help, call
           </h2>
-          <p className="mx-auto mt-3 max-w-[20rem] italic text-ink-soft md:max-w-[28rem]">
-            For directions, stays or anything at all, the family is a call away.
-          </p>
         </div>
 
         <ul className="bell-row mt-12 flex flex-wrap justify-center gap-y-12">

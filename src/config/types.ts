@@ -14,7 +14,8 @@ export type SectionId =
   | "travelStay"
   | "contact"
   | "thankYou"
-  | "loveNote";
+  | "loveNote"
+  | "closing"; // the city's landmark rising at the very end
 
 export interface Person {
   name: string; // short display name, e.g. "Meenakshi"
@@ -149,6 +150,17 @@ export interface WeddingConfig {
     timeZone: string;
     /** Line under the greeting, before the names. */
     invitationLine: string;
+    /** Opening invocation, e.g. "॥ श्री गणेशाय नमः ॥". */
+    invocation?: string;
+    /** Sign-off under the invitation, e.g. "The Sundaram & Raghavan Families". */
+    families?: string;
+    /** How the city is called in the RSVP line, e.g. "the Temple City". */
+    cityNickname?: string;
+  };
+  /** The love story: the city it began in and the city it lives on in (name + native script). */
+  loveStory?: {
+    began: { city: string; native?: string; line: string };
+    livesOn: { city: string; native?: string; line: string };
   };
   events: WeddingEvent[];
   family?: { bride?: FamilySide; groom?: FamilySide };
@@ -207,10 +219,8 @@ export interface WeddingConfig {
      * Used only once the file exists (prepared into art-manifest.json).
      */
     invitationWide?: { src: string; peek: number };
-    /** The couple scene (portrait 9:16), also used by Thank You. */
+    /** The couple scene (landscape), also used by Thank You. */
     couple: string;
-    /** Landscape 16:9 couple scene for screens wider than 900px (same centre, extended sideways). Used once the file exists. */
-    coupleWide?: string;
     events: string;
     family: string;
     rsvp: string;

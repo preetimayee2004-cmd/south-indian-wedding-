@@ -44,7 +44,15 @@ const weddingConfig: WeddingConfig = {
     quote: "Two souls, one thread, bound by blessings.",
     blessing: "॥ शुभ विवाह ॥",
     timeZone: "Asia/Kolkata",
-    invitationLine: "Together with our families, we joyfully invite you to celebrate the wedding of",
+    invitationLine: "With the blessings of our elders, we warmly invite you to the wedding celebrations of",
+    invocation: "॥ श्री गणेशाय नमः ॥",
+    families: "The Sundaram & Raghavan Families",
+    cityNickname: "the Temple City",
+  },
+
+  loveStory: {
+    began: { city: "Chennai", native: "சென்னை", line: "where two hearts first met" },
+    livesOn: { city: "Madurai", native: "மதுரை", line: "forever, together" },
   },
 
   events: [
@@ -147,7 +155,7 @@ const weddingConfig: WeddingConfig = {
   ],
 
   thankYou: {
-    message: "Your presence and blessings mean the world to us.",
+    message: "For your love and blessings, thank you.",
     quote: "Where there is love, there is life.",
   },
 
@@ -175,8 +183,7 @@ const weddingConfig: WeddingConfig = {
     invitation: "/media/temple-hero.webp",
     // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
     invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
-    couple: "/media/couple-scene.webp",
-    coupleWide: "/media/couple-scene-wide.webp",
+    couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky
     events: "/media/pillar-frame.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
@@ -211,17 +218,18 @@ const weddingConfig: WeddingConfig = {
   },
 
   sections: [
-    { id: "invitation", enabled: true }, // hero + temple frame with the invitation
-    { id: "events", enabled: true }, // shown inside the temple frame, under the invitation
-    { id: "couple", enabled: true },
-    { id: "gallery", enabled: true },
-    { id: "family", enabled: true },
+    { id: "invitation", enabled: true }, // hero, then the invitation with countdown + destination in the arch
+    { id: "events", enabled: true }, // one event at a time, sliding sideways
+    { id: "couple", enabled: true }, // the couple glide down and come to rest
+    { id: "family", enabled: true }, // meet the bride & groom family
+    { id: "gallery", enabled: true }, // our love story: the photo runway
     { id: "rsvp", enabled: true },
     { id: "wishingWall", enabled: true },
-    { id: "travelStay", enabled: true },
-    { id: "contact", enabled: true },
-    { id: "thankYou", enabled: true },
-    { id: "loveNote", enabled: true },
+    { id: "contact", enabled: true }, // for any help, call
+    { id: "travelStay", enabled: true }, // the venue
+    { id: "thankYou", enabled: true }, // thank you, save the date, replay
+    { id: "loveNote", enabled: true }, // a note from our hearts
+    { id: "closing", enabled: true }, // the city's landmark
   ],
 };
 

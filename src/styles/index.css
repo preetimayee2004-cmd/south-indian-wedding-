@@ -49,16 +49,10 @@
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
   }
-  html:not(.motion) {
-    scroll-behavior: smooth;
-  }
-  /* Lenis */
-  html.lenis,
-  html.lenis body {
-    height: auto;
-  }
-  .lenis.lenis-stopped {
-    overflow: clip;
+  /* Sections well off screen sleep: their looping animations pause (App.tsx). */
+  .zz,
+  .zz * {
+    animation-play-state: paused !important;
   }
   html,
   body {
@@ -260,6 +254,11 @@
   41% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); }
   63% { opacity: 0.95; transform: translate(-50%, -50%) scale(1.04); }
   80% { opacity: 0.78; transform: translate(-50%, -50%) scale(0.98); }
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
 }
 
 @keyframes dotIn {

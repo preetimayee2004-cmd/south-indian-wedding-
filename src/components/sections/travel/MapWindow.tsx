@@ -63,7 +63,7 @@ export function MapWindow({ query, address, venueName, compact }: { query: strin
           rel="noopener noreferrer"
           className={`rounded-full bg-accent text-center uppercase text-paper shadow-[0_6px_18px_rgb(202_76_61/0.28)] transition-transform active:scale-95 ${compact ? "px-3 py-2.5 text-[0.6rem] tracking-[0.14em]" : "px-6 py-3 text-[0.72rem] tracking-[0.2em]"}`}
         >
-          Get directions ↗
+          Open in Google Maps
         </a>
         <button
           type="button"
