@@ -18,7 +18,7 @@ interface OpeningProps {
 const POCKET = "h-[13.5rem] md:h-[15rem]";
 
 /**
- * The first thing a guest sees: a full-screen parchment overlay with the
+ * The first thing a guest sees: a full-screen overlay on the hero's cobalt sky with the
  * sealed envelope. Tap → the kumkum wax seal lifts, the flap swings open,
  * the envelope grows towards you and fades, revealing the hero underneath.
  * Skip is always there. Reduced motion → a simple fade.
@@ -83,7 +83,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .add(() => onReveal(), 1.05)
       .to(env.current, { scale: 1.6, autoAlpha: 0, duration: 0.9, ease: "power2.in" }, 1.1)
       .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.1)
-      .to(root.current, { backgroundColor: "rgb(243 229 196 / 0)", duration: 0.8, ease: "power1.inOut" }, 1.3)
+      .to(root.current, { backgroundColor: "rgb(0 77 183 / 0)", duration: 0.8, ease: "power1.inOut" }, 1.3)
       .to(root.current, { autoAlpha: 0, duration: 0.3 }, ">-0.1");
   }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
 
@@ -100,13 +100,13 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   return (
     <div
       ref={root}
-      className="parchment fixed inset-0 z-[100] flex touch-none select-none flex-col items-center justify-center overflow-hidden px-gutter"
+      className="cobalt fixed inset-0 z-[100] flex touch-none select-none flex-col items-center justify-center overflow-hidden px-gutter"
       role="dialog"
       aria-modal="true"
       aria-label="Wedding invitation"
     >
-      {wedding.blessing && <p className="open-fade text-[0.8rem] tracking-[0.32em] text-ink">{wedding.blessing}</p>}
-      <p className="open-fade mt-2 font-script text-[clamp(2rem,9vw,2.8rem)] leading-none text-accent">Dear {guestName},</p>
+      {wedding.blessing && <p className="open-fade text-[0.8rem] tracking-[0.32em] text-[#fbf2dc]">{wedding.blessing}</p>}
+      <p className="open-fade mt-2 font-script text-[clamp(2rem,9vw,2.8rem)] leading-none text-[#f3cf73]">Dear {guestName},</p>
 
       <button
         type="button"
@@ -152,7 +152,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
         </div>
       </button>
 
-      <p ref={hint} className="open-fade mt-7 text-[0.74rem] font-bold uppercase tracking-[0.3em] text-ink">
+      <p ref={hint} className="open-fade mt-7 text-[0.74rem] font-bold uppercase tracking-[0.3em] text-[#fbf2dc]">
         {opening.tapLabel}
       </p>
 

@@ -31,8 +31,7 @@ export function Invitation() {
           {...artProps(media.invitation, "100vw")}
           alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
           fetchPriority="high"
-          className="absolute bottom-0 left-1/2 w-full max-w-[40rem] -translate-x-1/2"
-          style={{ maskImage: "linear-gradient(to bottom, transparent, #000 12%)", WebkitMaskImage: "linear-gradient(to bottom, transparent, #000 12%)" }}
+          className="absolute bottom-0 left-0 w-full"
           draggable={false}
         />
         <div className="relative z-10 flex flex-col items-center px-gutter text-center text-white [text-shadow:0_2px_16px_rgb(0_30_90/0.55)]" style={{ paddingTop: "max(3.75rem, 8svh)" }}>

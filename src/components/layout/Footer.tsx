@@ -39,14 +39,14 @@ export function Footer() {
   };
 
   const pill =
-    "rounded-full border border-ink/15 px-5 py-2.5 text-[0.68rem] uppercase tracking-[0.22em] text-ink-soft transition-colors hover:border-accent hover:text-accent";
+    "rounded-full border border-[#fbf2dc]/40 px-5 py-2.5 text-[0.68rem] uppercase tracking-[0.22em] text-[#fbf2dc] transition-colors hover:border-[#f3cf73] hover:text-[#f3cf73]";
 
   return (
-    <footer className="parchment relative z-[95] border-t border-gold/50 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-12 text-center">
-      <p className="font-script text-[2.6rem] leading-none text-accent">
-        {couple.bride.name[0]} <span className="text-[1.6rem] text-gold">&amp;</span> {couple.groom.name[0]}
+    <footer className="cobalt relative z-[95] border-t border-[#f3cf73]/50 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-12 text-center">
+      <p className="font-script text-[2.6rem] leading-none text-[#f3cf73]">
+        {couple.bride.name[0]} <span className="text-[1.6rem] text-[#fbf2dc]">&amp;</span> {couple.groom.name[0]}
       </p>
-      <p className="mt-3 text-[0.68rem] uppercase tracking-[0.28em] text-ink-soft">
+      <p className="mt-3 text-[0.68rem] uppercase tracking-[0.28em] text-[#fbf2dc]">
         {date} · {wedding.city.split(",")[0]}
       </p>
 
@@ -62,7 +62,7 @@ export function Footer() {
         {shared === "copied" ? "Invitation link copied" : ""}
       </span>
 
-      <p className="mt-8 text-[0.72rem] text-ink">Made with love for our families and friends.</p>
+      <p className="mt-8 text-[0.72rem] text-[#fbf2dc]">Made with love for our families and friends.</p>
     </footer>
   );
 }

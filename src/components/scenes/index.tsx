@@ -12,12 +12,14 @@ import { RsvpScene } from "./RsvpScene";
 import { TravelScene } from "./TravelScene";
 import { ThankYouScene } from "./ThankYouScene";
 
-/** A normal-scrolling section on parchment, led in by a scalloped hem. */
+/** A normal-scrolling section: a parchment card on the hero's cobalt sky, led in by a scalloped hem. */
 function sheet(Component: ComponentType): ComponentType {
   const Sheet = () => (
-    <div className="parchment relative">
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f5e8c9" }} />
-      <Component />
+    <div className="cobalt relative px-3 py-5">
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />
+      <div className="parchment frieze-border mx-auto max-w-[44rem] overflow-hidden rounded-[6px]">
+        <Component />
+      </div>
     </div>
   );
   Sheet.displayName = `Sheet(${Component.displayName ?? Component.name})`;

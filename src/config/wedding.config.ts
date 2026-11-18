@@ -162,14 +162,21 @@ const weddingConfig: WeddingConfig = {
   },
 
   media: {
-    frame: { src: "/media/gopuram-frame.webp", width: 1200, height: 896, top: 831, bottom: 65, side: 215, clip: 62, contentTop: 405, tile: { src: "/media/pillar-tile.webp", height: 283 }, cut: { src: "/media/frame-cut.webp", tile: "/media/pillar-tile-cut.webp" } },
+    // The painted arch that frames the invitation (white background cut away by
+    // scripts/cut-white-bg.mjs). Roof + capitals (rows 0–top) and base (last
+    // `bottom` rows) are drawn once; between them the pillar module
+    // (scripts/make-pillar-tile.mjs, rows 497–642) repeats to any height.
+    frame: { src: "/media/arch-frame.webp", width: 1376, height: 768, top: 497, bottom: 126, side: 380, clip: 240, contentTop: 400, tile: { src: "/media/arch-tile.webp", height: 145 } },
     // Laptop/desktop scenes. Add landscape art here when ready, e.g.
     // hero: { src: "/media/desktop/hero.webp", ratio: 16 / 9, focus: 0.4 },
     desktop: {},
 
     opening: "/media/pillar-frame.webp",
     invitation: "/media/temple-hero.webp",
+    // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
+    invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
     couple: "/media/couple-scene.webp",
+    coupleWide: "/media/couple-scene-wide.webp",
     events: "/media/pillar-frame.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },

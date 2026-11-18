@@ -112,12 +112,20 @@
 @layer components {
   /* Parchment ivory, never plain white. */
   .parchment {
+    color: rgb(var(--c-ink));
     background-color: #f3e5c4;
     background-image:
       radial-gradient(ellipse 70% 50% at 25% 15%, rgb(255 249 230 / 0.75), transparent 70%),
       radial-gradient(ellipse 60% 45% at 85% 85%, rgb(190 150 85 / 0.2), transparent 70%),
       radial-gradient(ellipse 40% 30% at 70% 35%, rgb(214 178 112 / 0.12), transparent 70%),
       linear-gradient(#f5e8c9, #efdfb9);
+  }
+  /* The hero's cobalt sky (#004DB7) — the ground colour of every section, so
+     they all sit in the same world as the temple. Text on it is cream. */
+  .cobalt {
+    background-color: #004db7;
+    background-image: radial-gradient(ellipse 80% 55% at 50% 45%, rgb(255 255 255 / 0.05), transparent 72%);
+    color: #fbf2dc;
   }
   .sec:empty,
   html.motion .sec:not(:has(section)) {
@@ -131,6 +139,19 @@
   html.motion .sec[data-enter="cover"],
   html.motion .sec[data-enter="lift"] {
     margin-top: -100svh;
+  }
+  /* Scene pictures: full width, height from the art (portrait ≤900px, landscape above when present). */
+  .scene-pic {
+    aspect-ratio: var(--ar);
+  }
+  .scene-pic > picture {
+    display: block;
+    height: 100%;
+  }
+  @media (min-width: 901px) {
+    .scene-pic[data-wide] {
+      aspect-ratio: var(--ar-wide);
+    }
   }
   /* GPU hints only while a scene is actually animating. */
   .scene.is-live [data-layer] {
@@ -246,3 +267,4 @@
   to { opacity: 1; transform: none; }
 }
 svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
+

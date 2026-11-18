@@ -44,11 +44,11 @@ export function TravelScene() {
     <Scene
       id="travelStay"
       labelledBy="travel-heading"
-      className="bg-[#7a2e2a]"
+      className="cobalt"
       build={build}
       edgeTop={<div aria-hidden className="edge edge-frieze-top" />}
     >
-      <div className="absolute inset-0" style={{ background: "repeating-linear-gradient(45deg, rgb(255 255 255 / 0.03) 0 6px, transparent 6px 14px), linear-gradient(#7a2e2a, #5e211e)" }} />
+      <div className="cobalt absolute inset-0" />
       <div className="relative flex h-full px-[14px] py-[max(1.25rem,3svh)]">
         <div ref={win} className="parchment frieze-border relative w-full overflow-hidden rounded-[6px]">
           <div ref={track} data-layer className="px-3.5 pb-8 pt-5">

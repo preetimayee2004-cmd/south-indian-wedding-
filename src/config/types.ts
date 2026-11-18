@@ -200,8 +200,17 @@ export interface WeddingConfig {
     opening: string;
     /** Hero temple on a flat sky (portrait 3:4); the hero background uses its exact sky colour. */
     invitation: string;
+    /**
+     * Landscape 16:9 version of the hero temple for screens wider than 900px
+     * (the same temple, zoomed out on flat sky). `peek` = how much of the top of
+     * the picture shows at the start (finials + roof top), as a fraction of its height.
+     * Used only once the file exists (prepared into art-manifest.json).
+     */
+    invitationWide?: { src: string; peek: number };
     /** The couple scene (portrait 9:16), also used by Thank You. */
     couple: string;
+    /** Landscape 16:9 couple scene for screens wider than 900px (same centre, extended sideways). Used once the file exists. */
+    coupleWide?: string;
     events: string;
     family: string;
     rsvp: string;

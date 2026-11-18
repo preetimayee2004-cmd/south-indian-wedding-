@@ -26,7 +26,7 @@ const FROM = [
 const tilt = (i: number) => ((i * 7919) % 13) - 6; // stable "random" −6…6°
 
 /**
- * Scene 7 — Our Journey. Polaroids on parchment, each flying in from a
+ * Scene 7 — Our Journey. Polaroids on the cobalt sky, each flying in from a
  * different side with a small tilt, staggered with the scroll. Two columns
  * drift up at slightly different speeds. Tap a photo for the lightbox.
  */
@@ -74,16 +74,15 @@ export function JourneyScene() {
     <Scene
       id="gallery"
       labelledBy="gallery-heading"
-      className="parchment"
-      style={{ backgroundImage: "radial-gradient(ellipse 60% 45% at 85% 85%, rgb(190 150 85 / 0.16), transparent 70%), linear-gradient(#F9E6BD, #f1e0bb)" }}
+      className="cobalt"
       build={build}
       deps={[images]}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#F9E6BD" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
     >
       <div className="flex h-full flex-col px-gutter pt-[max(1.5rem,5svh)]">
         <div ref={head} className="text-center">
-          <p className="text-eyebrow uppercase text-ink">Moments</p>
-          <h2 id="gallery-heading" className="script-heading mt-1 text-[clamp(2.6rem,11vw,4rem)] leading-none">
+          <p className="text-eyebrow uppercase text-[#fbf2dc]">Moments</p>
+          <h2 id="gallery-heading" className="mt-1 font-script font-normal text-[#f3cf73] text-[clamp(2.6rem,11vw,4rem)] leading-none">
             Our Journey
           </h2>
           {categories.length > 1 && (

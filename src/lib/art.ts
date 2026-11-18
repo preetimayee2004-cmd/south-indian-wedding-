@@ -38,3 +38,9 @@ export function art2x(src: string): { src: string } {
   const m = src.match(/\/media\/(.+)\.webp$/);
   return m && SIZES[m[1]] ? { src: src.replace(/\.webp$/, "@2x.webp") } : { src };
 }
+
+/** True once the art file has been prepared (it is listed in art-manifest.json). */
+export function hasArt(src: string | undefined): src is string {
+  const m = src?.match(/\/media\/(.+)\.webp$/);
+  return Boolean(m && SIZES[m[1]]);
+}

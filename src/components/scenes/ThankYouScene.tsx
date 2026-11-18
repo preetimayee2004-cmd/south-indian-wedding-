@@ -3,7 +3,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Ornament } from "@/components/ui/Ornament";
 import { art2x } from "@/lib/art";
-import { COUPLE_BG, Petals, addPetals } from "./CoupleScene";
+import { Petals, addPetals } from "./CoupleScene";
 
 /**
  * Scene 11 — Thank You. The couple picture again, cropped to the couple,
@@ -31,20 +31,20 @@ export function ThankYouScene() {
     <Scene
       id="thankYou"
       labelledBy="thanks-heading"
-      style={{ background: COUPLE_BG }}
+      className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#C5E4EA" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
     >
       <div className="relative mx-auto flex h-full max-w-[34rem] flex-col items-center px-gutter pb-[max(1rem,2svh)] pt-[max(1.25rem,4svh)] text-center">
         <div ref={head}>
-          <p className="text-eyebrow uppercase text-maroon">With gratitude</p>
-          <h2 id="thanks-heading" className="script-heading mt-1 text-[clamp(2.8rem,13vw,4.6rem)] leading-none">
+          <p className="text-eyebrow uppercase text-[#fbf2dc]">With gratitude</p>
+          <h2 id="thanks-heading" className="mt-1 font-script font-normal text-[#f3cf73] text-[clamp(2.8rem,13vw,4.6rem)] leading-none">
             Thank You
           </h2>
         </div>
 
         {/* the couple, cropped; the layer is a little larger than its window so easing back to 0.9 never shows an edge */}
-        <div className="relative mt-3 w-full min-h-0 flex-1 overflow-hidden rounded-t-[999px] border border-gold/50">
+        <div className="relative mt-3 w-full min-h-0 flex-1 overflow-hidden rounded-t-[999px] border-2 border-[#f3cf73]/70">
           <div ref={pic} data-layer className="absolute -inset-[6%]">
             <img
               {...art2x(media.thankYou)}
@@ -59,15 +59,15 @@ export function ThankYouScene() {
         </div>
 
         <div ref={words} className="mt-3">
-          <p className="mx-auto max-w-[21rem] text-[1.05rem] leading-snug text-ink [text-wrap:balance]">{thankYou.message}</p>
+          <p className="mx-auto max-w-[21rem] text-[1.05rem] leading-snug text-[#fbf2dc] [text-wrap:balance]">{thankYou.message}</p>
           <div className="mt-1.5 flex justify-center">
-            <Ornament className="text-gold" />
+            <Ornament className="text-[#f3cf73]" />
           </div>
-          <p className="mt-1 font-script text-[clamp(2rem,9vw,3rem)] leading-none text-accent">
+          <p className="mt-1 font-script text-[clamp(2rem,9vw,3rem)] leading-none text-[#f3cf73]">
             {first.name} &amp; {second.name}
           </p>
-          {thankYou.quote && <p className="mx-auto mt-1.5 max-w-[19rem] text-[0.95rem] italic leading-snug text-ink">“{thankYou.quote}”</p>}
-          {wedding.blessing && <p className="mt-1.5 text-[0.75rem] tracking-[0.3em] text-ink">{wedding.blessing}</p>}
+          {thankYou.quote && <p className="mx-auto mt-1.5 max-w-[19rem] text-[0.95rem] italic leading-snug text-[#fbf2dc]">“{thankYou.quote}”</p>}
+          {wedding.blessing && <p className="mt-1.5 text-[0.75rem] tracking-[0.3em] text-[#fbf2dc]">{wedding.blessing}</p>}
         </div>
       </div>
       <Petals refs={petals} z="z-30" />

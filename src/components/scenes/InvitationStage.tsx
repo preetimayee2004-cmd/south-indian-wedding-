@@ -14,7 +14,7 @@ function dateParts(iso: string, timeZone: string) {
   return { weekday: f({ weekday: "long" }), day: f({ day: "numeric" }), month: f({ month: "long" }), year: f({ year: "numeric" }) };
 }
 
-/** Matches the frame art's cream where carvings end. */
+/** The parchment panel inside the arch's opening, where the invitation is written. */
 const CREAM = "radial-gradient(ellipse 60% 40% at 50% 30%, rgb(255 244 205 / 0.35), transparent 70%), linear-gradient(#f1d592, #f2d896 45%, #efd18c)";
 
 /**
@@ -112,6 +112,7 @@ export function ArchScene() {
       .to($.roof!, { yPercent: -100, duration: 0.7, ease: "power2.in" }, t)
       .to($.base!, { yPercent: 100, duration: 0.7, ease: "power2.in" }, t)
       .to($.cream!, { autoAlpha: 0, duration: 0.5 }, t + 0.2)
+      .to(showEvents ? $.events! : $.invite!, { autoAlpha: 0, duration: 0.4 }, t + 0.1)
       .to({}, { duration: 0.5 });
   };
 
@@ -119,25 +120,25 @@ export function ArchScene() {
     <Scene
       id="invitation"
       labelledBy="invite-heading"
-      className="parchment"
+      className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f5e8c9" }} />}
-      edgeBottom={<div aria-hidden className="edge edge-scallop-bottom" style={{ ["--edge" as string]: "#efdfb9" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
+      edgeBottom={<div aria-hidden className="edge edge-scallop-bottom" style={{ ["--edge" as string]: "#004DB7" }} />}
     >
       {/* plain parchment the frame leaves behind at the end */}
-      <div ref={set("parch")} data-layer className="parchment invisible absolute inset-0 z-30 opacity-0" />
+      <div ref={set("parch")} data-layer className="cobalt invisible absolute inset-0 z-30 opacity-0" />
 
       {/* the temple arch, with the invitation and the events inside */}
       <div ref={set("arch")} data-layer className="absolute inset-0 z-40 origin-bottom">
         <div className="absolute inset-y-0 left-1/2 -translate-x-1/2" style={{ width: `calc${fw}` }}>
-          <div ref={set("cream")} className="absolute" style={{ left: px(f.side - 24), right: px(f.side - 24), top: px(f.top - 60), bottom: px(f.bottom), background: CREAM }} />
+          <div ref={set("cream")} className="absolute" style={{ left: px(f.side - 4), right: px(f.side - 4), top: px(f.contentTop - 8), bottom: px(f.bottom), background: CREAM }} />
           <div ref={set("roof")} data-layer className="absolute inset-x-0 top-0" style={{ height: px(f.top), ...artBg("top center") }} />
           <div ref={set("pillarL")} data-layer style={pillar("left")} />
           <div ref={set("pillarR")} data-layer style={pillar("right")} />
           <div ref={set("base")} data-layer className="absolute inset-x-0 bottom-0" style={{ height: px(f.bottom), ...artBg("bottom center") }} />
 
           {/* writing area on the cream */}
-          <div className="absolute" style={{ left: px(f.side + 6), right: px(f.side + 6), top: px(f.contentTop - 10), bottom: `calc(${px(f.bottom)} + 0.75rem)` }}>
+          <div className="absolute text-ink" style={{ left: px(f.side + 6), right: px(f.side + 6), top: `calc(${px(f.contentTop)} + 0.5rem)`, bottom: `calc(${px(f.bottom)} + 0.75rem)` }}>
             <div ref={set("invite")} className="absolute inset-0 flex flex-col items-center justify-center text-center">
               {wedding.blessing && (
                 <p data-line className="text-[0.72rem] tracking-[0.3em] text-ink">

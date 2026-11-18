@@ -45,12 +45,22 @@ export function GopuramFrame({ children, id, labelledBy }: { children: ReactNode
   const px = (n: number) => `calc(${fw} * ${n / f.width})`;
   const art: CSSProperties = { backgroundImage: imageSet(f.src), backgroundRepeat: "no-repeat", backgroundSize: "100% auto" };
   const side = px(f.side);
+  const opening = `calc(100% - 2 * ${side} + ${px(8)})`; // parchment width between the pillars
 
   return (
-    <section id={id} aria-labelledby={labelledBy} className="relative isolate overflow-x-clip bg-ivory">
+    <section id={id} aria-labelledby={labelledBy} className="cobalt relative isolate overflow-x-clip">
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: fw, clipPath: `inset(0 ${px(f.clip)})` }}>
-        {/* roof, deities, capitals and the first carved niche */}
-        <div aria-hidden style={{ ...art, height: px(f.top), backgroundPosition: "top center" }} />
+        {/* roof, deities and capitals; parchment fills the top of the opening */}
+        <div
+          aria-hidden
+          style={{
+            height: px(f.top),
+            backgroundImage: `${imageSet(f.src)}, ${CREAM}`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: `100% auto, ${opening} ${px(f.top - f.contentTop + 8)}, ${opening} ${px(f.top - f.contentTop + 8)}`,
+            backgroundPosition: "top center, center bottom, center bottom",
+          }}
+        />
 
         {/* pillars that grow with the content — the carved niche module repeated
             (or painted shafts without a tile); cream between */}
@@ -60,10 +70,10 @@ export function GopuramFrame({ children, id, labelledBy }: { children: ReactNode
             paddingInline: side,
             ...(f.tile
               ? {
+                  // pillar modules (whole ones only: scaled a touch to fit), parchment only between the pillars
                   backgroundImage: `${imageSet(f.tile.src)}, ${CREAM}`,
-                  backgroundSize: `100% ${px(f.tile.height)}, 100% 100%, 100% 100%`,
+                  backgroundSize: `100% ${px(f.tile.height)}, ${opening} 100%, ${opening} 100%`,
                   backgroundPosition: "center top, center, center",
-                  // whole modules only: tiles are scaled a touch to fit, never cut mid-niche
                   backgroundRepeat: "no-repeat round, no-repeat, no-repeat",
                 }
               : {

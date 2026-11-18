@@ -11,12 +11,12 @@ import { GalleryScene } from "./scenes/GalleryScene";
 import { FamilyScene } from "./scenes/FamilyScene";
 import { ContactScene, LoveNoteScene, RsvpScene, TravelScene, WishesScene } from "./scenes/ClosingScenes";
 
-/** The pinned temple hero; the temple frame then rises over it on a scalloped parchment edge. */
+/** The pinned temple hero; the temple frame then rises over it on a scalloped edge, on the same cobalt sky. */
 const Hero: ComponentType = () => (
   <>
     <TempleHeroScene tail={1} />
-    <div className="parchment relative z-[1]" style={{ marginTop: "-100svh" }}>
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f5e8c9" }} />
+    <div className="cobalt relative z-[1]" style={{ marginTop: "-100svh" }}>
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />
       <InvitationFrame />
     </div>
   </>

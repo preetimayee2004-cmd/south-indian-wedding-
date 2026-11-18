@@ -36,11 +36,11 @@ export function FamiliesScene() {
     <Scene
       id="family"
       labelledBy="family-heading"
-      className="bg-[#7a2e2a]"
+      className="cobalt"
       build={build}
       edgeTop={<div aria-hidden className="edge edge-frieze-top" />}
     >
-      <div className="absolute inset-0" style={{ background: "repeating-linear-gradient(45deg, rgb(255 255 255 / 0.03) 0 6px, transparent 6px 14px), linear-gradient(#7a2e2a, #5e211e)" }} />
+      <div className="cobalt absolute inset-0" />
       <div className="relative flex h-full items-center justify-center px-[14px] py-[max(1.25rem,3svh)]">
         <div ref={card} data-layer className="parchment frieze-border relative flex max-h-full w-full max-w-[30rem] flex-col overflow-hidden rounded-[6px] px-3 pb-4 pt-5">
           <div ref={head} className="text-center">

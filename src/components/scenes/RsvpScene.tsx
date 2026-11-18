@@ -34,9 +34,9 @@ export function RsvpScene() {
     <Scene
       id="rsvp"
       label="RSVP"
-      className="bg-[#efe2c6]"
+      className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#efe2c6" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
     >
       <h2 className="sr-only">RSVP</h2>
       <div className="absolute left-1/2 top-0 h-full -translate-x-1/2" style={{ aspectRatio: IMG_RATIO }}>
@@ -64,7 +64,7 @@ export function RsvpScene() {
         <div
           ref={box}
           data-layer
-          className="absolute flex flex-col items-center justify-center overflow-y-auto"
+          className="absolute flex flex-col items-center justify-center overflow-y-auto text-ink"
           style={{ top: `${arch.top}%`, left: `${arch.left}%`, width: `${arch.width}%`, height: `${arch.height}%` }}
         >
           <RsvpPanel />

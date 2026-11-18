@@ -5,22 +5,33 @@ import { useWedding } from "@/context/WeddingContext";
 import { useRevealed } from "@/context/IntroContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Cloud, Leaf, rand } from "@/components/scene/Decor";
+import { ScenePicture, showsWide } from "@/components/scene/ScenePicture";
 import { ScrollCue } from "@/components/ui/ScrollCue";
-import { art2x } from "@/lib/art";
 
-/** The exact sky colour of temple-hero.webp, so the picture's edges vanish. */
+/** The exact sky colour of temple-hero.webp. */
 export const TEMPLE_SKY = "#004DB7";
 const LEAVES = 7;
+/** How much of the portrait picture's top shows at the start: finials + roof top. */
+const PEEK = 0.18;
+
+/** Clouds, all above the temple and inside the top 25% of the screen: [left vw, top svh, width vw, height svh, drift vw]. */
+const CLOUDS: [number, number, number, number, number][] = [
+  [-6, 2, 34, 7, 14],
+  [62, 4, 30, 6, -11],
+  [26, 11, 26, 5.5, 8],
+  [-12, 15, 30, 6, 18],
+  [74, 16, 28, 5.5, -15],
+];
 
 /**
  * Scene 1 — Hero + temple (pinned 250vh, scrub 1).
- * The names sit on the cobalt sky; only the finials and the top of the roof
- * peek above the bottom edge. Scrolling, the temple grows from 0.45 to its
- * full size (sized at final zoom, never above 1) and rises, so the camera
- * travels from the roof down the tower to the stone base and the tree.
- * Names rise at half the temple's speed and fade in the first 30%. Clouds
- * drift behind and in front at different speeds; leaves fall in the last 40%.
- * The next section then rises over it with a scalloped edge (`tail`).
+ * The temple always spans the full screen width (never narrower). It starts
+ * pushed down so only the golden finials and roof top show at the bottom,
+ * then rises with the scroll while easing from 1 to 1.15 (about its centre),
+ * so the camera travels down the tower to the stone base. Names rise at half
+ * the temple's speed and fade in the first 30%. Clouds drift above the temple
+ * in the top quarter of the screen; leaves fall in the last 40%. The
+ * invitation arch then rises over it on a scalloped edge (`tail`).
  */
 export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const { couple, wedding, media } = useWedding();
@@ -29,14 +40,14 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
   const d = new Date(wedding.dateISO);
+  const wide = media.invitationWide;
   const dateLine = new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, day: "numeric", month: "long", year: "numeric" }).format(d);
 
   const copy = useRef<HTMLDivElement>(null);
   const lines = useRef<HTMLDivElement>(null);
   const temple = useRef<HTMLDivElement>(null);
   const cue = useRef<HTMLAnchorElement>(null);
-  const back = useRef<(HTMLDivElement | null)[]>([]);
-  const front = useRef<(HTMLDivElement | null)[]>([]);
+  const clouds = useRef<(HTMLDivElement | null)[]>([]);
   const leaves = useRef<(HTMLDivElement | null)[]>([]);
 
   // Entrance once the envelope hands over: the words settle onto the sky.
@@ -54,32 +65,23 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const build: Build = (tl) => {
     const vh = () => window.innerHeight;
     const vw = () => window.innerWidth;
-    const H = () => temple.current!.offsetHeight; // final (scale 1) height
-    const y0 = () => vh() - 0.18 * 0.45 * H(); // finials + top of the roof peek in
-    const y1 = () => vh() - H(); // base and tree at the bottom edge
-    const travel = () => y0() - y1();
+    const H = () => temple.current!.offsetHeight; // full-width height at scale 1
+    const peek = () => (showsWide(wide?.src) ? wide!.peek : PEEK);
+    const END_SCALE = 1.15;
+    // scale is about the centre: at 1 the visual top is y; at 1.15 the visual bottom is y + H(1 + 1.15)/2
+    const yStart = () => vh() - peek() * H();
+    const yEnd = () => vh() - ((1 + END_SCALE) / 2) * H();
+    const travel = () => yStart() - yEnd();
     const T = 2.5;
 
-    tl.fromTo(
-      temple.current,
-      { xPercent: -50, scale: 0.45, y: y0 },
-      { xPercent: -50, scale: 1, y: y1, duration: T, ease: "power1.inOut" },
-      0,
-    )
+    tl.fromTo(temple.current, { scale: 1, y: yStart }, { scale: END_SCALE, y: yEnd, duration: T, ease: "power1.inOut" }, 0)
       // names: half the temple's speed, gone by 30%
       .to(copy.current, { y: () => -travel() / 2, duration: T, ease: "power1.inOut" }, 0)
       .to(copy.current, { opacity: 0, duration: T * 0.3, ease: "power1.in" }, 0)
       .to(cue.current, { autoAlpha: 0, duration: 0.15 }, 0);
 
-    // clouds: behind move slower than the temple, in front faster
-    const backSpeed = [0.12, 0.22];
-    const frontSpeed = [1.15, 1.35, 1.25];
-    back.current.forEach((c, i) =>
-      tl.to(c, { x: () => (i % 2 ? -1 : 1) * vw() * 0.14, y: () => -travel() * backSpeed[i], duration: T }, 0),
-    );
-    front.current.forEach((c, i) =>
-      tl.to(c, { x: () => (i % 2 ? -1 : 1) * vw() * 0.12, y: () => -travel() * frontSpeed[i], duration: T }, 0),
-    );
+    // clouds drift sideways only, each at its own speed — they stay in the top quarter
+    clouds.current.forEach((c, i) => tl.to(c, { x: () => (CLOUDS[i][4] / 100) * vw(), duration: T }, 0));
 
     // leaves drift down across the screen in the last 40%
     leaves.current.forEach((l, i) => {
@@ -96,36 +98,27 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
 
   return (
     <Scene id="invitation-hero" labelledBy="couple-names" style={{ backgroundColor: TEMPLE_SKY }} build={build} tail={tail}>
-      {/* clouds behind the temple */}
-      <Cloud ref={(el) => void (back.current[0] = el)} className="left-[-10vw] top-[12svh] h-[22vw] max-h-40 w-[48vw] max-w-sm" opacity={0.85} />
-      <Cloud ref={(el) => void (back.current[1] = el)} className="right-[-12vw] top-[30svh] h-[18vw] max-h-32 w-[40vw] max-w-xs" opacity={0.8} />
-
-      {/* the temple, sized at its final zoom; GSAP scales it 0.45 → 1 about its top centre */}
-      <div
+      {/* the temple: full screen width, height from the picture; centre-origin scale 1 → 1.15 */}
+      <ScenePicture
         ref={temple}
-        data-layer
-        className="absolute left-1/2 top-0 origin-top"
-        style={{
-          height: "clamp(125svh, 133.33vw, 150svh)",
-          aspectRatio: "3 / 4",
-          maskImage: "linear-gradient(to right, transparent, #000 4%, #000 96%, transparent)",
-          WebkitMaskImage: "linear-gradient(to right, transparent, #000 4%, #000 96%, transparent)",
-        }}
-      >
-        <img
-          {...art2x(media.invitation)}
-          alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
-          fetchPriority="high"
-          decoding="async"
-          className="h-full w-full object-cover"
-          draggable={false}
-        />
-      </div>
+        src={media.invitation}
+        ratio="3 / 4"
+        wide={wide?.src}
+        alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
+        className="origin-center"
+        eager
+      />
 
-      {/* clouds in front */}
-      <Cloud ref={(el) => void (front.current[0] = el)} className="left-[-16vw] top-[64svh] z-[5] h-[24vw] max-h-44 w-[56vw] max-w-md" />
-      <Cloud ref={(el) => void (front.current[1] = el)} className="right-[-18vw] top-[86svh] z-[5] h-[26vw] max-h-48 w-[62vw] max-w-lg" />
-      <Cloud ref={(el) => void (front.current[2] = el)} className="left-[18vw] top-[118svh] z-[5] h-[22vw] max-h-40 w-[50vw] max-w-md" opacity={0.9} />
+      {/* clouds: above the temple, inside the top 25% of the screen */}
+      {CLOUDS.map(([left, top, w, h], i) => (
+        <Cloud
+          key={i}
+          ref={(el) => void (clouds.current[i] = el)}
+          className="z-[5]"
+          style={{ left: `${left}vw`, top: `${top}svh`, width: `${w}vw`, height: `${h}svh` }}
+          opacity={0.92 - (i % 3) * 0.08}
+        />
+      ))}
 
       {/* names and date, centred on the sky */}
       <div ref={copy} data-layer className="absolute inset-0 z-10 flex items-center justify-center px-gutter pb-[14svh]">

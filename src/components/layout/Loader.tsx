@@ -29,7 +29,7 @@ export function usePreload(srcs: string[], timeout = 8000): boolean {
   return ready;
 }
 
-/** A simple full-screen loader on parchment: a turning gold ring and a word. */
+/** A simple full-screen loader on the cobalt sky: a turning gold ring and a word. */
 export function Loader({ done }: { done: boolean }) {
   const [gone, setGone] = useState(false);
   useEffect(() => {
@@ -39,9 +39,9 @@ export function Loader({ done }: { done: boolean }) {
   }, [done]);
   if (gone) return null;
   return (
-    <div id="site-loader" role="status" aria-live="polite" className="parchment fixed inset-0 z-[120] flex flex-col items-center justify-center gap-4">
-      <span aria-hidden className="block h-12 w-12 animate-spin rounded-full border-[3px] border-gold/25 border-t-accent motion-reduce:animate-none" />
-      <p className="text-eyebrow uppercase text-ink">Loading the invitation…</p>
+    <div id="site-loader" role="status" aria-live="polite" className="cobalt fixed inset-0 z-[120] flex flex-col items-center justify-center gap-4">
+      <span aria-hidden className="block h-12 w-12 animate-spin rounded-full border-[3px] border-[#f3cf73]/25 border-t-[#f3cf73] motion-reduce:animate-none" />
+      <p className="text-eyebrow uppercase text-[#fbf2dc]">Loading the invitation…</p>
     </div>
   );
 }
