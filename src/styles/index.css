@@ -117,8 +117,13 @@
   /* The hero's cobalt sky (#004DB7) — the ground colour of every section, so
      they all sit in the same world as the temple. Text on it is cream. */
   .cobalt {
+    /* the hero's cobalt at the top and bottom edge (so neighbouring sections join
+       without a line), opening up to a lighter, sunlit blue through the middle —
+       like the temple picture's own sky towards the horizon */
     background-color: #004db7;
-    background-image: radial-gradient(ellipse 80% 55% at 50% 45%, rgb(255 255 255 / 0.05), transparent 72%);
+    background-image:
+      radial-gradient(ellipse 75% 45% at 50% 50%, rgb(255 255 255 / 0.07), transparent 72%),
+      linear-gradient(#004db7 0%, #0f63c6 22%, #1a6fd0 50%, #0f63c6 78%, #004db7 100%);
     color: #fbf2dc;
   }
   .sec:empty,
