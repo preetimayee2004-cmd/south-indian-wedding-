@@ -6,7 +6,7 @@ import { Container } from "@/components/layout/Container";
 import { Ornament } from "@/components/ui/Ornament";
 import { artProps } from "@/lib/art";
 
-const IMG_RATIO = 1376 / 768;
+const IMG_RATIO = 1116 / 2000; // couple-scene.webp (portrait)
 const PETALS = 9;
 
 /**
@@ -84,7 +84,7 @@ export function ThankYou() {
   return (
     <section ref={root} id="thankYou" aria-labelledby="thanks-heading" className="relative isolate pb-section">
       {/* ── Panning scene ── */}
-      <div ref={band} className="relative overflow-hidden bg-[#a9cdee]" style={{ height: "min(72svh, 640px)" }}>
+      <div ref={band} className="relative overflow-hidden bg-[#C5E4EA]" style={{ height: "min(72svh, 640px)" }}>
         <img
           ref={img}
           {...artProps(media.thankYou)}
@@ -92,7 +92,7 @@ export function ThankYou() {
           loading="lazy"
           decoding="async"
           className="absolute left-0 top-0 h-full w-auto max-w-none"
-          style={{ aspectRatio: String(IMG_RATIO), minWidth: "100%", objectFit: "cover" }}
+          style={{ aspectRatio: String(IMG_RATIO), minWidth: "100%", objectFit: "cover", objectPosition: "50% 58%" }}
           draggable={false}
         />
         <div ref={petals} aria-hidden className="pointer-events-none absolute inset-0">

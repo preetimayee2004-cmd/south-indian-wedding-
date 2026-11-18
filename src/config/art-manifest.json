@@ -35,36 +35,12 @@
     "w": 1200,
     "h": 283
   },
-  "layers/hero-sky": {
-    "w": 768,
-    "h": 1376
+  "temple-hero": {
+    "w": 747,
+    "h": 1000
   },
-  "layers/hero-clouds": {
-    "w": 768,
-    "h": 1376
-  },
-  "layers/hero-gopuram": {
-    "w": 768,
-    "h": 1376
-  },
-  "layers/dancers-sky": {
-    "w": 768,
-    "h": 1376
-  },
-  "layers/dancers-clouds": {
-    "w": 768,
-    "h": 1376
-  },
-  "layers/dancers-courtyard": {
-    "w": 768,
-    "h": 1376
-  },
-  "layers/couple-sky": {
-    "w": 1376,
-    "h": 768
-  },
-  "layers/couple-scene": {
-    "w": 1376,
-    "h": 768
+  "couple-scene": {
+    "w": 558,
+    "h": 1000
   }
 }

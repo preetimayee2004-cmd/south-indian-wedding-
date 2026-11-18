@@ -14,7 +14,7 @@ const weddingConfig: WeddingConfig = {
   meta: {
     title: "Meenakshi & Karthik — Wedding Invitation",
     description: "With the blessings of our elders, we invite you to our wedding.",
-    ogImage: "/media/couple-garland.webp",
+    ogImage: "/media/couple-scene.webp",
     // Set before going live so WhatsApp/Facebook can show the preview image:
     siteUrl: "",
   },
@@ -112,7 +112,7 @@ const weddingConfig: WeddingConfig = {
   // SAMPLE photos (the theme artwork) — replace with real photographs.
   // Add as many as you like; order = order along the journey.
   gallery: [
-    { src: "/media/couple-garland.webp", alt: "The couple exchanging garlands before the gopuram", caption: "Maalai Maatral", category: "couple" },
+    { src: "/media/couple-scene.webp", alt: "The couple exchanging garlands before the gopuram", caption: "Maalai Maatral", category: "couple" },
     { src: "/media/gopuram-sky.webp", alt: "A gopuram against a clear blue sky", caption: "Where we first met", category: "pre-wedding" },
     { src: "/media/temple-dancers.webp", alt: "Dancers performing in the temple courtyard", caption: "The sangeet rehearsal", category: "family" },
     { src: "/media/mandapam-arch.webp", alt: "A mandapam archway with bells and garlands", caption: "The mandapam, dressed for the day", category: "traditional" },
@@ -168,18 +168,15 @@ const weddingConfig: WeddingConfig = {
     desktop: {},
 
     opening: "/media/pillar-frame.webp",
-    openingReveal: "/media/gopuram-sky.webp",
-    openingDoorY: 0.945,
-    invitation: "/media/gopuram-sky.webp",
-    heroReveal: "/media/temple-dancers.webp",
-    couple: "/media/couple-garland.webp",
+    invitation: "/media/temple-hero.webp",
+    couple: "/media/couple-scene.webp",
     events: "/media/pillar-frame.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
     rsvp: "/media/stone-arch.webp",
     rsvpArch: { top: 36, left: 13, width: 74, height: 42 },
     rsvpLamps: [[13, 75.5], [87, 75.5], [5.5, 82.5], [94.5, 82.5]],
-    thankYou: "/media/couple-garland.webp",
+    thankYou: "/media/couple-scene.webp",
     gallery: "/media/temple-dancers.webp",
   },
 

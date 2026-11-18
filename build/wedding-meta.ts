@@ -44,9 +44,9 @@ export function weddingMeta(config: WeddingConfig, root: string): Plugin {
           `<meta name="twitter:title" content="${t}" />`,
           `<meta name="twitter:description" content="${d}" />`,
           `<meta name="twitter:image" content="${ogImage}" />`,
-          // the first two images anyone sees
-          `<link rel="preload" as="image" href="${config.media.opening}" fetchpriority="high" />`,
-          `<link rel="preload" as="image" href="${config.media.openingReveal}" />`,
+          // the two scene pictures (their sharpened 2× files are what the scenes show)
+          `<link rel="preload" as="image" href="${config.media.invitation.replace(/\.webp$/, "@2x.webp")}" fetchpriority="high" />`,
+          `<link rel="preload" as="image" href="${config.media.couple.replace(/\.webp$/, "@2x.webp")}" />`,
         ]
           .filter(Boolean)
           .join("\n    ");

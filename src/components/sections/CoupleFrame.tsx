@@ -34,14 +34,14 @@ export function CoupleFrame() {
   }, [reduced]);
 
   return (
-    <section ref={root} id="couple" aria-labelledby="couple-heading" className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-[#a9cdee]">
+    <section ref={root} id="couple" aria-labelledby="couple-heading" className="relative isolate h-[100svh] min-h-[560px] overflow-hidden bg-[linear-gradient(#C5E4EA,#F9E6BD)]">
       <img
         ref={img}
         {...artProps(media.couple)}
         alt={`${first.name} and ${second.name} exchanging garlands in a temple courtyard`}
         loading="lazy"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover object-[52%_50%]"
+        className="absolute inset-0 h-full w-full object-cover object-[50%_55%]"
         draggable={false}
       />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[42%] bg-gradient-to-b from-[rgb(28_62_112/0.35)] to-transparent" />

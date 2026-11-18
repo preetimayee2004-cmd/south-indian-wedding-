@@ -33,6 +33,8 @@ interface SceneProps {
   build: Build;
   /** Rebuild when these change (e.g. a gallery filter). */
   deps?: unknown[];
+  /** Screens held at the end while the next section covers this one (default: read from the next section). */
+  tail?: number;
   children: ReactNode;
 }
 
@@ -42,7 +44,7 @@ interface SceneProps {
  * covers it). Layers inside mark themselves with data-layer so they get
  * will-change only while the scene is live.
  */
-export function Scene({ id, labelledBy, label, className = "", style, edgeTop, edgeBottom, build, deps = [], children }: SceneProps) {
+export function Scene({ id, labelledBy, label, className = "", style, edgeTop, edgeBottom, build, deps = [], tail, children }: SceneProps) {
   const root = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
@@ -51,7 +53,8 @@ export function Scene({ id, labelledBy, label, className = "", style, edgeTop, e
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ paused: true, defaults: { ease: "none" } });
       build(tl, el);
-      if (nextEnter(el) === "cover") tl.to({}, { duration: 1 });
+      const hold = tail ?? (nextEnter(el) === "cover" ? 1 : 0);
+      if (hold) tl.to({}, { duration: hold });
       const len = Math.max(tl.duration(), 0.01);
       ScrollTrigger.create({
         trigger: el,

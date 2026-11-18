@@ -102,34 +102,6 @@ export function ContactScene() {
   );
 }
 
-/** Thank you: the garland exchange fills the screen; the words rest on the floor below the couple. */
-export function ThankYouScene() {
-  const config = useWedding();
-  const { thankYou, couple, wedding } = config;
-  const first = couple.order === "bride-first" ? couple.bride : couple.groom;
-  const second = couple.order === "bride-first" ? couple.groom : couple.bride;
-  return (
-    <Scene id="thankYou" labelledBy="thanks-heading" art={desktopArt(config, "thankYou")}>
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-b from-transparent via-ivory/85 to-ivory" />
-      <div className="relative translate-y-[30vh] text-center">
-        <p data-reveal className="eyebrow">
-          With gratitude
-        </p>
-        <h2 id="thanks-heading" data-reveal className="script-heading mt-1 text-[clamp(4rem,6vw,6rem)] leading-none">
-          Thank You
-        </h2>
-        <p data-reveal className="mx-auto mt-3 max-w-[34rem] text-[1.25rem] text-ink [text-wrap:balance]">
-          {thankYou.message}
-        </p>
-        <p data-reveal className="mt-3 font-script text-[2.3rem] leading-none text-accent">
-          {first.name} &amp; {second.name}
-          {wedding.blessing && <span className="ml-4 align-middle font-body text-[0.8rem] tracking-[0.35em] text-ink-soft">{wedding.blessing}</span>}
-        </p>
-      </div>
-    </Scene>
-  );
-}
-
 /** The sealed love note, on parchment — the last scene before the footer. */
 export function LoveNoteScene() {
   const { loveNote, thankYou } = useWedding();

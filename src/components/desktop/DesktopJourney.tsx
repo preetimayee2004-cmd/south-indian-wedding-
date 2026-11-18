@@ -4,21 +4,30 @@ import { useWedding } from "@/context/WeddingContext";
 import { SECTION_REGISTRY } from "@/components/sections";
 import { SectionBoundary } from "@/components/layout/SectionBoundary";
 import { InvitationFrame } from "@/components/frame/InvitationFrame";
-import { CoupleFrame } from "@/components/sections/CoupleFrame";
-import { HeroScene } from "./scenes/HeroScene";
+import { TempleHeroScene } from "@/components/scenes/TempleHeroScene";
+import { CoupleScene } from "@/components/scenes/CoupleScene";
+import { ThankYouScene } from "@/components/scenes/ThankYouScene";
 import { GalleryScene } from "./scenes/GalleryScene";
 import { FamilyScene } from "./scenes/FamilyScene";
-import { ContactScene, LoveNoteScene, RsvpScene, ThankYouScene, TravelScene, WishesScene } from "./scenes/ClosingScenes";
+import { ContactScene, LoveNoteScene, RsvpScene, TravelScene, WishesScene } from "./scenes/ClosingScenes";
 
-/** The sharp gold line under the dancers, before the temple frame begins. */
-const Rule: ComponentType = () => <div className="section-rule" aria-hidden />;
+/** The pinned temple hero; the temple frame then rises over it on a scalloped parchment edge. */
+const Hero: ComponentType = () => (
+  <>
+    <TempleHeroScene tail={1} />
+    <div className="parchment relative z-[1]" style={{ marginTop: "-100svh" }}>
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f5e8c9" }} />
+      <InvitationFrame />
+    </div>
+  </>
+);
 const InsideFrame: ComponentType = () => null;
 
 /** Laptop scenes per section (a section not listed falls back to its phone layout). */
 const DESKTOP_SCENES: Partial<Record<SectionId, ComponentType[]>> = {
-  invitation: [HeroScene, Rule, InvitationFrame],
+  invitation: [Hero],
   events: [InsideFrame], // shown inside the temple frame
-  couple: [CoupleFrame],
+  couple: [CoupleScene],
   gallery: [GalleryScene],
   family: [FamilyScene],
   rsvp: [RsvpScene],

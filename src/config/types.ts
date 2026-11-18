@@ -107,7 +107,7 @@ export interface ThemeTokens {
 }
 
 /** Desktop (≥1024px) journey scenes that take their own artwork. */
-export type DesktopSlot = "opening" | "hero" | "heroReveal" | "invitation" | "couple" | "events" | "gallery" | "family" | "rsvp" | "thankYou";
+export type DesktopSlot = "opening" | "invitation" | "couple" | "events" | "gallery" | "family" | "rsvp" | "thankYou";
 
 export interface DesktopArt {
   src: string;
@@ -198,13 +198,9 @@ export interface WeddingConfig {
     familyParchment: { left: number; width: number; top: number; color: string };
     /** Symmetrical entrance art behind the threads; splits open like doors. */
     opening: string;
-    /** Sky + gopuram the camera tilts down and dives through. Doorway must sit bottom-centre. */
-    openingReveal: string;
-    /** Vertical position (0–1) of the gopuram doorway in openingReveal — the dive target. */
-    openingDoorY: number;
+    /** Hero temple on a flat sky (portrait 3:4); the hero background uses its exact sky colour. */
     invitation: string;
-    /** The hero zooms into its gopuram and dissolves into this (same gopuram, wider view, e.g. with dancers). */
-    heroReveal: string;
+    /** The couple scene (portrait 9:16), also used by Thank You. */
     couple: string;
     events: string;
     family: string;

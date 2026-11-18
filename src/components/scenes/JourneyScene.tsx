@@ -75,9 +75,10 @@ export function JourneyScene() {
       id="gallery"
       labelledBy="gallery-heading"
       className="parchment"
+      style={{ backgroundImage: "radial-gradient(ellipse 60% 45% at 85% 85%, rgb(190 150 85 / 0.16), transparent 70%), linear-gradient(#F9E6BD, #f1e0bb)" }}
       build={build}
       deps={[images]}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f5e8c9" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#F9E6BD" }} />}
     >
       <div className="flex h-full flex-col px-gutter pt-[max(1.5rem,5svh)]">
         <div ref={head} className="text-center">
