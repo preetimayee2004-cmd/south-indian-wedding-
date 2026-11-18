@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
 import { SCRUB } from "@/lib/smooth";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
@@ -6,7 +6,6 @@ import { useGuest } from "@/context/GuestContext";
 import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
-import { bgImage } from "@/lib/art";
 import { TempleHeroScene } from "./TempleHeroScene";
 
 function dateParts(iso: string, timeZone: string) {
@@ -25,9 +24,9 @@ const ARCH_RATIO = ARCH_W / ARCH_H;
 const PANEL = { top: 0.385, bottom: 0.13, side: 0.205 };
 
 /**
- * The invitation section: scene 1 (hero + temple), then the temple arch rises
- * in beneath it as the temple moves up off the screen, and holds the
- * invitation and the celebrations.
+ * The invitation section on phones: scene 1 (hero + temple), then the temple
+ * arch rises over it with a scalloped edge and holds the invitation and the
+ * celebrations.
  */
 export function InvitationStage() {
   return (
@@ -47,7 +46,7 @@ const SLICE_END = 576;
 
 /**
  * The painted temple arch with the invitation (as the reference's gate). It
- * rises in beneath the leaving hero and docks, then simply scrolls with
+ * rises over the hero on a scalloped edge and docks, then simply scrolls with
  * the page — nothing is pinned, so nothing is ever cut off. The whole letter
  * sits on the cream sheet in the opening: when it needs more room than the
  * arch has, only the plain fluted stretch of the pillars is drawn taller (the
@@ -114,16 +113,7 @@ export function ArchScene() {
     return () => ctx.revert();
   }, [reduced]);
 
-  // lazy: the arch art starts loading only a screen before it comes up
-  const [near, setNear] = useState(false);
-  useEffect(() => {
-    const el = root.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && (setNear(true), io.disconnect()), { rootMargin: "100% 0px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  const art = near ? bgImage(ARCH) : "none";
+  const art = `url("${ARCH.replace(/\.webp$/, "@2x.webp")}")`;
 
   return (
     <section
@@ -132,6 +122,7 @@ export function ArchScene() {
       aria-labelledby="invite-heading"
       className="cobalt relative overflow-x-clip pb-10"
     >
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       {/* the arch, a little wider than phones so the opening is roomy (pillars still in view); full width on large screens */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(min(118vw, 45rem), 100vw)" }}>
       <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { MusicToggle } from "@/components/layout/MusicToggle";
 import { Footer } from "@/components/layout/Footer";
-import { Loader, useHeroReady } from "@/components/layout/Loader";
+import { Loader, usePreload } from "@/components/layout/Loader";
 import { SectionBoundary } from "@/components/layout/SectionBoundary";
 import { Opening } from "@/components/opening/Opening";
 import { SECTION_REGISTRY } from "@/components/sections";
@@ -17,14 +17,14 @@ import { autoScrollAfterIntro } from "@/lib/smooth";
 const skipIntroByUrl = () => new URLSearchParams(window.location.search).has("nointro");
 
 export default function App() {
-  const { sections, opening } = useWedding();
+  const { sections, opening, media } = useWedding();
   const reduced = usePrefersReducedMotion();
   // every screen size uses the same scenes (they size themselves to the screen)
   const scenes = !reduced;
   const [showOpening, setShowOpening] = useState(() => opening.enabled && !skipIntroByUrl());
   const [revealed, setRevealed] = useState(!showOpening);
-  // The loader waits only for the hero picture (the sky and the envelope are CSS).
-  const artReady = useHeroReady();
+  // Both scene pictures are decoded before anything animates.
+  const artReady = usePreload([media.invitation, media.couple].map((s) => s.replace(/\.webp$/, "@2x.webp")));
 
   // 3 s after the envelope hands over, glide slowly through the hero down to the
   // invitation; any touch, wheel, key or click stops it (lib/smooth).

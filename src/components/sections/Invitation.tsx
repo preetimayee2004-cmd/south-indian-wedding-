@@ -28,7 +28,6 @@ export function Invitation() {
       <div className="cobalt relative overflow-hidden" style={{ minHeight: "100svh" }}>
         <img
           {...artProps(media.invitation, "100vw")}
-          data-hero
           alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
           fetchPriority="high"
           className="absolute bottom-0 left-0 w-full"

@@ -14,10 +14,11 @@ import { TravelScene } from "./TravelScene";
 import { ThankYouScene } from "./ThankYouScene";
 import { ClosingScene } from "./ClosingScene";
 
-/** A normal-scrolling section: a parchment card on the one sky. */
+/** A normal-scrolling section: a parchment card on the hero's cobalt sky, led in by a scalloped hem. */
 function sheet(Component: ComponentType): ComponentType {
   const Sheet = () => (
     <div className="cobalt relative px-3 py-5">
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       <div className="parchment frieze-border mx-auto max-w-[44rem] overflow-hidden rounded-[6px]">
         <Component />
       </div>
@@ -44,14 +45,14 @@ export interface SceneEntry {
 export const SCENES: Record<SectionId, SceneEntry> = {
   invitation: { Component: InvitationStage, enter: "flow", z: 10 }, // hero → the arch with the invitation, countdown, destination
   events: { Component: EventsSlider, enter: "flow", z: 12 }, // one event at a time, sliding sideways
-  couple: { Component: CoupleScene, enter: "flow", z: 14 }, // pinned: the couple glide in, rest, petals fall
-  gallery: { Component: JourneyScene, enter: "cover", z: 18 }, // rises over the couple on a soft sky fade
+  couple: { Component: CoupleScene, enter: "flow", z: 14 }, // the couple glide down and come to rest
+  gallery: { Component: JourneyScene, enter: "flow", z: 18 }, // the love-story runway
   family: { Component: FamiliesScene, enter: "flow", z: 16 }, // scrolls normally; lotus plants grow
-  rsvp: { Component: RsvpScene, enter: "flow", z: 40 }, // a card that grows to fit
+  rsvp: { Component: RsvpScene, enter: "cover", z: 40 },
   wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },
-  travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue: stacked on phones, two columns on desktop
+  travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue
   contact: { Component: sheet(Contact), enter: "flow", z: 55 },
-  thankYou: { Component: ThankYouScene, enter: "flow", z: 80 }, // thank you, save the date, replay
-  loveNote: { Component: sheet(LoveNote), enter: "flow", z: 90 },
+  thankYou: { Component: ThankYouScene, enter: "cover", z: 80 }, // thank you, save the date, replay
+  loveNote: { Component: sheet(LoveNote), enter: "cover", z: 90 },
   closing: { Component: ClosingScene, enter: "flow", z: 92 },
 };

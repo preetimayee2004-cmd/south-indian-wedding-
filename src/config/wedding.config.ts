@@ -123,11 +123,9 @@ const weddingConfig: WeddingConfig = {
     { src: "/media/couple-scene.webp", alt: "The couple exchanging garlands before the gopuram", caption: "Maalai Maatral", category: "couple" },
     { src: "/media/gopuram-sky.webp", alt: "A gopuram against a clear blue sky", caption: "Where we first met", category: "pre-wedding" },
     { src: "/media/temple-dancers.webp", alt: "Dancers performing in the temple courtyard", caption: "The sangeet rehearsal", category: "family" },
-    // PHOTO PLACEHOLDERS — swap in your own photos: put them through
-    // `node scripts/prepare-art.mjs <folder>` (any name) and change src/alt below.
-    { src: "/media/your-photo-1.webp", alt: "Photo placeholder 1", caption: "The mandapam, dressed for the day", category: "traditional" },
-    { src: "/media/your-photo-2.webp", alt: "Photo placeholder 2", caption: "Blessings from the temple", category: "traditional" },
-    { src: "/media/your-photo-3.webp", alt: "Photo placeholder 3", caption: "Garlands for the hall", category: "family" },
+    { src: "/media/mandapam-arch.webp", alt: "A mandapam archway with bells and garlands", caption: "The mandapam, dressed for the day", category: "traditional" },
+    { src: "/media/gopuram-frame.webp", alt: "A painted temple gateway with deities", caption: "Blessings from the temple", category: "traditional" },
+    { src: "/media/pillar-frame.webp", alt: "Painted temple pillars with marigold garlands", caption: "Garlands for the hall", category: "family" },
   ],
 
   rsvp: { deadlineISO: "2027-01-31T23:59:00+05:30", maxAttendees: 6 },
@@ -185,8 +183,7 @@ const weddingConfig: WeddingConfig = {
     invitation: "/media/temple-hero.webp",
     // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
     invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
-    couple: "/media/couple-scene.webp", // landscape 1376×768 — screens 900px and wider
-    couplePortrait: "/media/couple-portrait.webp", // portrait 3072×5504 — screens under 900px
+    couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky
     events: "/media/pillar-frame.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },

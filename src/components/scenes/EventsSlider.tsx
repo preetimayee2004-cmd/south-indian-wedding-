@@ -117,6 +117,7 @@ export function EventsSlider() {
       onPointerDown={stop}
       onKeyDown={stop}
     >
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       {/* as in the reference: no heading on screen, just the framed event (named for screen readers) */}
       <div ref={head} className="flex justify-center">
         <h2 id="events-heading" className="sr-only">

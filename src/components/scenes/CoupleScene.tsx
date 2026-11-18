@@ -1,8 +1,19 @@
-import { useRef, type MutableRefObject } from "react";
+import { useLayoutEffect, useRef, type CSSProperties, type MutableRefObject } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { Scene, type Build } from "@/components/scene/Scene";
-import { Petal, rand } from "@/components/scene/Decor";
-import { naturalSize, srcSetOf, artProps } from "@/lib/art";
+import type { Build } from "@/components/scene/Scene";
+import { Cloud, Petal, rand } from "@/components/scene/Decor";
+import { gsap } from "@/lib/gsap";
+import { SCRUB } from "@/lib/smooth";
+
+/** couple-scene.webp is landscape. */
+const RATIO = 1376 / 768;
+/** Where the couple stands across the picture (fraction of its width). */
+const COUPLE_X = 0.5;
+/** Lamp flames in couple-scene.webp, [x%, y%]. */
+const LAMPS: [number, number][] = [
+  [9.5, 69.5],
+  [90.5, 69.5],
+];
 
 /** Three groups of petals falling at different speeds: [count, duration, spread]. */
 const PETAL_GROUPS: [number, number, number][] = [
@@ -49,79 +60,106 @@ export function addPetals(tl: Parameters<Build>[0], petals: (HTMLDivElement | nu
   });
 }
 
-/** Breakpoint between the portrait (below) and landscape (at and above) couple picture. */
-const WIDE = "(min-width: 900px)";
-/** Scene length after the first screen: 2.2 screens → a 320vh pinned track. */
-const P1 = 0.6; // glide in from below and ease to rest
-const P2 = 0.8; // hold: slow 1 → 1.1, petals
-const P3 = 0.8; // move on while the next section rises over it
+/** Where the tops of the couple's heads are in the picture (fraction of its height). */
+const HEADS = 0.33;
 
 /**
- * The couple — a pinned scene (320vh, scrub 1.5).
- *  1. The picture glides in from below and eases to rest, the couple centred.
- *  2. It stays put, slowly scaling 1 → 1.1, while petals fall.
- *  3. It moves on and the gallery rises over it on a soft fade into the sky
- *     (no hard horizontal line).
- * Portrait picture under 900px, landscape at and above (one <picture>); each
- * is capped at its natural pixel size, centred on the solid sky with softly
- * fading edges.
+ * Scene 2 — the couple, exactly as in the reference invitation (its page 4).
+ * The page simply scrolls (nothing is pinned). While the section comes up the
+ * couple start at the top of the scene and move up more slowly than the page,
+ * so they slide down into it, heads first; the moment the scene fills the
+ * screen they come to rest in place, and from there they scroll away with
+ * the page. The picture always covers the scene, so they never float. Clouds
+ * drift, petals fall and the lamps glow as the section passes.
  */
 export function CoupleScene() {
   const { couple, media } = useWedding();
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
-  const portrait = media.couplePortrait ?? media.couple;
-  const land = naturalSize(media.couple) ?? { w: 1376, h: 768 };
-  const port = naturalSize(portrait) ?? { w: 768, h: 1376 };
 
-  const slide = useRef<HTMLDivElement>(null);
-  const zoom = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const pic = useRef<HTMLDivElement>(null);
+  const clouds = useRef<(HTMLDivElement | null)[]>([]);
   const petals = useRef<(HTMLDivElement | null)[]>([]);
 
-  const build: Build = (tl) => {
-    // 1 — from below the screen to rest
-    tl.fromTo(slide.current, { yPercent: 100 }, { yPercent: 0, duration: P1, ease: "power3.out" }, 0)
-      // 2 — held, slowly growing; petals fall
-      .fromTo(zoom.current, { scale: 1 }, { scale: 1.1, duration: P2 + P3, ease: "none" }, P1)
-      // 3 — moves on upward while the next section rises over it
-      .to(slide.current, { yPercent: -14, duration: P3, ease: "power1.in" }, P1 + P2);
-    addPetals(tl, petals.current, P1 * 0.6, P2 + P3);
-  };
+  useLayoutEffect(() => {
+    const section = root.current;
+    if (!section) return;
+    const ctx = gsap.context(() => {
+      const vw = () => window.innerWidth;
+      const H = () => pic.current!.offsetHeight;
+      const W = () => pic.current!.offsetWidth;
+      const S = () => stage.current!.offsetHeight;
+      const landed = () => S() - H(); // floor on the scene's bottom edge
+      // reference maths: p = 0 when the scene's top reaches the screen bottom, 1 when it reaches the top;
+      // the heads' place in the scene goes from its top (0) to where they rest, linearly in p
+      const start = () => landed() - (landed() + HEADS * H());
+      gsap.set(pic.current, { x: () => Math.min(0, Math.max(vw() - W(), vw() / 2 - COUPLE_X * W())) });
+      gsap.fromTo(
+        pic.current,
+        { y: start },
+        { y: landed, ease: "none", scrollTrigger: { trigger: section, start: "top bottom", end: "top top", scrub: SCRUB, invalidateOnRefresh: true } },
+      );
+      // clouds and petals as the whole section passes
+      const pass = gsap.timeline({ scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: SCRUB, invalidateOnRefresh: true } });
+      clouds.current.forEach((c, i) => pass.to(c, { xPercent: i % 2 ? -22 : 26, duration: 2.5, ease: "none" }, 0));
+      addPetals(pass, petals.current, 0, 2.5);
+    }, section);
+    const onResize = () => gsap.set(pic.current, { x: Math.min(0, Math.max(window.innerWidth - pic.current!.offsetWidth, window.innerWidth / 2 - COUPLE_X * pic.current!.offsetWidth)) });
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      ctx.revert();
+    };
+  }, []);
+
+  const glow = (x: number, y: number): CSSProperties => ({
+    left: `${x}%`,
+    top: `${y}%`,
+    width: "7%",
+    aspectRatio: "1",
+    transform: "translate(-50%, -50%)",
+    background: "radial-gradient(circle, rgb(255 210 110 / 0.8) 0%, rgb(255 170 60 / 0.32) 38%, transparent 70%)",
+  });
 
   return (
-    <Scene id="couple" labelledBy="couple-heading" className="cobalt" build={build} tail={0} scrub={1.5}>
-      {/* the picture's box: portrait fills a phone screen; landscape ≤ its natural size, centred */}
-      <div ref={slide} data-layer className="absolute inset-0 flex items-center justify-center">
+    <section ref={root} id="couple" aria-labelledby="couple-heading" className="relative">
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
+      <div ref={stage} className="cobalt relative h-[100svh] min-h-[520px] overflow-hidden">
+        {/* the picture: as tall as the scene (never narrower than the screen), framed on the couple */}
         <div
-          className="couple-pic relative overflow-hidden"
-          style={{
-            ["--pw" as string]: `${port.w}px`,
-            ["--ph" as string]: `${port.h}px`,
-            ["--lw" as string]: `${land.w}px`,
-            ["--lar" as string]: `${land.w} / ${land.h}`,
-          }}
+          ref={pic}
+          data-layer
+          className="absolute left-0 top-0"
+          style={{ height: `max(106svh, 551px, calc(100vw / ${RATIO.toFixed(4)}))`, aspectRatio: `${RATIO}` }}
         >
-          <div ref={zoom} data-layer className="h-full w-full">
-            <picture>
-              <source media={WIDE} srcSet={srcSetOf(media.couple)} sizes={`min(100vw, ${land.w}px)`} />
-              <img
-                {...artProps(portrait, "100vw")}
-                alt={`${first.name} and ${second.name} exchanging garlands before the temples, with lamps and lotus flowers`}
-                loading="lazy"
-                decoding="async"
-                className="block h-full w-full object-cover"
-                style={{ objectPosition: "50% 58%" }}
-                draggable={false}
-              />
-            </picture>
-          </div>
+          <img
+            src={media.couple.replace(/.webp$/, "@2x.webp")}
+            alt={`${first.name} and ${second.name} exchanging garlands before the temples, with lamps and lotus flowers`}
+            decoding="async"
+            className="block h-full w-full object-cover"
+            draggable={false}
+          />
+          {/* drifting clouds over the sky, and the lamp glow — both ride along with the picture */}
+          <Cloud ref={(el) => void (clouds.current[0] = el)} className="left-[14%] top-[2%] h-[9%] w-[12%]" opacity={0.7} />
+          <Cloud ref={(el) => void (clouds.current[1] = el)} className="left-[46%] top-[1%] h-[8%] w-[10%]" opacity={0.6} />
+          <Cloud ref={(el) => void (clouds.current[2] = el)} className="left-[70%] top-[5%] h-[8%] w-[11%]" opacity={0.65} />
+          {LAMPS.map(([x, y], i) => (
+            <span
+              key={i}
+              aria-hidden
+              className="pointer-events-none absolute rounded-full mix-blend-screen motion-safe:animate-[flicker_2.8s_ease-in-out_infinite]"
+              style={{ ...glow(x, y), animationDelay: `${i * 0.6}s` }}
+            />
+          ))}
         </div>
+        <Petals refs={petals} />
+        {/* as in the reference: the picture speaks for itself (named for screen readers) */}
+        <h2 id="couple-heading" className="sr-only">
+          {first.name} &amp; {second.name}
+        </h2>
       </div>
-      <Petals refs={petals} />
-      {/* the picture speaks for itself (named for screen readers) */}
-      <h2 id="couple-heading" className="sr-only">
-        {first.name} &amp; {second.name}
-      </h2>
-    </Scene>
+    </section>
   );
 }

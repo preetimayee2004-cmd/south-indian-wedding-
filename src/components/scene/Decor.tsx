@@ -1,26 +1,35 @@
 import { forwardRef, type CSSProperties } from "react";
 
 /**
- * Code-made scene decorations (inline SVG, no filters): the one cloud style,
- * falling leaves and petals.
+ * Code-made scene decorations (inline SVG, no filters): soft clouds, falling
+ * leaves and petals. Softness comes from radial gradients, never blur.
  */
 
-/**
- * The one cloud style: a crisp, flat white cloud (a single solid silhouette,
- * flat base, no gradients or soft edges). Always placed behind the temple and
- * arch layers. `opacity` is kept for compatibility but clouds stay solid.
- */
+let uid = 0;
+
+/** A soft white cloud: overlapping puffs with feathered gradient edges. */
 export const Cloud = forwardRef<HTMLDivElement, { className?: string; style?: CSSProperties; opacity?: number }>(function Cloud(
-  { className = "", style },
+  { className = "", style, opacity = 0.95 },
   ref,
 ) {
+  const id = `cl${uid++}`;
   return (
     <div ref={ref} data-layer aria-hidden className={`pointer-events-none absolute ${className}`} style={style}>
-      <svg viewBox="0 0 240 100" preserveAspectRatio="xMidYMax meet" className="h-full w-full overflow-visible">
-        <path
-          fill="#ffffff"
-          d="M18 96h204a18 18 0 0 0 0-36 26 26 0 0 0-30-22 38 38 0 0 0-70-14 30 30 0 0 0-50 22 22 22 0 0 0-24 18A16 16 0 0 0 18 96Z"
-        />
+      <svg viewBox="0 0 240 110" className="h-full w-full overflow-visible" style={{ opacity }}>
+        <defs>
+          <radialGradient id={id}>
+            <stop offset="0%" stopColor="#fff" />
+            <stop offset="62%" stopColor="#fff" stopOpacity="0.96" />
+            <stop offset="100%" stopColor="#fff" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <g fill={`url(#${id})`}>
+          <ellipse cx="62" cy="72" rx="56" ry="36" />
+          <ellipse cx="108" cy="50" rx="52" ry="44" />
+          <ellipse cx="156" cy="58" rx="48" ry="38" />
+          <ellipse cx="190" cy="76" rx="46" ry="30" />
+          <ellipse cx="124" cy="82" rx="92" ry="28" />
+        </g>
       </svg>
     </div>
   );

@@ -42,7 +42,7 @@ export function Footer() {
     "rounded-full border border-[#fbf2dc]/40 px-5 py-2.5 text-[0.68rem] uppercase tracking-[0.22em] text-[#fbf2dc] transition-colors hover:border-[#f3cf73] hover:text-[#f3cf73]";
 
   return (
-    <footer className="cobalt relative z-[95] pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-6 text-center">
+    <footer className="cobalt relative z-[95] border-t border-[#f3cf73]/50 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-12 text-center">
       <p className="font-script text-[2.6rem] leading-none text-[#f3cf73]">
         {couple.bride.name[0]} <span className="text-[1.6rem] text-[#fbf2dc]">&amp;</span> {couple.groom.name[0]}
       </p>

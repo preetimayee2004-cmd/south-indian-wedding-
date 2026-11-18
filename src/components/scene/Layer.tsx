@@ -1,5 +1,5 @@
 import { forwardRef, type CSSProperties } from "react";
-import { artProps } from "@/lib/art";
+import { art2x, artProps } from "@/lib/art";
 
 interface LayerProps {
   src: string;
@@ -8,7 +8,7 @@ interface LayerProps {
   position?: string;
   className?: string;
   style?: CSSProperties;
-  /** Kept for compatibility: srcset already serves a large enough file. */
+  /** The layer scales above ~1.15 during scroll: always use the 2× file. */
   hi?: boolean;
   eager?: boolean;
 }
@@ -22,8 +22,7 @@ export const Layer = forwardRef<HTMLDivElement, LayerProps>(function Layer(
   { src, alt = "", position = "50% 50%", className = "absolute inset-0", style, hi, eager },
   ref,
 ) {
-  void hi;
-  const img = artProps(src);
+  const img = hi ? art2x(src) : artProps(src);
   return (
     <div ref={ref} data-layer className={className} style={style} aria-hidden={alt ? undefined : true}>
       <img

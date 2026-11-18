@@ -37,7 +37,7 @@ function City({ lead, city, native, line }: { lead: string; city: string; native
 }
 
 /**
- * Our Love Story (as in the reference runway). While
+ * Meet the Bride & Groom — our love story (as in the reference runway). While
  * the page scrolls past, the stage stays on screen (sticky) and the photos
  * travel from right to left along a gold line, from the city where it began
  * to the city it lives on in; a paper plane flies along a smooth curve that
@@ -95,13 +95,14 @@ export function JourneyScene() {
       labelledBy="gallery-heading"
       className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-fade-top" />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <div className="flex h-full flex-col">
         <div ref={head} className="px-gutter pt-[max(1.5rem,6svh)] text-center">
           <h2 id="gallery-heading" className="font-script text-[clamp(2.4rem,10vw,3.6rem)] font-normal leading-none text-[#f3cf73]">
-            Our Love Story
+            Meet the Bride &amp; Groom
           </h2>
+          <p className="mt-2 text-[0.72rem] font-bold uppercase tracking-[0.36em] text-[#fbf2dc]">Our love story</p>
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-hidden">

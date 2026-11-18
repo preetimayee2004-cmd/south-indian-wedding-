@@ -1,6 +1,11 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { bgImage as imageSet } from "@/lib/art";
+
+/** CSS image-set offering the sharpened 2× file on retina screens. */
+const imageSet = (src: string) => {
+  const x2 = src.replace(/\.webp$/, "@2x.webp");
+  return `image-set(url("${src}") 1x, url("${x2}") 2x)`;
+};
 
 /*
  * The pillar shaft, painted in the colours sampled from the carved pillar
@@ -8,7 +13,7 @@ import { bgImage as imageSet } from "@/lib/art";
  * teal → gold rim → cream). Mirrored for the right-hand pillar.
  */
 const SHAFT = [
-  "#004DB7 0%", "#004DB7 35%",
+  "#a6cdee 0%", "#a6cdee 35%",
   "#4a3a1c 35.3%", "#4a3a1c 37%",
   "#c9a24f 37%", "#e2c272 40%", "#b48a3f 42%",
   "#5a3a14 42%", "#5a3a14 43.7%",
