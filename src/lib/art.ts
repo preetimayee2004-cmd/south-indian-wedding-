@@ -13,7 +13,7 @@ const SIZES = manifest as Record<string, { w: number; h: number }>;
  * Images not in the manifest (e.g. guest photos) are returned unchanged.
  */
 export function artProps(src: string, sizes?: string): { src: string; srcSet?: string; sizes?: string } {
-  const m = src.match(/\/media\/([^/]+)\.webp$/);
+  const m = src.match(/\/media\/(.+)\.webp$/);
   const s = m ? SIZES[m[1]] : undefined;
   if (!s) return { src };
   const ratio = s.w / s.h;
@@ -22,4 +22,19 @@ export function artProps(src: string, sizes?: string): { src: string; srcSet?: s
     srcSet: `${src} ${s.w}w, ${src.replace(/\.webp$/, "@2x.webp")} ${s.w * 2}w`,
     sizes: sizes ?? `(max-aspect-ratio: ${s.w}/${s.h}) calc(100vh * ${ratio.toFixed(3)}), 100vw`,
   };
+}
+
+/**
+ * A scene layer by name, if its file exists (listed in art-manifest.json):
+ * layer("hero-gopuram") → "/media/layers/hero-gopuram.webp" or undefined.
+ * Drop new layer art in with `node scripts/prepare-art.mjs <folder> layers`.
+ */
+export function layer(name: string): string | undefined {
+  return SIZES[`layers/${name}`] ? `/media/layers/${name}.webp` : undefined;
+}
+
+/** Always the sharpened 2× file — for layers that scale up during scroll. */
+export function art2x(src: string): { src: string } {
+  const m = src.match(/\/media\/(.+)\.webp$/);
+  return m && SIZES[m[1]] ? { src: src.replace(/\.webp$/, "@2x.webp") } : { src };
 }

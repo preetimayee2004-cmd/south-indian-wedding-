@@ -167,8 +167,6 @@ export interface WeddingConfig {
   opening: {
     enabled: boolean;
     tapLabel: string;
-    /** [left thread, right thread] — turmeric & kumkum by default. */
-    threadColors: [string, string];
   };
   media: {
     /**
@@ -177,8 +175,16 @@ export interface WeddingConfig {
      * once; between them the pillar shafts are painted and grow with the content.
      * `side` = width of each pillar band, `clip` = sky trimmed at each edge,
      * `contentTop` = where the text starts on the cream.
+     * `tile` (optional) = one carved pillar module cut from the same art
+     * (scripts/make-pillar-tile.mjs, same width, cream middle transparent),
+     * repeated down the shafts instead of the painted gradient.
      */
-    frame: { src: string; width: number; height: number; top: number; bottom: number; side: number; clip: number; contentTop: number };
+    frame: {
+      src: string; width: number; height: number; top: number; bottom: number; side: number; clip: number; contentTop: number;
+      tile?: { src: string; height: number };
+      /** The same art with its sky made transparent (scripts/cut-frame-sky.mjs) + its pillar tile, for the phone scenes where the arch rises over a picture. */
+      cut?: { src: string; tile: string };
+    };
     /**
      * Laptop/desktop artwork per scene (landscape, ideally 1920×1080 or larger).
      * Any slot left out falls back to the mobile artwork above.

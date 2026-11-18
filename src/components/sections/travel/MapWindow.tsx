@@ -6,7 +6,7 @@ import { directionsUrl, mapEmbedUrl } from "@/lib/format";
  * The iframe only loads when the window nears the screen, to keep the first
  * load light. Below: Get directions + Copy address.
  */
-export function MapWindow({ query, address, venueName }: { query: string; address: string; venueName: string }) {
+export function MapWindow({ query, address, venueName, compact }: { query: string; address: string; venueName: string; compact?: boolean }) {
   const box = useRef<HTMLDivElement>(null);
   const [load, setLoad] = useState(false);
   const [copied, setCopied] = useState<"idle" | "ok" | "fail">("idle");
@@ -56,19 +56,19 @@ export function MapWindow({ query, address, venueName }: { query: string; addres
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap justify-center gap-3">
+      <div className={compact ? "mt-3 flex flex-col items-stretch gap-2" : "mt-4 flex flex-wrap justify-center gap-3"}>
         <a
           href={directionsUrl(query)}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full bg-accent px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em] text-paper shadow-[0_6px_18px_rgb(202_76_61/0.28)] transition-transform active:scale-95"
+          className={`rounded-full bg-accent text-center uppercase text-paper shadow-[0_6px_18px_rgb(202_76_61/0.28)] transition-transform active:scale-95 ${compact ? "px-3 py-2.5 text-[0.6rem] tracking-[0.14em]" : "px-6 py-3 text-[0.72rem] tracking-[0.2em]"}`}
         >
           Get directions ↗
         </a>
         <button
           type="button"
           onClick={copy}
-          className="rounded-full border border-ink/20 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em] text-ink-soft transition-colors hover:border-accent hover:text-accent"
+          className={`rounded-full border border-ink/30 uppercase text-ink transition-colors hover:border-accent hover:text-accent ${compact ? "px-3 py-2.5 text-[0.6rem] tracking-[0.14em]" : "px-6 py-3 text-[0.72rem] tracking-[0.2em]"}`}
         >
           {copied === "ok" ? "Copied ✓" : copied === "fail" ? "Couldn’t copy" : "Copy address"}
         </button>

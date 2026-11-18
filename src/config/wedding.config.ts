@@ -158,12 +158,11 @@ const weddingConfig: WeddingConfig = {
 
   opening: {
     enabled: true, // add ?nointro to the URL to bypass while reviewing
-    tapLabel: "Tap to begin",
-    threadColors: ["#e2a72e", "#ca4c3d"],
+    tapLabel: "Tap to open",
   },
 
   media: {
-    frame: { src: "/media/gopuram-frame.webp", width: 1200, height: 896, top: 805, bottom: 91, side: 215, clip: 62, contentTop: 405 },
+    frame: { src: "/media/gopuram-frame.webp", width: 1200, height: 896, top: 831, bottom: 65, side: 215, clip: 62, contentTop: 405, tile: { src: "/media/pillar-tile.webp", height: 283 }, cut: { src: "/media/frame-cut.webp", tile: "/media/pillar-tile-cut.webp" } },
     // Laptop/desktop scenes. Add landscape art here when ready, e.g.
     // hero: { src: "/media/desktop/hero.webp", ratio: 16 / 9, focus: 0.4 },
     desktop: {},
@@ -194,15 +193,15 @@ const weddingConfig: WeddingConfig = {
 
   theme: {
     accent: "#ca4c3d",
-    ink: "#2a2421",
-    inkSoft: "#6b5e56",
-    ivory: "#f7f2eb",
-    paper: "#fffdf9",
+    ink: "#3a1f16",
+    inkSoft: "#5c3a2b",
+    ivory: "#f3e5c4", // parchment — no plain white anywhere
+    paper: "#fbf2dc",
     gold: "#b88a3e",
     teal: "#1f6b68",
     maroon: "#7a2e2a",
     leaf: "#4e7a3c",
-    line: "#e4d8c8",
+    line: "#dcc595",
     fontScript: "'Great Vibes', cursive",
     fontBody: "'EB Garamond', Georgia, serif",
   },

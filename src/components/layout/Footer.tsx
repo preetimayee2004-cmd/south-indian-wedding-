@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
+import { scrollToTarget } from "@/lib/smooth";
 
 /** Link to share: the page without personal params, so a forwarded link never carries this guest's name. */
 function shareableUrl(dropParams: string[]): string {
@@ -41,7 +42,7 @@ export function Footer() {
     "rounded-full border border-ink/15 px-5 py-2.5 text-[0.68rem] uppercase tracking-[0.22em] text-ink-soft transition-colors hover:border-accent hover:text-accent";
 
   return (
-    <footer className="border-t border-line bg-paper/60 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-12 text-center">
+    <footer className="parchment relative z-[95] border-t border-gold/50 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-12 text-center">
       <p className="font-script text-[2.6rem] leading-none text-accent">
         {couple.bride.name[0]} <span className="text-[1.6rem] text-gold">&amp;</span> {couple.groom.name[0]}
       </p>
@@ -53,7 +54,7 @@ export function Footer() {
         <button type="button" onClick={share} className={pill}>
           {shared === "copied" ? "Link copied ✓" : shared === "fail" ? "Couldn’t share" : "Share invitation"}
         </button>
-        <a href="#main" onClick={(e) => (e.preventDefault(), window.scrollTo({ top: 0, behavior: "smooth" }))} className={pill}>
+        <a href="#main" onClick={(e) => (e.preventDefault(), scrollToTarget(0))} className={pill}>
           Back to top ↑
         </a>
       </div>
@@ -61,7 +62,7 @@ export function Footer() {
         {shared === "copied" ? "Invitation link copied" : ""}
       </span>
 
-      <p className="mt-8 text-[0.72rem] text-ink-soft/80">Made with love for our families and friends.</p>
+      <p className="mt-8 text-[0.72rem] text-ink">Made with love for our families and friends.</p>
     </footer>
   );
 }

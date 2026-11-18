@@ -9,15 +9,15 @@
  */
 :root {
   --c-accent: 202 76 61; /* #ca4c3d */
-  --c-ink: 42 36 33;
-  --c-ink-soft: 107 94 86;
-  --c-ivory: 247 242 235; /* #f7f2eb */
-  --c-paper: 255 253 249;
+  --c-ink: 58 31 22;
+  --c-ink-soft: 92 58 43;
+  --c-ivory: 243 229 196; /* #f3e5c4 parchment */
+  --c-paper: 251 242 220;
   --c-gold: 184 138 62;
   --c-teal: 31 107 104;
   --c-maroon: 122 46 42;
   --c-leaf: 78 122 60;
-  --c-line: 228 216 200;
+  --c-line: 220 197 149;
 
   --font-script: "Great Vibes", cursive;
   --font-body: "EB Garamond", Georgia, serif;
@@ -48,7 +48,17 @@
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
+  }
+  html:not(.motion) {
     scroll-behavior: smooth;
+  }
+  /* Lenis */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
   }
   html,
   body {
@@ -75,7 +85,7 @@
 @layer components {
   /* Crisp gold band between sections ("frame ends here"). */
   .section-rule,
-  .sec:not(:empty) ~ .sec:not(:empty)::before {
+  html:not(.motion) .sec:not(:empty) ~ .sec:not(:empty)::before {
     content: "";
     position: relative;
     z-index: 6;
@@ -95,6 +105,75 @@
   /* Cursive heading — the one script font, always accent-coloured */
   .script-heading {
     @apply font-script font-normal text-accent;
+  }
+}
+
+/* ── Scroll scenes (phones/tablets) ───────────────────────────────── */
+@layer components {
+  /* Parchment ivory, never plain white. */
+  .parchment {
+    background-color: #f3e5c4;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 25% 15%, rgb(255 249 230 / 0.75), transparent 70%),
+      radial-gradient(ellipse 60% 45% at 85% 85%, rgb(190 150 85 / 0.2), transparent 70%),
+      radial-gradient(ellipse 40% 30% at 70% 35%, rgb(214 178 112 / 0.12), transparent 70%),
+      linear-gradient(#f5e8c9, #efdfb9);
+  }
+  .sec:empty,
+  html.motion .sec:not(:has(section)) {
+    display: none; /* a section that rendered nothing takes no space (and no overlap) */
+  }
+  /* A section that rises over a pinned scene (cover) or sits under one that
+     lifts away (lift) starts 100svh early, so the hand-over has no seam. */
+  html.motion .sec {
+    position: relative;
+  }
+  html.motion .sec[data-enter="cover"],
+  html.motion .sec[data-enter="lift"] {
+    margin-top: -100svh;
+  }
+  /* GPU hints only while a scene is actually animating. */
+  .scene.is-live [data-layer] {
+    will-change: transform, opacity;
+  }
+
+  /* Decorative edges that lead one scene into the next. */
+  .edge {
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .edge-scallop-top {
+    bottom: calc(100% - 1px);
+    height: 18px;
+    background: radial-gradient(circle at 50% 100%, var(--edge, #f3e5c4) 13px, #b88a3e 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
+  }
+  .edge-scallop-bottom {
+    top: calc(100% - 1px);
+    height: 18px;
+    background: radial-gradient(circle at 50% 0, var(--edge, #f3e5c4) 13px, #b88a3e 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
+  }
+  /* Temple frieze: maroon band, gold rules, a row of lotus beads and a scalloped hem. */
+  .edge-frieze-top {
+    bottom: calc(100% - 1px);
+    height: 34px;
+    background:
+      radial-gradient(circle at 50% 100%, #7a2e2a 9px, transparent 9.5px) 0 0 / 22px 10px repeat-x,
+      linear-gradient(#b88a3e, #b88a3e) 0 10px / 100% 2px no-repeat,
+      radial-gradient(circle, #e9c46a 3px, #b88a3e 3.5px 4.5px, transparent 5px) 0 14px / 22px 12px repeat-x,
+      linear-gradient(#7a2e2a, #7a2e2a) 0 10px / 100% 18px no-repeat,
+      linear-gradient(#e9c46a, #b88a3e) 0 28px / 100% 3px no-repeat,
+      linear-gradient(#7a2e2a, #7a2e2a) 0 31px / 100% 3px no-repeat;
+  }
+  .frieze-border {
+    border: 3px solid #b88a3e;
+    box-shadow:
+      0 0 0 4px #7a2e2a,
+      0 0 0 6px #e0b85c,
+      0 0 0 9px #7a2e2a,
+      0 18px 40px rgb(74 40 20 / 0.25);
   }
 }
 

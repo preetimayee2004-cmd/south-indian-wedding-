@@ -52,15 +52,26 @@ export function GopuramFrame({ children, id, labelledBy }: { children: ReactNode
         {/* roof, deities, capitals and the first carved niche */}
         <div aria-hidden style={{ ...art, height: px(f.top), backgroundPosition: "top center" }} />
 
-        {/* painted pillar shafts that grow with the content; cream between */}
+        {/* pillars that grow with the content — the carved niche module repeated
+            (or painted shafts without a tile); cream between */}
         <div
           style={{
             display: "flow-root", // keeps the text's negative top margin from dragging this background up over the carvings
             paddingInline: side,
-            backgroundImage: `${shaft("right")}, ${shaft("left")}, ${CREAM}`,
-            backgroundSize: `${side} 100%, ${side} 100%, 100% 100%, 100% 100%`,
-            backgroundPosition: "left top, right top, center, center",
-            backgroundRepeat: "no-repeat",
+            ...(f.tile
+              ? {
+                  backgroundImage: `${imageSet(f.tile.src)}, ${CREAM}`,
+                  backgroundSize: `100% ${px(f.tile.height)}, 100% 100%, 100% 100%`,
+                  backgroundPosition: "center top, center, center",
+                  // whole modules only: tiles are scaled a touch to fit, never cut mid-niche
+                  backgroundRepeat: "no-repeat round, no-repeat, no-repeat",
+                }
+              : {
+                  backgroundImage: `${shaft("right")}, ${shaft("left")}, ${CREAM}`,
+                  backgroundSize: `${side} 100%, ${side} 100%, 100% 100%, 100% 100%`,
+                  backgroundPosition: "left top, right top, center, center",
+                  backgroundRepeat: "no-repeat",
+                }),
           }}
         >
           {/* content starts up on the cream beneath the roof */}
