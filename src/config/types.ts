@@ -219,8 +219,10 @@ export interface WeddingConfig {
      * Used only once the file exists (prepared into art-manifest.json).
      */
     invitationWide?: { src: string; peek: number };
-    /** The couple scene (landscape), also used by Thank You. */
+    /** The couple scene (landscape), also used by Thank You. Shown on screens 900px and wider. */
     couple: string;
+    /** Portrait version of the couple picture, shown on screens under 900px. */
+    couplePortrait?: string;
     events: string;
     family: string;
     rsvp: string;

@@ -7,6 +7,21 @@ import type { WeddingConfig } from "../src/config/types";
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
 /**
+ * <link rel=preload> for the hero picture with the same srcset/sizes the page's
+ * <img> uses (ScenePicture: full width on phones, ≤85vh tall above 900px).
+ */
+function heroPreload(src: string, root: string): string {
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "src/config/art-manifest.json"), "utf8"));
+  const key = src.match(/\/media\/(.+)\.webp$/)?.[1];
+  const e = key ? manifest[key] : undefined;
+  if (!e) return `<link rel="preload" as="image" href="${src}" fetchpriority="high" />`;
+  const file = (w: number) => src.replace(/\.webp$/, `-${w}.webp`);
+  const set = e.widths.map((w: number) => `${file(w)} ${w}w`).join(", ");
+  const sizes = `(min-width: 901px) calc(85vh * ${(e.w / e.h).toFixed(3)}), 100vw`;
+  return `<link rel="preload" as="image" href="${file(e.widths.find((w: number) => w >= 960) ?? e.widths.at(-1))}" imagesrcset="${set}" imagesizes="${sizes}" fetchpriority="high" />`;
+}
+
+/**
  * Link previews come from static HTML (WhatsApp's crawler runs no JS), so this
  * plugin writes the wedding's title / description / Open Graph tags into
  * index.html from wedding.config.ts, preloads the opening artwork, and at
@@ -44,9 +59,9 @@ export function weddingMeta(config: WeddingConfig, root: string): Plugin {
           `<meta name="twitter:title" content="${t}" />`,
           `<meta name="twitter:description" content="${d}" />`,
           `<meta name="twitter:image" content="${ogImage}" />`,
-          // the two scene pictures (their sharpened 2× files are what the scenes show)
-          `<link rel="preload" as="image" href="${config.media.invitation.replace(/\.webp$/, "@2x.webp")}" fetchpriority="high" />`,
-          `<link rel="preload" as="image" href="${config.media.couple.replace(/\.webp$/, "@2x.webp")}" />`,
+          // only the hero temple is preloaded (sky colour and envelope are CSS) — the same
+          // srcset/sizes as the page's <img>, so the browser fetches it once, at the right size
+          heroPreload(config.media.invitation, root),
         ]
           .filter(Boolean)
           .join("\n    ");

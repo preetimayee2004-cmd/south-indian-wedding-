@@ -23,7 +23,7 @@ interface SceneProps {
   label?: string;
   className?: string;
   style?: CSSProperties;
-  /** Decoration that leads in (hangs above the scene's top edge), e.g. a scalloped parchment hem. */
+  /** Decoration that leads in (hangs above the scene's top edge), e.g. a soft fade into the sky. */
   edgeTop?: ReactNode;
   /** Decoration that trails (hangs below the bottom edge) — shown when this scene lifts away. */
   edgeBottom?: ReactNode;
@@ -36,6 +36,8 @@ interface SceneProps {
   deps?: unknown[];
   /** Screens held at the end while the next section covers this one (default: read from the next section). */
   tail?: number;
+  /** Scroll smoothing in seconds (default: lib/smooth SCRUB). */
+  scrub?: number | boolean;
   children: ReactNode;
 }
 
@@ -66,7 +68,7 @@ function useWidth() {
  * section covers it). Layers inside mark themselves with data-layer so they
  * get will-change only while the scene is on screen.
  */
-export function Scene({ id, labelledBy, label, className = "", style, edgeTop, edgeBottom, build, deps = [], tail, children }: SceneProps) {
+export function Scene({ id, labelledBy, label, className = "", style, edgeTop, edgeBottom, build, deps = [], tail, scrub = SCRUB, children }: SceneProps) {
   const root = useRef<HTMLElement>(null);
   const width = useWidth();
 
@@ -84,7 +86,7 @@ export function Scene({ id, labelledBy, label, className = "", style, edgeTop, e
         trigger: el,
         start: "top top",
         end: "bottom bottom",
-        scrub: SCRUB,
+        scrub,
         animation: tl,
         invalidateOnRefresh: true,
       });

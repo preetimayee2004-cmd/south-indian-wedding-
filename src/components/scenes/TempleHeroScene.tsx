@@ -25,12 +25,14 @@ const CLOUDS: [number, number, number, number, number][] = [
 
 /**
  * Scene 1 — Hero + temple, on a sticky track.
- * The temple always spans the full screen width. It starts pushed down so
- * only the golden finials and roof top show at the bottom, then rises exactly
- * with the scroll (1:1) until its stone base and tree reach the bottom edge.
- * The names slide down at 0.6× and disappear behind it (no fade). Clouds
- * drift above the temple in the top quarter; leaves fall in the last 40%. The
- * invitation arch then rises over it on a scalloped edge (`tail`).
+ * The temple spans the full width on phones; above 900px it is at most 85% of
+ * the screen tall, centred on the solid sky. It starts pushed down so only the
+ * golden finials and roof top show at the bottom, then rises exactly with the
+ * scroll (1:1) until its stone base and tree reach the bottom edge. The names
+ * slide down at 0.6× and disappear behind it (no fade). Flat clouds drift
+ * behind the temple in the top quarter; leaves fall in the last 40%. For the
+ * last `tail` screens everything keeps moving up off the screen while the
+ * invitation arch rises in beneath — no horizontal edge ever crosses the temple.
  */
 export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const { couple, wedding, media } = useWedding();
@@ -71,6 +73,9 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     const RISE = Math.max(0.4, travel() / vh());
     const T = Math.max(1.6, RISE + 0.6);
 
+    // the hero's layers that leave upward at the end (the temple's base stays on the arch's top edge)
+    const leaving = () => [temple.current, copy.current, ...clouds.current].filter(Boolean);
+
     tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0)
       // the names slide down and disappear behind the temple (no fade)
       .to(copy.current, { y: () => travel() * 0.6, duration: RISE, ease: "none" }, 0)
@@ -79,6 +84,9 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
 
     // clouds drift sideways only, each at its own speed — they stay in the top quarter
     clouds.current.forEach((c, i) => tl.to(c, { x: () => (CLOUDS[i][4] / 100) * vw(), duration: T }, 0));
+
+    // hand-over: everything moves up 1:1 with the scroll, off the top of the screen
+    if (tail > 0) tl.to(leaving(), { y: `-=${vh()}`, duration: tail, ease: "none" }, T);
 
     // leaves drift down across the screen in the last 40%
     leaves.current.forEach((l, i) => {
@@ -94,24 +102,25 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   };
 
   return (
-    <Scene id="invitation-hero" labelledBy="couple-names" className="cobalt" build={build} tail={tail}>
+    <Scene id="invitation-hero" labelledBy="couple-names" className="cobalt" build={build} tail={0}>
       {/* the temple: full screen width, height from the picture; rises 1:1 with the scroll */}
       <ScenePicture
         ref={temple}
         src={media.invitation}
-        ratio="3 / 4"
+        ratio="3584 / 4800"
         wide={wide?.src}
         alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
         className="z-[2]"
+        capVh={85}
         eager
       />
 
-      {/* clouds: above the temple, inside the top 25% of the screen */}
+      {/* flat clouds: behind the temple, inside the top 25% of the screen */}
       {CLOUDS.map(([left, top, w, h], i) => (
         <Cloud
           key={i}
           ref={(el) => void (clouds.current[i] = el)}
-          className="z-[5]"
+          className="z-0"
           style={{ left: `${left}vw`, top: `${top}svh`, width: `${w}vw`, height: `${h}svh` }}
           opacity={0.92 - (i % 3) * 0.08}
         />

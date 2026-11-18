@@ -114,24 +114,16 @@
       radial-gradient(ellipse 40% 30% at 70% 35%, rgb(214 178 112 / 0.12), transparent 70%),
       linear-gradient(#f5e8c9, #efdfb9);
   }
-  /* The day sky (blue with white clouds) — the ground of every "blue" section,
-     the hero included, so they all sit under the same sky. Text on it is cream,
-     with a soft shadow so it reads over the clouds. */
+  /* ONE sky: the solid blue of the temple picture, behind every "blue" section
+     (the hero included), so sections flow into each other with no seams.
+     Clouds are flat SVG shapes placed behind the temple and arch. Text on it
+     is cream, with a soft shadow. */
   :root {
-    --sky-top: #0876dc; /* the picture's colour at its top edge (scalloped edges) */
+    --sky: #004db7;
   }
   .cobalt {
-    background-color: #0d84e6;
-    background-image: url("/media/invite-sky.webp");
-    background-size: cover;
-    background-position: center top;
+    background-color: var(--sky);
     color: #fbf2dc;
-  }
-  /* mouse/trackpad screens: one sky fixed behind the page, so sections join seamlessly */
-  @media (hover: hover) and (pointer: fine) {
-    .cobalt {
-      background-attachment: fixed;
-    }
   }
   .cobalt [class*="text-[#fbf2dc]"],
   .cobalt [class*="text-[#f3cf73]"],
@@ -163,6 +155,31 @@
     .scene-pic[data-wide] {
       aspect-ratio: var(--ar-wide);
     }
+    /* large screens: at most --cap% of the screen tall, centred on the sky */
+    .scene-pic[data-cap] {
+      width: min(100%, calc(var(--cap) * 1svh * var(--arn)));
+      right: 0;
+      margin-inline: auto;
+    }
+  }
+  /* The couple picture. Phones: the portrait fills the screen (never wider or
+     taller than its natural pixels), top and bottom fading into the sky.
+     900px and wider: the landscape at most its natural width, centred, every
+     edge fading into the sky. */
+  .couple-pic {
+    width: min(100%, var(--pw));
+    height: min(100%, var(--ph));
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 90%, transparent);
+    mask-image: linear-gradient(to bottom, transparent, #000 6%, #000 90%, transparent);
+  }
+  @media (min-width: 900px) {
+    .couple-pic {
+      width: min(100vw, var(--lw), calc(100svh * 1.791));
+      height: auto;
+      aspect-ratio: var(--lar);
+      -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%);
+      mask-image: radial-gradient(ellipse 72% 70% at 50% 50%, #000 62%, transparent 100%);
+    }
   }
   /* GPU hints only while a scene is actually animating. */
   .scene.is-live [data-layer] {
@@ -177,27 +194,12 @@
     pointer-events: none;
     z-index: 5;
   }
-  .edge-scallop-top {
+  /* A section rising over a picture leads with a soft fade into the sky
+     (never a hard horizontal line). */
+  .edge-fade-top {
     bottom: calc(100% - 1px);
-    height: 18px;
-    background: radial-gradient(circle at 50% 100%, var(--edge, #f3e5c4) 13px, #b88a3e 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
-  }
-  .edge-scallop-bottom {
-    top: calc(100% - 1px);
-    height: 18px;
-    background: radial-gradient(circle at 50% 0, var(--edge, #f3e5c4) 13px, #b88a3e 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
-  }
-  /* Temple frieze: maroon band, gold rules, a row of lotus beads and a scalloped hem. */
-  .edge-frieze-top {
-    bottom: calc(100% - 1px);
-    height: 34px;
-    background:
-      radial-gradient(circle at 50% 100%, #7a2e2a 9px, transparent 9.5px) 0 0 / 22px 10px repeat-x,
-      linear-gradient(#b88a3e, #b88a3e) 0 10px / 100% 2px no-repeat,
-      radial-gradient(circle, #e9c46a 3px, #b88a3e 3.5px 4.5px, transparent 5px) 0 14px / 22px 12px repeat-x,
-      linear-gradient(#7a2e2a, #7a2e2a) 0 10px / 100% 18px no-repeat,
-      linear-gradient(#e9c46a, #b88a3e) 0 28px / 100% 3px no-repeat,
-      linear-gradient(#7a2e2a, #7a2e2a) 0 31px / 100% 3px no-repeat;
+    height: 38svh;
+    background: linear-gradient(to bottom, rgb(0 77 183 / 0), var(--sky) 92%);
   }
   .frieze-border {
     border: 3px solid #b88a3e;

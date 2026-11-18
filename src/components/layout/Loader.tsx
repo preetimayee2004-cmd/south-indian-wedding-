@@ -1,40 +1,51 @@
 import { useEffect, useState } from "react";
 import { gsap, refreshSoon } from "@/lib/gsap";
 
-/** Loads and decodes images; resolves when all are ready (or after `timeout` ms). */
-export function usePreload(srcs: string[], timeout = 8000): boolean {
+/**
+ * Ready when the hero picture (the <img data-hero> the page itself shows) has
+ * loaded and decoded — the only image the first screen needs. The sky colour
+ * and the envelope are drawn in CSS, so they are ready at once. Waiting for
+ * the page's own <img> (not a separate Image()) means the file is fetched once,
+ * at the size the browser chose from its srcset. Gives up after `timeout` ms.
+ */
+export function useHeroReady(timeout = 6000): boolean {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     let done = false;
-    const each = srcs.map((src) => {
-      const img = new Image();
-      img.decoding = "async";
-      img.src = src;
-      return img.decode().catch(() => undefined);
-    });
+    let poll = 0;
     const finish = () => {
       if (done) return;
       done = true;
       setReady(true);
       refreshSoon(50); // the scenes measure the pictures
     };
-    Promise.all(each).then(finish);
+    const wait = () => {
+      const img = document.querySelector<HTMLImageElement>("img[data-hero]");
+      if (!img) {
+        poll = window.setTimeout(wait, 30); // the scenes mount on the same render (a timer, so a background tab works too)
+        return;
+      }
+      if (img.complete && img.naturalWidth) return void img.decode().catch(() => undefined).then(finish);
+      img.addEventListener("load", () => void img.decode().catch(() => undefined).then(finish), { once: true });
+      img.addEventListener("error", finish, { once: true });
+    };
+    wait();
     const t = window.setTimeout(finish, timeout);
     return () => {
       done = true;
+      window.clearTimeout(poll);
       window.clearTimeout(t);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [srcs.join("|")]);
+  }, [timeout]);
   return ready;
 }
 
-/** A simple full-screen loader on the cobalt sky: a turning gold ring and a word. */
+/** A simple full-screen loader on the sky: a turning gold ring and a word. */
 export function Loader({ done }: { done: boolean }) {
   const [gone, setGone] = useState(false);
   useEffect(() => {
     if (!done) return;
-    const tw = gsap.to("#site-loader", { opacity: 0, duration: 0.5, ease: "power1.out", onComplete: () => setGone(true) });
+    const tw = gsap.to("#site-loader", { opacity: 0, duration: 0.4, ease: "power1.out", onComplete: () => setGone(true) });
     return () => void tw.kill();
   }, [done]);
   if (gone) return null;

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
-import { art2x } from "@/lib/art";
+import { artProps } from "@/lib/art";
 import { Petals, addPetals } from "./CoupleScene";
 
 /**
@@ -47,7 +47,6 @@ export function ThankYouScene() {
       labelledBy="thanks-heading"
       className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <div className="relative mx-auto flex h-full max-w-[34rem] flex-col items-center px-gutter pb-[max(1rem,2svh)] pt-[max(1.25rem,4svh)] text-center">
         <div ref={head}>
@@ -61,7 +60,7 @@ export function ThankYouScene() {
         <div className="relative mt-3 w-full min-h-0 flex-1 overflow-hidden rounded-t-[999px] border-2 border-[#f3cf73]/70">
           <div ref={pic} data-layer className="absolute -inset-[6%]">
             <img
-              {...art2x(media.thankYou)}
+              {...artProps(media.thankYou, "(min-width: 34rem) 34rem, 100vw")}
               alt={`${first.name} and ${second.name} exchanging garlands`}
               loading="lazy"
               decoding="async"

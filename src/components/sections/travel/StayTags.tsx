@@ -1,17 +1,18 @@
 import type { StayOption } from "@/config/types";
 
 /**
- * Places to stay as luggage tags. Swipe sideways on phones; wrap on desktop.
+ * Places to stay as luggage tags. Phones: stacked at full width (nothing
+ * runs off the screen edge); tablets and up: side by side, wrapping.
  * `.stay-tag` swings in from its hole (animated by the section).
  */
 export function StayTags({ stays }: { stays: StayOption[] }) {
   return (
-    <div className="-mx-gutter overflow-x-auto px-gutter pb-4 pt-2 [scrollbar-width:thin] md:mx-0 md:px-0">
-      <ul className="flex w-max snap-x snap-mandatory gap-5 md:w-auto md:flex-wrap md:justify-center">
+    <div className="pb-2 pt-2">
+      <ul className="flex flex-col gap-4 md:flex-row md:flex-wrap md:justify-center md:gap-5">
         {stays.map((s) => (
-          <li key={s.name} className="snap-start">
+          <li key={s.name}>
             <article
-              className="stay-tag relative w-[15.5rem] origin-[0.9rem_50%] border border-gold/50 bg-paper py-5 pl-11 pr-5 shadow-[0_8px_22px_rgb(42_36_33/0.07)]"
+              className="stay-tag relative w-full origin-[0.9rem_50%] border border-gold/50 bg-paper py-5 pl-11 pr-5 shadow-[0_8px_22px_rgb(42_36_33/0.07)] md:w-[15.5rem]"
               style={{
                 clipPath: "polygon(1.6rem 0, 100% 0, 100% 100%, 1.6rem 100%, 0 calc(100% - 1.6rem), 0 1.6rem)",
                 borderRadius: "0 14px 14px 0",

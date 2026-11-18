@@ -3,8 +3,8 @@ import { directionsUrl, mapEmbedUrl } from "@/lib/format";
 
 /**
  * Google map in an arch-topped window (warm-toned to sit with the palette).
- * The iframe only loads when the window nears the screen, to keep the first
- * load light. Below: Get directions + Copy address.
+ * The iframe starts loading a screen before the section arrives (never at
+ * page load), so it is already showing when the section comes into view. Below: Get directions + Copy address.
  */
 export function MapWindow({ query, address, venueName, compact }: { query: string; address: string; venueName: string; compact?: boolean }) {
   const box = useRef<HTMLDivElement>(null);
@@ -21,7 +21,7 @@ export function MapWindow({ query, address, venueName, compact }: { query: strin
           io.disconnect();
         }
       },
-      { rootMargin: "400px 0px" },
+      { rootMargin: "100% 0px" }, // a screen ahead, so the map is there as soon as the section is in view
     );
     io.observe(el);
     return () => io.disconnect();
@@ -45,7 +45,6 @@ export function MapWindow({ query, address, venueName, compact }: { query: strin
             <iframe
               title={`Map showing ${venueName}`}
               src={mapEmbedUrl(query)}
-              loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="absolute inset-0 h-full w-full border-0 [filter:sepia(0.22)_saturate(0.85)]"
               allowFullScreen
@@ -56,7 +55,7 @@ export function MapWindow({ query, address, venueName, compact }: { query: strin
         </div>
       </div>
 
-      <div className={compact ? "mt-3 flex flex-col items-stretch gap-2" : "mt-4 flex flex-wrap justify-center gap-3"}>
+      <div className={compact ? "mt-3 flex flex-col items-stretch gap-2" : "mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center"}>
         <a
           href={directionsUrl(query)}
           target="_blank"
