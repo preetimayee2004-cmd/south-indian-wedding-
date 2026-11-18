@@ -125,7 +125,7 @@ export function CoupleScene() {
 
   return (
     <section ref={root} id="couple" aria-labelledby="couple-heading" className="relative">
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       <div ref={stage} className="cobalt relative h-[100svh] min-h-[520px] overflow-hidden">
         {/* the picture: as tall as the scene (never narrower than the screen), framed on the couple */}
         <div

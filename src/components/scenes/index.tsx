@@ -18,7 +18,7 @@ import { ClosingScene } from "./ClosingScene";
 function sheet(Component: ComponentType): ComponentType {
   const Sheet = () => (
     <div className="cobalt relative px-3 py-5">
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       <div className="parchment frieze-border mx-auto max-w-[44rem] overflow-hidden rounded-[6px]">
         <Component />
       </div>

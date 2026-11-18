@@ -94,7 +94,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   };
 
   return (
-    <Scene id="invitation-hero" labelledBy="couple-names" style={{ backgroundColor: TEMPLE_SKY }} build={build} tail={tail}>
+    <Scene id="invitation-hero" labelledBy="couple-names" className="cobalt" build={build} tail={tail}>
       {/* the temple: full screen width, height from the picture; rises 1:1 with the scroll */}
       <ScenePicture
         ref={temple}

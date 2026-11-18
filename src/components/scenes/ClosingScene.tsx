@@ -4,7 +4,6 @@ import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Cloud } from "@/components/scene/Decor";
 import { art2x } from "@/lib/art";
-import { TEMPLE_SKY } from "./TempleHeroScene";
 
 /**
  * The last page (as in the reference's Amer Fort section): the city's temple
@@ -42,7 +41,7 @@ export function ClosingScene() {
   }, [reduced]);
 
   return (
-    <section ref={root} id="closing" aria-label={`${city} — the end of the invitation`} className="relative h-[100svh] min-h-[520px] overflow-hidden" style={{ backgroundColor: TEMPLE_SKY }}>
+    <section ref={root} id="closing" aria-label={`${city} — the end of the invitation`} className="cobalt relative h-[100svh] min-h-[520px] overflow-hidden">
       <div data-name className="absolute inset-x-0 top-[9svh] z-10 text-center">
         <p className="text-[clamp(2.4rem,12vw,4.5rem)] font-bold uppercase leading-none tracking-[0.18em] text-[#f3cf73]">{city}</p>
         {native && <p className="mt-2 text-[1.3rem] text-[#fbf2dc]">{native}</p>}

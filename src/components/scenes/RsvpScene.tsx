@@ -36,7 +36,7 @@ export function RsvpScene() {
       label="RSVP"
       className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <h2 className="sr-only">RSVP</h2>
       <div className="absolute left-1/2 top-0 h-full -translate-x-1/2" style={{ aspectRatio: IMG_RATIO }}>

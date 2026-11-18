@@ -95,7 +95,7 @@ export function JourneyScene() {
       labelledBy="gallery-heading"
       className="cobalt"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#004DB7" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <div className="flex h-full flex-col">
         <div ref={head} className="px-gutter pt-[max(1.5rem,6svh)] text-center">

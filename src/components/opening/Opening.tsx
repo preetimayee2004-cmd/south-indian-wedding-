@@ -187,7 +187,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
 
       {/* the card that grows to fill the screen; its paper turns into the hero's sky */}
       <div ref={zoom} aria-hidden className="invisible fixed left-0 top-0 z-20 origin-top-left rounded-sm bg-[#fbf2dc]">
-        <div ref={sky} className="absolute inset-0 opacity-0" style={{ backgroundColor: "#004DB7" }} />
+        <div ref={sky} className="cobalt absolute inset-0 opacity-0" />
       </div>
 
       <p ref={hint} className="open-fade mt-7 text-[0.74rem] font-bold uppercase tracking-[0.3em] text-[#fbf2dc]">

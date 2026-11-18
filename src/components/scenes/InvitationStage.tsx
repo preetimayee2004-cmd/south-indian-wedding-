@@ -14,12 +14,14 @@ function dateParts(iso: string, timeZone: string) {
   return { weekday: f({ weekday: "long" }), day: f({ day: "numeric" }), month: f({ month: "long" }), year: f({ year: "numeric" }) };
 }
 
-/** The temple arch, drawn in the hero temple's style (portrait 896×1200; its flat blue background
- *  cut away by scripts/cut-flat-bg.mjs, so the hero's own cobalt shows through). */
+/** The temple arch, drawn in the hero temple's style (751×754, cropped to the arch; its flat
+ *  blue background cut away by scripts/cut-flat-bg.mjs, so the sky shows through). */
 const ARCH = "/media/invite-arch.webp";
-const ARCH_RATIO = 896 / 1200;
+const ARCH_W = 751;
+const ARCH_H = 754;
+const ARCH_RATIO = ARCH_W / ARCH_H;
 /** The opening between the pillars, as fractions of the arch: where the invitation panel sits. */
-const PANEL = { top: 0.366, bottom: 0.075, side: 0.27 };
+const PANEL = { top: 0.385, bottom: 0.13, side: 0.205 };
 
 /**
  * The invitation section on phones: scene 1 (hero + temple), then the temple
@@ -37,12 +39,10 @@ export function InvitationStage() {
   );
 }
 
-/** Rows of the arch (of 1200): the roof, lintel and capitals end at SLICE_TOP, and the plain
+/** Rows of the arch (of ARCH_H): the roof, lintel and capitals end at SLICE_TOP, and the plain
  *  fluted stretch of the pillars that can be drawn taller runs to SLICE_END. */
-const SLICE_TOP = 760;
-/** The sky picture's colour at its top edge (for the scalloped edge above it). */
-const SKY_TOP = "#0876dc";
-const SLICE_END = 900;
+const SLICE_TOP = 466;
+const SLICE_END = 576;
 
 /**
  * The painted temple arch with the invitation (as the reference's gate). It
@@ -72,7 +72,7 @@ export function ArchScene() {
     const fit = () => {
       const W = $.box!.offsetWidth;
       const Hn = W / ARCH_RATIO; // the painting's natural height at this width
-      const k = Hn / 1200;
+      const k = Hn / ARCH_H;
       const panelTop = PANEL.top * Hn;
       const panelBottom = PANEL.bottom * Hn;
       const need = $.col!.offsetHeight + 56; // the letter + the sheet's padding
@@ -87,7 +87,7 @@ export function ArchScene() {
         backgroundSize: `100% ${Hn * f}px`,
         backgroundPosition: `center ${-SLICE_TOP * k * f}px`,
       });
-      Object.assign($.bot!.style, { height: `${(1200 - SLICE_END) * k}px` });
+      Object.assign($.bot!.style, { height: `${(ARCH_H - SLICE_END) * k}px` });
       Object.assign($.panel!.style, { top: `${panelTop}px`, bottom: `${panelBottom}px` });
     };
     fit();
@@ -120,13 +120,11 @@ export function ArchScene() {
       ref={root}
       id="invitation"
       aria-labelledby="invite-heading"
-      className="relative overflow-x-clip pb-10"
-      // a bright day sky with white clouds behind the arch (covers the whole section)
-      style={{ backgroundColor: SKY_TOP, backgroundImage: 'url("/media/invite-sky.webp")', backgroundSize: "cover", backgroundPosition: "center top" }}
+      className="cobalt relative overflow-x-clip pb-10"
     >
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: SKY_TOP }} />
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
       {/* the arch, a little wider than phones so the opening is roomy (pillars still in view); full width on large screens */}
-      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(min(142vw, 45rem), 100vw)" }}>
+      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(min(118vw, 45rem), 100vw)" }}>
       <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">
         <div ref={set("top")} className="absolute inset-x-0 top-0" style={{ backgroundImage: art, backgroundSize: "100% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat" }} />
         <div ref={set("mid")} className="absolute inset-x-0" style={{ backgroundImage: art, backgroundRepeat: "no-repeat" }} />

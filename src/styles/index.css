@@ -114,17 +114,29 @@
       radial-gradient(ellipse 40% 30% at 70% 35%, rgb(214 178 112 / 0.12), transparent 70%),
       linear-gradient(#f5e8c9, #efdfb9);
   }
-  /* The hero's cobalt sky (#004DB7) — the ground colour of every section, so
-     they all sit in the same world as the temple. Text on it is cream. */
+  /* The day sky (blue with white clouds) — the ground of every "blue" section,
+     the hero included, so they all sit under the same sky. Text on it is cream,
+     with a soft shadow so it reads over the clouds. */
+  :root {
+    --sky-top: #0876dc; /* the picture's colour at its top edge (scalloped edges) */
+  }
   .cobalt {
-    /* the hero's cobalt at the top and bottom edge (so neighbouring sections join
-       without a line), opening up to a lighter, sunlit blue through the middle —
-       like the temple picture's own sky towards the horizon */
-    background-color: #004db7;
-    background-image:
-      radial-gradient(ellipse 75% 45% at 50% 50%, rgb(255 255 255 / 0.07), transparent 72%),
-      linear-gradient(#004db7 0%, #0f63c6 22%, #1a6fd0 50%, #0f63c6 78%, #004db7 100%);
+    background-color: #0d84e6;
+    background-image: url("/media/invite-sky.webp");
+    background-size: cover;
+    background-position: center top;
     color: #fbf2dc;
+  }
+  /* mouse/trackpad screens: one sky fixed behind the page, so sections join seamlessly */
+  @media (hover: hover) and (pointer: fine) {
+    .cobalt {
+      background-attachment: fixed;
+    }
+  }
+  .cobalt [class*="text-[#fbf2dc]"],
+  .cobalt [class*="text-[#f3cf73]"],
+  .cobalt .text-white {
+    text-shadow: 0 1px 2px rgb(0 40 100 / 0.45), 0 2px 14px rgb(0 40 100 / 0.5);
   }
   .sec:empty,
   html.motion .sec:not(:has(section)) {

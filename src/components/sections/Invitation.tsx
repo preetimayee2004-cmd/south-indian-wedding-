@@ -2,7 +2,6 @@ import { useGuest } from "@/context/GuestContext";
 import { useWedding } from "@/context/WeddingContext";
 import { ScrollCue } from "@/components/ui/ScrollCue";
 import { InvitationFrame } from "@/components/frame/InvitationFrame";
-import { TEMPLE_SKY } from "@/components/scenes/TempleHeroScene";
 import { artProps } from "@/lib/art";
 
 function useDateParts(iso: string, timeZone: string) {
@@ -26,7 +25,7 @@ export function Invitation() {
 
   return (
     <section id="invitation" aria-labelledby="couple-names" className="relative isolate">
-      <div className="relative overflow-hidden" style={{ minHeight: "100svh", backgroundColor: TEMPLE_SKY }}>
+      <div className="cobalt relative overflow-hidden" style={{ minHeight: "100svh" }}>
         <img
           {...artProps(media.invitation, "100vw")}
           alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
