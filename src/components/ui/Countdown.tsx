@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Bell } from "@/components/scenes/invite/Ornaments";
 
 function left(target: number) {
   const ms = Math.max(0, target - Date.now());
@@ -29,8 +30,37 @@ function Flip({ value }: { value: string }) {
   );
 }
 
+/** One box hung from the rod by a short chain, with a bell under it; it swings (3°, from the top) when its number changes. */
+function Hanging({ value, label, dot, boxRef }: { value: number; label: string; dot: boolean; boxRef?: React.Ref<HTMLDivElement> }) {
+  const swing = useRef<HTMLDivElement>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) return void (first.current = false);
+    swing.current?.animate?.(
+      [{ transform: "rotate(0deg)" }, { transform: "rotate(3deg)" }, { transform: "rotate(-1.5deg)" }, { transform: "rotate(0deg)" }],
+      { duration: 900, easing: "ease-in-out" },
+    );
+  }, [value]);
+  return (
+    <div data-box className="relative">
+      {dot && <i aria-hidden className="cd-dot" />}
+      <div ref={swing} className="cd-swing">
+        <span aria-hidden className="cd-chain" />
+        <div ref={boxRef} className="cd-box" aria-hidden>
+          <svg viewBox="0 0 48 10" className="cd-crest" preserveAspectRatio="none">
+            <path d="M0 10C8 10 10 4 16 4c3 0 4-3 8-3s5 3 8 3c6 0 8 6 16 6" fill="#EFDDB8" stroke="#B8893E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          </svg>
+          <Flip value={two(value)} />
+          <span className="cd-label">{label}</span>
+        </div>
+        <Bell />
+      </div>
+    </div>
+  );
+}
+
 /**
- * Live "counting the days": four temple-niche boxes (days, hours, minutes,
+ * Live "counting the days": four temple-niche boxes hung from a gold rod by chains, a bell under each, (days, hours, minutes,
  * seconds) in one row with a gold dot between each pair. Numbers are always
  * two digits with tabular figures, flip on change, and the seconds box gives
  * a tiny pulse each tick. Each box's outer wrapper is marked data-box so the
@@ -58,19 +88,13 @@ export function Countdown({ iso, className = "" }: { iso: string; className?: st
     [t.seconds, "Seconds"],
   ];
   return (
-    <div className={`cd-row ${className}`} role="timer" aria-label={`${t.days} days, ${t.hours} hours, ${t.minutes} minutes to go`}>
-      {cells.map(([v, label], i) => (
-        <div key={label} data-box className="relative">
-          {i > 0 && <i aria-hidden className="cd-dot" />}
-          <div ref={label === "Seconds" ? secBox : undefined} className="cd-box" aria-hidden>
-            <svg viewBox="0 0 48 10" className="cd-crest" preserveAspectRatio="none">
-              <path d="M0 10C8 10 10 4 16 4c3 0 4-3 8-3s5 3 8 3c6 0 8 6 16 6" fill="#EFDDB8" stroke="#B8893E" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-            </svg>
-            <Flip value={two(v)} />
-            <span className="cd-label">{label}</span>
-          </div>
-        </div>
-      ))}
+    <div className={`cd-hang ${className}`}>
+      <span aria-hidden className="cd-rod" />
+      <div className="cd-row" role="timer" aria-label={`${t.days} days, ${t.hours} hours, ${t.minutes} minutes to go`}>
+        {cells.map(([v, label], i) => (
+          <Hanging key={label} value={v} label={label} dot={i > 0} boxRef={label === "Seconds" ? secBox : undefined} />
+        ))}
+      </div>
     </div>
   );
 }

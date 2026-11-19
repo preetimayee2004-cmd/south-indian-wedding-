@@ -7,7 +7,8 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { GoldLabel, Kalasam, LotusDivider, LotusMedallion, Pin } from "./invite/Ornaments";
+import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, Kolam, LotusMedallion, Pin } from "./invite/Ornaments";
+import { petalBurst } from "./invite/petalBurst";
 
 function dateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -88,6 +89,7 @@ export function ArchScene() {
       });
       Object.assign($.bot!.style, { height: `${(ARCH_H - SLICE_END) * k}px` });
       Object.assign($.panel!.style, { top: `${panelTop}px`, bottom: `${panelBottom}px` });
+      $.panel!.style.setProperty("--sheet-h", `${Hn + extra - panelTop - panelBottom}px`);
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -108,6 +110,23 @@ export function ArchScene() {
       const boxes = gsap.utils.toArray<HTMLElement>("[data-box]", r.current.col);
       if (boxes.length)
         gsap.from(boxes, { y: 26, opacity: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", scrollTrigger: { trigger: boxes[0], start: "top 94%", once: true } });
+      const col = r.current.col!;
+      const panel = r.current.panel!;
+      // the flourishes under the names draw themselves (left → right) when the names appear
+      const names = col.querySelector(".ic-names");
+      gsap.fromTo(col.querySelectorAll(".ic-flourish [data-draw]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, stagger: 0.35, delay: 0.3, ease: "power2.inOut", scrollTrigger: { trigger: names, start: "top 90%", once: true } });
+      // the kolam behind the names draws itself with the scroll
+      gsap.fromTo(col.querySelectorAll("[data-kolam]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", stagger: 0.02, scrollTrigger: { trigger: names, start: "top 95%", end: "center 40%", scrub: SCRUB } });
+      // jasmine buds pop in one by one from the centre outward
+      col.querySelectorAll<SVGElement>("[data-jasmine]").forEach((svg) => {
+        const buds = [...svg.querySelectorAll<SVGGElement>("[data-bud] > .ic-bud")].sort((a, b) => Number(a.parentElement!.dataset.d) - Number(b.parentElement!.dataset.d));
+        gsap.from(buds, { scale: 0, opacity: 0, transformOrigin: "50% 50%", duration: 0.35, stagger: 0.07, ease: "back.out(2)", scrollTrigger: { trigger: svg, start: "top 92%", once: true } });
+      });
+      // the gopuram by the venue draws itself
+      const gop = col.querySelector(".ic-gopuram");
+      if (gop) gsap.fromTo(gop.querySelectorAll("[data-draw]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, stagger: 0.12, ease: "power1.inOut", scrollTrigger: { trigger: gop, start: "top 92%", once: true } });
+      // the marigold strings grow down the zari borders as you read through the sheet
+      gsap.fromTo(panel.querySelectorAll("[data-garland]"), { yPercent: -100 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: panel, start: "top 60%", end: "bottom bottom", scrub: SCRUB } });
       gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
         gsap.from(el, { opacity: 0, y: 18, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 94%", once: true } }),
       );
@@ -129,7 +148,7 @@ export function ArchScene() {
       <div aria-hidden className="sky-layer" />
       {/* the arch: full width, and at least 37rem so the card in its opening holds the countdown in one row
           (on phones the pillars sit at the screen edges); full width on large screens */}
-      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(37rem, 100vw)" }}>
+      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(40.5rem, 100vw)" }}>
       <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">
         <div ref={set("top")} className="absolute inset-x-0 top-0" style={{ backgroundImage: art, backgroundSize: "100% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat" }} />
         <div ref={set("mid")} className="absolute inset-x-0" style={{ backgroundImage: art, backgroundRepeat: "no-repeat" }} />
@@ -138,14 +157,26 @@ export function ArchScene() {
         {/* the cream sheet in the opening between the pillars */}
         <div
           ref={set("panel")}
-          className="absolute flex flex-col justify-center border border-[#d9b25f]/80 text-ink shadow-[0_12px_40px_rgb(5_15_45/0.45)]"
-          style={{
-            left: `${PANEL.side * 100}%`,
-            right: `${PANEL.side * 100}%`,
-            borderRadius: "48% 48% 10px 10px / 9rem 9rem 10px 10px",
-            background: "radial-gradient(ellipse 70% 30% at 50% 12%, rgb(255 250 235 / 0.7), transparent 70%), #F7ECD3",
-          }}
+          className="ic-sheet absolute flex flex-col justify-center overflow-hidden border border-[#d9b25f]/80 text-ink shadow-[0_12px_40px_rgb(5_15_45/0.45)]"
+          style={{ left: `${PANEL.side * 100}%`, right: `${PANEL.side * 100}%` }}
         >
+          {/* Kanchipuram silk: the arch-shaped gold double line and dots, the zari borders with
+              marigold strings that grow as you read, the pallu, and a few drifting petals */}
+          <span aria-hidden className="ic-sheet-top" />
+          <span aria-hidden className="ic-sheet-dots" />
+          {["l", "r"].map((side) => (
+            <span key={side} aria-hidden className={`ic-zari ic-zari--${side}`}>
+              <span className="ic-garland-clip">
+                <span data-garland className="ic-garland" />
+              </span>
+            </span>
+          ))}
+          <span aria-hidden className="ic-pallu" />
+          <span aria-hidden className="ic-drift">
+            {Array.from({ length: 6 }, (_, i) => (
+              <i key={i} style={{ left: `${12 + ((i * 37) % 76)}%`, animationDelay: `${-i * 4.3}s`, animationDuration: `${22 + (i % 3) * 5}s` }} />
+            ))}
+          </span>
           <div ref={set("col")} className="invite-card mx-auto flex w-full flex-col items-center">
             {wedding.invocation && (
               <div data-line className="flex flex-col items-center">
@@ -161,25 +192,41 @@ export function ArchScene() {
             <p data-line className="ic-guest mt-2.5">{isPersonalized ? guestName : "Family & Friends"}</p>
             <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
             <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
-            <h2 data-line id="invite-heading" className="ic-names">
-              <span className="ic-name">{first.name}</span>
-              <LotusMedallion>&amp;</LotusMedallion>
-              <span className="ic-name">{second.name}</span>
-            </h2>
+            <div className="ic-names-wrap ic-clean">
+              <Kolam className="ic-kolam" />
+              <h2 data-line id="invite-heading" className="ic-names">
+                <span className="ic-name-row">
+                  <span className="ic-name" data-text={first.name} onClick={(e) => petalBurst(e)}>
+                    {first.name}
+                  </span>
+                  <Flourish />
+                </span>
+                <LotusMedallion>&amp;</LotusMedallion>
+                <span className="ic-name-row">
+                  <span className="ic-name" data-text={second.name} onClick={(e) => petalBurst(e)}>
+                    {second.name}
+                  </span>
+                  <Flourish />
+                </span>
+              </h2>
+            </div>
             {wedding.blessing && <p data-line className="ic-blessing">{wedding.blessing}</p>}
 
-            <LotusDivider className="ic-divider" />
+            <JasmineDivider className="ic-divider" />
             <GoldLabel>Counting the days</GoldLabel>
-            <div className="mt-3.5 w-full">
+            <div className="ic-clean mt-3.5 w-full">
               <Countdown iso={wedding.dateISO} />
             </div>
             <p data-line className="ic-until">
               until the Muhurtham · <b>{date.day} {date.month} {date.year}</b>
             </p>
 
-            <LotusDivider className="ic-divider" />
+            <JasmineDivider className="ic-divider" />
             <GoldLabel>The Destination</GoldLabel>
-            <p data-line className="ic-venue mt-2.5">{venue.name}</p>
+            <p data-line className="ic-venue mt-2.5">
+              <GopuramLine className="ic-gopuram" />
+              <span>{venue.name}</span>
+            </p>
             <p data-line className="ic-city mt-2">
               <Pin className="h-[1em] w-auto" />
               {wedding.city}
