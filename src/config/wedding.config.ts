@@ -152,18 +152,19 @@ const weddingConfig: WeddingConfig = {
     },
   },
 
-  // Our Love Story: up to 6 photos, in order (square-ish WebP photos look best; any size works).
-  // Put the files in public/media/gallery/ and list them here.
+  // The photo board: up to 6 photos, in order (square-ish WebP photos look best; any size works).
+  // Put the files in public/media/gallery/ and list them here (replace them with your own,
+  // same names, or change the list).
   gallery: {
-    heading: "Our Love Story",
-    ending: "to be continued...",
+    heading: "Moments to Cherish",
+    ending: "and so it begins...",
     photos: [
-      { src: "/media/gallery/photo-1.webp", caption: "Where it all began", alt: "Where it all began" },
-      { src: "/media/gallery/photo-2.webp", caption: "Our first adventure", alt: "Our first adventure" },
-      { src: "/media/gallery/photo-3.webp", caption: "She said yes", alt: "She said yes" },
-      { src: "/media/gallery/photo-4.webp", caption: "Two families, one promise", alt: "Two families, one promise" },
-      { src: "/media/gallery/photo-5.webp", caption: "Counting down", alt: "Counting down" },
-      { src: "/media/gallery/photo-6.webp", caption: "And the story continues", alt: "And the story continues" },
+      { src: "/media/gallery/photo-1.webp", caption: "When our families said yes", alt: "The couple in cream and gold silk in a carved temple corridor, the gopuram behind them" },
+      { src: "/media/gallery/photo-2.webp", caption: "Jasmine for her hair", alt: "He pins jasmine in her hair at sunset, she in a cream saree with a green blouse" },
+      { src: "/media/gallery/photo-3.webp", caption: "Our first walk together", alt: "The couple walking hand in hand down a busy street, smiling" },
+      { src: "/media/gallery/photo-4.webp", caption: "A promise in red and gold", alt: "The couple close together, she in a red saree, he in black" },
+      { src: "/media/gallery/photo-5.webp", caption: "Lighting the lamp together", alt: "The couple in gold lighting a tall brass lamp in the temple" },
+      { src: "/media/gallery/photo-6.webp", caption: "Blessings at the temple", alt: "The couple holding a plate of offerings by the temple tank, lamps floating on the water" },
     ],
   },
 

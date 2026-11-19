@@ -15,14 +15,14 @@ mandir ke khambhe / sheet lambe ho jaate hain.
 | Shehar | `wedding.city` |
 | Venue (invitation card) | `venue.name`, `venue.address`, `venue.mapsQuery` |
 | Events (Nalangu, Mehendi…) | `events: [ … ]` — har event mein `name`, `subtitle`, `startISO`, `endISO`, `venue`, `dressCode`, `dressColors`, `description` |
-| Love story photos | `gallery.photos` (neeche dekho) |
+| Photo board ("Moments to Cherish") | `gallery.heading`, `gallery.photos`, `gallery.ending` (neeche dekho) |
 | Parivaar, contacts, RSVP ki aakhri tareekh | `family`, `contacts`, `rsvp.deadlineISO` |
 
 Tareekh hamesha is format mein likho: `"2027-02-15T07:00:00+05:30"` (saal-mahina-din, phir samay, phir India ka time zone).
 
 Kisi ek mehmaan ke liye link: site ke link ke aage `?guest=Naam` lagao, jaise `…/?guest=Anita`.
 
-## Love story ki photos
+## Photo board ("Moments to Cherish")
 
 1. Apni photos `public/media/gallery/` folder mein daalo (WebP sabse achha; JPG/PNG bhi chalega).
    Square ya lagbhag square photos sabse sundar dikhti hain; koi bhi size chalega — photo frame mein apne aap fit hoti hai.
@@ -32,7 +32,7 @@ Kisi ek mehmaan ke liye link: site ke link ke aage `?guest=Naam` lagao, jaise `�
    ```
 3. Zyada se zyada **6 photos** board pe aati hain, list ke order mein. Kam photos bhi chalegi.
 
-Abhi wahan "PHOTO 1…6" wali placeholder photos hain — unhe usi naam se replace kar do, ya list badal do.
+Abhi wahan example couple photos hain — apni photos usi naam se rakh do (photo-1.webp … photo-6.webp), ya list badal do. Heading aur captions bhi yahin se badlo — love story na ho to bhi chalega (jaise "When our families said yes", "Nichayathartham, the engagement").
 
 ## Check aur publish
 
