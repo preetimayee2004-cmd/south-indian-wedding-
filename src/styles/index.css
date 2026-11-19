@@ -1024,3 +1024,108 @@ html.motion .sec:not(:empty) ~ .sec .edge-scallop-top {
   width: fit-content;
   margin-inline: auto;
 }
+
+/* ── The hero temple stage: procession, tree, blossoms, petals, birds ── */
+.temple-stage {
+  container-type: size;
+}
+/* the tree's leaves sway very slightly */
+.tree-front {
+  transform-origin: 0% 100%;
+  animation: tree-sway 5s ease-in-out infinite;
+}
+@keyframes tree-sway {
+  0%, 100% { transform: rotate(-0.3deg); }
+  50% { transform: rotate(0.3deg); }
+}
+/* a soft dust puff at the feet (played by the procession on every step) */
+.dust-puff {
+  position: absolute;
+  bottom: -2%;
+  width: 22%;
+  aspect-ratio: 2.2;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(214 188 150 / 0.8), rgb(214 188 150 / 0));
+  opacity: 0;
+  pointer-events: none;
+}
+/* yellow blossoms falling from the tree (three speeds) */
+.blossom {
+  position: absolute;
+  width: clamp(4px, 0.9cqw, 9px);
+  aspect-ratio: 1;
+  border-radius: 50% 0 50% 50%;
+  background: #f7d13b;
+  box-shadow: inset -1px -1px 0 rgb(214 150 20 / 0.6);
+  opacity: 0;
+  animation: blossom-fall linear infinite;
+}
+@keyframes blossom-fall {
+  0% { transform: translate(0, 0) rotate(0); opacity: 0; }
+  8% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translate(var(--dx), 30cqh) rotate(540deg); opacity: 0; }
+}
+/* petals drifting down the temple steps (down and to the left, along the flight) */
+.step-petal {
+  position: absolute;
+  width: clamp(4px, 0.8cqw, 8px);
+  aspect-ratio: 1.6;
+  border-radius: 50%;
+  background: #e86a84;
+  opacity: 0;
+  animation: step-petal linear infinite;
+}
+.step-petal:nth-child(3n) { background: #f2a3b4; }
+.step-petal:nth-child(3n + 1) { background: #d9463e; }
+@keyframes step-petal {
+  0% { transform: translate(0, 0) rotate(0); opacity: 0; }
+  10% { opacity: 0.9; }
+  85% { opacity: 0.9; }
+  100% { transform: translate(-9cqw, 16cqh) rotate(320deg); opacity: 0; }
+}
+/* the birds' wings flap */
+.hero-bird {
+  transform-origin: 50% 60%;
+  animation: bird-flap 0.42s ease-in-out infinite alternate;
+}
+@keyframes bird-flap {
+  from { transform: scaleY(1); }
+  to { transform: scaleY(0.45); }
+}
+
+/* ── The street between the hero and the invitation ── */
+.street-strip {
+  overflow-x: clip;
+  height: clamp(110px, 17vh, 180px);
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  background-position: left center;
+  /* a thin gold line and a soft shadow underneath: the parchment begins under the street */
+  border-bottom: 2px solid #b8893e;
+  box-shadow: 0 1px 0 #e8c56b, 0 10px 18px -4px rgb(58 31 22 / 0.35);
+}
+@media (max-width: 640px) {
+  .street-strip {
+    height: 110px;
+  }
+}
+/* sprites: feet or wheels on one baseline, a little above the strip's bottom edge */
+.street-sprite {
+  position: absolute;
+  bottom: 12%;
+  left: 0;
+}
+.street-bob {
+  animation: street-bob 0.9s ease-in-out infinite alternate;
+}
+@keyframes street-bob {
+  from { transform: translateY(0); }
+  to { transform: translateY(-2px); }
+}
+/* the invitation's ground: parchment with the faint gold mango buttas (the sky stays in the hero) */
+.parchment-ground {
+  background-color: #f7ecd3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%23B8893E' fill-opacity='.1'%3E%3Cpath d='M11 26c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3Cpath d='M43 58c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3C/g%3E%3C/svg%3E");
+}

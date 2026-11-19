@@ -7,6 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
+import { StreetStrip } from "./hero/StreetStrip";
 import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
@@ -39,6 +40,7 @@ export function InvitationStage() {
   return (
     <>
       <TempleHeroScene tail={0} />
+      <StreetStrip />
       <ArchScene />
     </>
   );
@@ -144,11 +146,8 @@ export function ArchScene() {
       ref={root}
       id="invitation"
       aria-labelledby="invite-heading"
-      className="cobalt sky-pinned relative overflow-x-clip pb-10"
+      className="parchment-ground relative overflow-x-clip pb-10"
     >
-      {/* the hero's sky continues: on mouse screens held on the screen like the hero's; on phones
-          the section's own sky picks up where the hero's ends (index.css .sky-pinned) */}
-      <div aria-hidden className="sky-layer" />
       {/* the mandapam: full width, and at least 31.75rem so the sheet in its opening keeps the
           countdown in one row (on phones the pillars sit just past the screen edges) */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(31.75rem, 100vw)" }}>
