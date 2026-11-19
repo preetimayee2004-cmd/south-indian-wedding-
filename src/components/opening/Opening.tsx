@@ -27,7 +27,7 @@ const POCKET = "h-[13.5rem] md:h-[15rem]";
 export function Opening({ onReveal, onDone }: OpeningProps) {
   const { couple, wedding, opening, loveStory } = useWedding();
   const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
-  const { guestName, isPersonalized } = useGuest();
+  const { guestName } = useGuest();
   const { start: startMusic, playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
@@ -158,7 +158,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
           />
           {/* addressed to the guest */}
           <p className="pointer-events-none absolute inset-x-0 bottom-[9%] z-[22] text-center font-script text-[clamp(1.5rem,6.5vw,2rem)] leading-none text-maroon">
-            Dear {isPersonalized ? guestName : "Family & Friends"}
+            Dear {guestName}
           </p>
           {/* flap, hinged at the top edge, with the wax seal */}
           <div className="absolute inset-0 z-[25] [transform-style:preserve-3d]">

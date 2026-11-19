@@ -2,7 +2,7 @@ import type { ComponentType } from "react";
 import type { SectionId } from "@/config/types";
 import { Invitation } from "./Invitation";
 import { CoupleStill } from "@/components/scenes/CoupleScene";
-import { Gallery } from "./Gallery";
+import { LoveStoryStill } from "@/components/scenes/gallery/LoveStoryBoard";
 import { Family } from "./Family";
 import { WishingWall } from "./WishingWall";
 import { Rsvp } from "./Rsvp";
@@ -20,7 +20,7 @@ export const SECTION_REGISTRY: Record<SectionId, ComponentType> = {
   invitation: Invitation,
   events: InsideFrame,
   couple: CoupleStill,
-  gallery: Gallery,
+  gallery: LoveStoryStill,
   family: Family,
   wishingWall: WishingWall,
   rsvp: Rsvp,

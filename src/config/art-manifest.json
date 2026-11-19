@@ -7,23 +7,11 @@
     "w": 1200,
     "h": 896
   },
-  "gopuram-sky": {
-    "w": 768,
-    "h": 1376
-  },
-  "mandapam-arch": {
-    "w": 768,
-    "h": 1376
-  },
   "pillar-frame": {
     "w": 768,
     "h": 1376
   },
   "stone-arch": {
-    "w": 768,
-    "h": 1376
-  },
-  "temple-dancers": {
     "w": 768,
     "h": 1376
   },

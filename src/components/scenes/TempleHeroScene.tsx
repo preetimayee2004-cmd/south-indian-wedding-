@@ -8,33 +8,36 @@ import { Cloud, Leaf, rand } from "@/components/scene/Decor";
 import { TempleStage } from "./hero/TempleStage";
 import { ScrollCue } from "@/components/ui/ScrollCue";
 
-/** The exact sky colour of temple-hero.webp. */
-export const TEMPLE_SKY = "#004DB7";
+/** The solid sky colour sampled from the top of temple-hero.webp (the hero's only sky). */
+export const TEMPLE_SKY = "#0061C2";
 const LEAVES = 7;
 /** How much of the portrait picture's top shows at the start: finials + roof top. */
 const PEEK = 0.18;
 
-/** Clouds, all above the temple and inside the top 25% of the screen: [left vw, top svh, width vw, height svh, drift vw]. */
+/** Flat clouds, all in the band above the text (which starts at 14% of the screen): [left vw, top svh, width vw, height svh, drift vw]. */
 const CLOUDS: [number, number, number, number, number][] = [
-  [-6, 2, 34, 6.5, 14],
-  [62, 3, 30, 6, -11],
-  [28, 9, 26, 5, 8],
-  [-12, 13, 30, 5.5, 18],
-  [74, 14, 28, 5, -15],
+  [-6, 1.5, 30, 5.5, 12],
+  [64, 1, 28, 5, -10],
+  [30, 6.5, 22, 4.5, 7],
+  [-14, 7, 24, 4.5, 14],
+  [80, 6.5, 24, 4.5, -12],
 ];
+/** The temple may peek into the bottom 22% of the screen at the start, no more. */
+const MAX_PEEK = 0.22;
 
 /**
  * Scene 1 — Hero + temple, on a sticky track.
  * The temple always spans the full screen width. It starts pushed down so
- * only the golden finials and roof top show at the bottom, then rises exactly
- * with the scroll (1:1) until its stone base and tree reach the bottom edge.
- * The names slide down at 0.6× and disappear behind it (no fade). Clouds
- * drift above the temple in the top quarter; leaves fall in the last 40%. The
+ * only the golden finials and roof top show, in the bottom 22% of the screen,
+ * then rises exactly with the scroll (1:1) until its stone base reaches the
+ * bottom edge. The text block (14%–68% of the screen) moves up at half the
+ * temple's speed and fades out before the temple reaches it. Flat clouds
+ * drift in the band above the text, on a solid sky; leaves fall in the last 40%. The
  * invitation arch then rises over it on a scalloped edge (`tail`).
  */
 export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const { couple, wedding } = useWedding();
-  const { guestName, isPersonalized } = useGuest();
+  const { guestName } = useGuest();
   const revealed = useRevealed();
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
@@ -63,16 +66,19 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     const vw = () => window.innerWidth;
     const H = () => temple.current!.offsetHeight; // full-width height at scale 1
     const peek = () => PEEK;
-    const yStart = () => vh() - peek() * H(); // only the finials and roof top show
+    const yStart = () => vh() - Math.min(peek() * H(), MAX_PEEK * vh()); // only the finials and roof top show, in the bottom 22% at most
     const yEnd = () => Math.min(yStart(), vh() - H()); // the stone base and tree at the bottom edge
     const travel = () => yStart() - yEnd();
     // the temple rises exactly with the scroll (1:1), then holds while the leaves fall
     const RISE = Math.max(0.4, travel() / vh());
     const T = Math.max(1.6, RISE + 0.6);
 
+    // the text block moves up at half the temple's speed and has faded out before the temple reaches it
+    const textBottom = copy.current!.offsetTop + copy.current!.offsetHeight;
+    const meet = Math.min(1, Math.max(0.05, (yStart() - textBottom) / (0.5 * Math.max(1, travel())))); // share of the rise when they would touch
     tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0)
-      // the names slide down and disappear behind the temple (no fade)
-      .to(copy.current, { y: () => travel() * 0.6, duration: RISE, ease: "none" }, 0)
+      .to(copy.current, { y: () => -travel() * 0.5, duration: RISE, ease: "none" }, 0)
+      .to(copy.current, { autoAlpha: 0, duration: RISE * meet * 0.55, ease: "none" }, RISE * meet * 0.3)
       .to(cue.current, { autoAlpha: 0, duration: Math.min(0.17, RISE * 0.3) }, 0)
       .to({}, { duration: T - RISE }, RISE);
 
@@ -93,7 +99,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   };
 
   return (
-    <Scene id="invitation-hero" labelledBy="couple-names" className="cobalt" build={build} tail={tail}>
+    <Scene id="invitation-hero" labelledBy="couple-names" style={{ backgroundColor: TEMPLE_SKY }} build={build} tail={tail}>
       {/* the temple: full screen width, height from the picture; rises 1:1 with the scroll */}
       <TempleStage ref={temple} className="z-[2]" eager />
 
@@ -108,21 +114,22 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
         />
       ))}
 
-      {/* the names on the sky — behind the temple, which rises over them */}
-      {/* starts below the clouds (top quarter), with room between every line */}
-      <div ref={copy} data-layer className="absolute inset-x-0 top-[max(9rem,23svh)] z-[1] flex justify-center px-gutter">
-        <div ref={lines} className="flex max-w-[34rem] flex-col items-center text-center text-white [text-shadow:0_2px_18px_rgb(0_30_90/0.6)]">
-          {wedding.invocation && <p className="text-[0.86rem] font-bold tracking-[0.26em] text-[#f3cf73]">{wedding.invocation}</p>}
-          <h1 id="couple-names" className="mt-5 font-script font-normal">
-            <span className="block text-[clamp(3rem,min(14vw,8.6svh),6.2rem)] leading-[1.12]">{first.name}</span>
-            <span className="my-1 block font-body text-[clamp(0.95rem,min(4.2vw,2.5svh),1.35rem)] font-semibold italic leading-none tracking-[0.24em] text-[#f3cf73]">
+      {/* the text in the upper part of the screen: from 14% down to 68% at most, clear of the temple and the clouds */}
+      <div ref={copy} data-layer className="hero-copy absolute inset-x-0 z-[1] flex justify-center px-gutter">
+        <div ref={lines} className="flex max-w-full flex-col items-center text-center text-white">
+          {wedding.invocation && <p className="hero-invocation">{wedding.invocation}</p>}
+          <h1 id="couple-names" className="hero-names">
+            <span className="block">{first.name}</span>
+            <span className="hero-weds">
+              <span aria-hidden className="hero-weds-line" />
               weds
+              <span aria-hidden className="hero-weds-line" />
             </span>
-            <span className="block text-[clamp(3rem,min(14vw,8.6svh),6.2rem)] leading-[1.12]">{second.name}</span>
+            <span className="block">{second.name}</span>
           </h1>
-          <p className="mt-5 text-[0.84rem] font-bold uppercase leading-none tracking-[0.32em]">are getting married</p>
-          <p className="mt-5 max-w-[20rem] font-script text-[clamp(1.6rem,min(7vw,4.1svh),2.4rem)] leading-[1.25]">
-            Dear {isPersonalized ? guestName : "Family & Friends"}, you are invited
+          <p className="hero-married">are getting married</p>
+          <p className="hero-dear">
+            <span className="whitespace-nowrap">Dear {guestName},</span> <span className="whitespace-nowrap">you are invited</span>
           </p>
         </div>
       </div>

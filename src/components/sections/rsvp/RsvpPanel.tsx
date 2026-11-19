@@ -22,7 +22,7 @@ export function useRsvpUsable(): boolean {
  */
 export function RsvpPanel() {
   const { id: weddingId, rsvp, wedding, contacts, couple } = useWedding();
-  const { guestName, isPersonalized } = useGuest();
+  const { guestName } = useGuest();
   const { events } = useWedding();
   // "13 – 14 FEBRUARY 2027 · MADURAI": the days of the celebrations
   const span = (() => {
@@ -92,7 +92,7 @@ export function RsvpPanel() {
     return (
       <div className="flex flex-col items-center text-center">
         <p className="text-[0.7rem] font-bold uppercase tracking-[0.4em] text-maroon">R · S · V · P</p>
-        <p className="mt-1 text-[0.95rem] text-ink">Dear {isPersonalized ? guestName : "Family & Friends"}</p>
+        <p className="mt-1 text-[0.95rem] text-ink">Dear {guestName}</p>
         <p className="script-heading text-[2.1rem] leading-tight">Will You Join Us?</p>
         <p className="mt-1 max-w-[17rem] text-[0.88rem] italic leading-snug text-ink">
           Your presence is the greatest blessing we could ask for. Come celebrate the union of {couple.bride.name} &amp; {couple.groom.name} with our

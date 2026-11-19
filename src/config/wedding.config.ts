@@ -1,5 +1,8 @@
 import type { WeddingConfig } from "./types";
 
+/** Who the invitation greets ("Dear Preeti"). A ?guest= link still overrides it. */
+const guestName = "Preeti";
+
 /**
  * ─────────────────────────────────────────────────────────────
  *  THE ONLY FILE TO EDIT FOR A NEW WEDDING.
@@ -22,7 +25,7 @@ const weddingConfig: WeddingConfig = {
   personalization: {
     // ?guest=Priya%20Raman  (also accepts ?to= or ?name=)
     queryParams: ["guest", "to", "name"],
-    fallbackName: "Guest",
+    fallbackName: guestName,
   },
 
   couple: {
@@ -117,17 +120,6 @@ const weddingConfig: WeddingConfig = {
     },
   },
 
-  // SAMPLE photos (the theme artwork) — replace with real photographs.
-  // Add as many as you like; order = order along the journey.
-  gallery: [
-    { src: "/media/couple-scene.webp", alt: "The couple exchanging garlands before the gopuram", caption: "Maalai Maatral", category: "couple" },
-    { src: "/media/gopuram-sky.webp", alt: "A gopuram against a clear blue sky", caption: "Where we first met", category: "pre-wedding" },
-    { src: "/media/temple-dancers.webp", alt: "Dancers performing in the temple courtyard", caption: "The sangeet rehearsal", category: "family" },
-    { src: "/media/mandapam-arch.webp", alt: "A mandapam archway with bells and garlands", caption: "The mandapam, dressed for the day", category: "traditional" },
-    { src: "/media/gopuram-frame.webp", alt: "A painted temple gateway with deities", caption: "Blessings from the temple", category: "traditional" },
-    { src: "/media/pillar-frame.webp", alt: "Painted temple pillars with marigold garlands", caption: "Garlands for the hall", category: "family" },
-  ],
-
   rsvp: { deadlineISO: "2027-01-31T23:59:00+05:30", maxAttendees: 6 },
 
   venue: {
@@ -195,7 +187,6 @@ const weddingConfig: WeddingConfig = {
     rsvpArch: { top: 36, left: 13, width: 74, height: 42 },
     rsvpLamps: [[13, 75.5], [87, 75.5], [5.5, 82.5], [94.5, 82.5]],
     thankYou: "/media/couple-scene.webp",
-    gallery: "/media/temple-dancers.webp",
   },
 
   audio: {
@@ -226,7 +217,7 @@ const weddingConfig: WeddingConfig = {
     { id: "events", enabled: true }, // one event at a time, sliding sideways
     { id: "couple", enabled: true }, // the couple glide down and come to rest
     { id: "family", enabled: true }, // meet the bride & groom family
-    { id: "gallery", enabled: true }, // our love story: the photo runway
+    { id: "gallery", enabled: true }, // our love story: the photo board and paper plane
     { id: "rsvp", enabled: true },
     { id: "wishingWall", enabled: true },
     { id: "contact", enabled: true }, // for any help, call

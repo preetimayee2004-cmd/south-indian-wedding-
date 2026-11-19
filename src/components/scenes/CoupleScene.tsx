@@ -3,6 +3,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Petal, rand } from "@/components/scene/Decor";
 import { gsap, refreshSoon } from "@/lib/gsap";
+import { CloudMessage, type CloudRefs } from "./couple/CloudMessage";
 
 /** Three groups of petals falling at different speeds: [count, duration, spread]. */
 const PETAL_GROUPS: [number, number, number][] = [
@@ -78,7 +79,7 @@ function CoupleRoom({
 }: {
   refs?: Record<"stage" | "bg" | "bride" | "brideBob" | "brideTilt" | "groom" | "groomBob", MutableRefObject<HTMLDivElement | null>> & {
     lamps: MutableRefObject<(HTMLSpanElement | null)[]>;
-    lines: MutableRefObject<(HTMLSpanElement | null)[]>;
+    cloud: MutableRefObject<CloudRefs>;
   };
   still?: boolean;
 }) {
@@ -136,20 +137,8 @@ function CoupleRoom({
         </div>
       </div>
 
-      {/* the names, one line at a time, in the sky above their heads */}
-      <div className="couple-names pointer-events-none absolute inset-x-0 flex items-center justify-center">
-        <h2 id="couple-heading" className="couple-glow relative text-center font-script font-normal leading-[1.02] text-accent">
-          {[first.name, "&", second.name].map((t, i) => (
-            <span
-              key={i}
-              ref={(el) => void (refs && (refs.lines.current[i] = el))}
-              className={`block ${i === 1 ? "couple-amp text-gold" : ""} ${still ? "" : "invisible"}`}
-            >
-              {t === "&" ? <>&amp;</> : t}
-            </span>
-          ))}
-        </h2>
-      </div>
+      {/* the names in a cloud, in the sky above their heads (never over their faces) */}
+      <CloudMessage first={first.name} second={second.name} refs={refs?.cloud} still={still} />
     </div>
   );
 }
@@ -159,8 +148,10 @@ function CoupleRoom({
  * bride walks in from the left and the groom from the right (scrub 1.2), with
  * a small walking bob that fades as they stop a little apart, a short way into
  * the pin. The section pins for 350vh: the background settles (1.12 → 1), she
- * leans in 2° offering the garland, then petals fall, the lamps glow and the
- * names appear above them. It holds, and the next section rises over it.
+ * leans in 2° offering the garland and the lamps glow; two small clouds drift in
+ * and merge into a big one above them, the names write in, and petals fall from
+ * it onto the couple. It holds, and the next section rises over it while the
+ * cloud drifts up and away.
  * Scrolling back plays it in reverse. While resting each one breathes
  * (CSS couple-idle, outside the scrub).
  */
@@ -174,9 +165,8 @@ export function CoupleScene() {
     groom: useRef<HTMLDivElement>(null),
     groomBob: useRef<HTMLDivElement>(null),
     lamps: useRef<(HTMLSpanElement | null)[]>([]),
-    lines: useRef<(HTMLSpanElement | null)[]>([]),
+    cloud: useRef<CloudRefs>({ drift: null, main: null, left: null, right: null, label: null, amp: null, letters: [], flourish: null, petals: [], rain: null }),
   };
-  const petals = useRef<(HTMLDivElement | null)[]>([]);
 
   // keep the pin's measurements right when the screen's height changes too (phone address bar, rotation)
   useEffect(() => {
@@ -190,7 +180,7 @@ export function CoupleScene() {
     const bride = refs.bride.current!;
     const groom = refs.groom.current!;
     const lamps = refs.lamps.current.filter(Boolean);
-    const lines = refs.lines.current.filter(Boolean);
+    const c = refs.cloud.current;
 
     // 0–15%: the background settles
     tl.fromTo(refs.bg.current, { scale: 1.12 }, { scale: 1, duration: at(0.15), ease: "power1.out" }, 0);
@@ -218,16 +208,51 @@ export function CoupleScene() {
     tl.to(refs.brideTilt.current, { rotate: 2, duration: at(0.05), ease: "sine.inOut" }, at(0.4));
     tl.to(refs.brideTilt.current, { rotate: 0, duration: at(0.05), ease: "sine.inOut" }, at(0.45));
 
-    // 50–70%: petals at three speeds, the lamps glow, the names one line at a time
-    addPetals(tl, petals.current, at(0.5), at(0.2));
-    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.5))
-      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.56))
-      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.6))
-      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.64));
-    tl.fromTo(lines, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: at(0.06), stagger: at(0.055), ease: "power2.out" }, at(0.51));
+    // the lamps glow up as they meet
+    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.42))
+      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.48))
+      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.52))
+      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.56));
 
-    // 70–100%: hold (the next section then rises over the scene)
+    // 50–62%: two small clouds drift in from the edges, meet in the centre and merge into the big one
+    const edge = () => window.innerWidth * 0.62;
+    tl.fromTo(c.left, { x: () => -edge(), autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.5));
+    tl.fromTo(c.right, { x: edge, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.5));
+    tl.to([c.left, c.right], { autoAlpha: 0, scale: 1.2, duration: at(0.03) }, at(0.59));
+    tl.fromTo(c.main, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: at(0.05), ease: "back.out(2)" }, at(0.585));
+
+    // 63–78%: "THE COUPLE", then the names write in letter by letter, the "&" in its lotus, then the flourish draws
+    tl.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: at(0.025), ease: "power2.out" }, at(0.63));
+    const half = c.letters.length;
+    tl.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: at(0.02), stagger: at(0.11) / Math.max(1, half), ease: "power2.out" }, at(0.655));
+    tl.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: at(0.03), ease: "back.out(2)" }, at(0.7));
+    tl.fromTo(c.flourish, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: at(0.04), ease: "power1.inOut" }, at(0.775));
+
+    // 82–97%: petals fall from under the cloud onto the couple, then keep falling lightly
+    c.petals.forEach((el, i) => {
+      const fall = () => {
+        const cloud = c.main!.getBoundingClientRect();
+        const stageBox = refs.stage.current!.getBoundingClientRect();
+        return Math.max(60, stageBox.top + stageBox.height * 0.9 - cloud.bottom);
+      };
+      tl.fromTo(
+        el,
+        { y: 0, x: 0, rotate: rand(i, 71) * 180, autoAlpha: 1 },
+        { y: fall, x: (rand(i, 73) - 0.5) * 80, rotate: `+=${200 + rand(i, 79) * 260}`, autoAlpha: 0.2, duration: at(0.08 + rand(i, 83) * 0.05), ease: "none" },
+        at(0.82 + (i / c.petals.length) * 0.05),
+      );
+    });
+    tl.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: at(0.03) }, at(0.93));
+
+    // hold to the end (the next section then rises over the scene)
     tl.to({}, { duration: Math.max(0, T - tl.duration()) });
+
+    // as the next section rises over the scene, the cloud drifts upward and fades
+    gsap.fromTo(
+      c.drift,
+      { y: 0, autoAlpha: 1 },
+      { y: () => -0.18 * window.innerHeight, autoAlpha: 0, ease: "none", scrollTrigger: { trigger: section, start: () => `bottom-=${window.innerHeight} bottom`, end: "bottom bottom", scrub: 1.2, invalidateOnRefresh: true } },
+    );
   };
 
   return (
@@ -241,7 +266,6 @@ export function CoupleScene() {
       edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <CoupleRoom refs={refs} />
-      <Petals refs={petals} />
     </Scene>
   );
 }

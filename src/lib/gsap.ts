@@ -1,7 +1,8 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 // Mobile address-bar show/hide resizes the viewport; don't re-layout on that.
 ScrollTrigger.config({ ignoreMobileResize: true });
 
@@ -42,4 +43,4 @@ if (typeof window !== "undefined") {
   document.addEventListener("load", (e) => e.target instanceof HTMLImageElement && refreshSoon(300), true);
 }
 
-export { gsap, ScrollTrigger };
+export { gsap, ScrollTrigger, MotionPathPlugin };

@@ -12,7 +12,7 @@ import { Container } from "@/components/layout/Container";
  */
 export function LoveNote() {
   const { loveNote, couple } = useWedding();
-  const { guestName, isPersonalized } = useGuest();
+  const { guestName } = useGuest();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
 
@@ -33,7 +33,7 @@ export function LoveNote() {
 
   if (!loveNote) return null;
 
-  const greeting = isPersonalized ? `Dear ${guestName},` : "Dear Family & Friends,";
+  const greeting = `Dear ${guestName},`;
   const signature = loveNote.signature ?? `${couple.bride.name} & ${couple.groom.name}`;
 
   return (

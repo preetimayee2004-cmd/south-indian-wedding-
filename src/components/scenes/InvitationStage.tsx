@@ -61,7 +61,7 @@ const SLICE_END = 506;
  */
 export function ArchScene() {
   const { couple, wedding, venue } = useWedding();
-  const { guestName, isPersonalized } = useGuest();
+  const { guestName } = useGuest();
   const reduced = usePrefersReducedMotion();
   const date = dateParts(wedding.dateISO, wedding.timeZone);
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
@@ -109,7 +109,7 @@ export function ArchScene() {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         r.current.box,
-        { y: () => window.innerHeight * 0.22 },
+        { y: () => window.innerHeight * 0.3 }, // it rises a little faster than the page
         { y: 0, ease: "power1.out", scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 45%", scrub: SCRUB, invalidateOnRefresh: true } },
       );
       const boxes = gsap.utils.toArray<HTMLElement>("[data-box]", r.current.col);
@@ -146,6 +146,9 @@ export function ArchScene() {
       aria-labelledby="invite-heading"
       className="parchment-ground relative overflow-x-clip pb-10"
     >
+      {/* the temple's stone floor ends here on a carved kerb, then parchment (90px+ before the finials) */}
+      <div aria-hidden className="ground-kerb" />
+      <div aria-hidden className="h-[96px]" />
       {/* the mandapam: full width, and at least 31.75rem so the sheet in its opening keeps the
           countdown in one row (on phones the pillars sit just past the screen edges) */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(31.75rem, 100vw)" }}>
@@ -189,7 +192,7 @@ export function ArchScene() {
               </div>
             )}
             <GoldLabel className="mt-5">Dear</GoldLabel>
-            <p data-line className="ic-guest mt-2.5">{isPersonalized ? guestName : "Family & Friends"}</p>
+            <p data-line className="ic-guest mt-2.5">{guestName}</p>
             <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
             <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
             <div className="ic-names-wrap">

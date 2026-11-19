@@ -164,7 +164,6 @@ export interface WeddingConfig {
   };
   events: WeddingEvent[];
   family?: { bride?: FamilySide; groom?: FamilySide };
-  gallery: GalleryImage[];
   rsvp: {
     deadlineISO?: string;
     maxAttendees: number;
@@ -233,7 +232,6 @@ export interface WeddingConfig {
     family: string;
     rsvp: string;
     thankYou: string;
-    gallery: string;
   };
   audio: {
     music?: string;

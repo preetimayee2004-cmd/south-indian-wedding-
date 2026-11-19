@@ -265,24 +265,147 @@
   left: clamp(100cqw - var(--W), 50cqw - var(--W) * 0.499, 0px);
   top: var(--top);
 }
-.couple-names {
+/* The cloud with the names: in the sky above their heads (it never reaches their faces).
+   --cw = the cloud's width: min(86vw, 560px), and never taller than the sky above them. */
+.cloud-zone {
   top: var(--names-top);
   height: var(--names-h);
-  font-size: min(var(--names-h) / 2.75, 12.5cqw, 5.5rem);
+  --cw: min(86cqw, 560px, calc(var(--names-h) * 1.45));
+  --cloud-ar: 1.45;
 }
-.couple-amp {
-  font-size: 0.55em;
+@media (min-width: 768px) {
+  .cloud-zone {
+    --cw: min(86cqw, 560px, calc(var(--names-h) * 2.2));
+    --cloud-ar: 2.2;
+  }
 }
-/* a soft cream glow behind the names so they read over the temples */
-.couple-glow {
-  text-shadow: 0 0 6px #fbf2dc, 0 0 16px #fbf2dc, 0 0 30px rgb(251 242 220 / 0.85);
+.cloud-float {
+  width: var(--cw);
+  aspect-ratio: var(--cloud-ar);
+  animation: cloud-float 4s ease-in-out infinite;
 }
-.couple-glow::before {
-  content: "";
+@keyframes cloud-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.cloud-msg,
+.cloud-small {
   position: absolute;
-  inset: -16% -26%;
-  z-index: -1;
-  background: radial-gradient(ellipse closest-side, rgb(251 242 220 / 0.9), rgb(251 242 220 / 0.55) 55%, transparent);
+  filter: drop-shadow(0 8px 14px rgb(20 60 120 / 0.22));
+}
+.cloud-msg {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* text keeps well inside the bumps: at least 20px from the cloud's edge */
+  padding: max(20px, 7.5%) max(20px, 15%);
+}
+.cloud-small {
+  top: 18%;
+  left: 30%;
+  width: 40%;
+  height: 64%;
+}
+.cloud-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.cloud-text {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 100%;
+}
+.cloud-label {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  margin-right: -0.35em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: #b8893e;
+}
+.cloud-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2px;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  /* phones: the names stack; never larger than the cloud allows */
+  font-size: min(clamp(40px, 6vw, 72px), calc(var(--cw) * 0.125));
+  line-height: 1.1;
+  color: #5e1220;
+}
+.cloud-name {
+  white-space: nowrap;
+}
+.cloud-amp {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 1.15em;
+  height: 0.85em;
+  font-size: 0.62em;
+  color: #b8893e;
+  line-height: 1;
+}
+.cloud-amp-lotus {
+  position: absolute;
+  inset: -12% -8% 0;
+  width: 116%;
+  height: 112%;
+}
+@media (min-width: 768px) {
+  /* desktop: one line, "Meenakshi & Karthik", sized to stay inside the cloud */
+  .cloud-names {
+    flex-direction: row;
+    gap: 0.18em;
+    font-size: min(clamp(40px, 6vw, 72px), calc(var(--cw) * 0.077));
+  }
+  .cloud-amp {
+    font-size: 0.7em;
+  }
+}
+.cloud-flourish {
+  width: min(70%, 220px);
+  height: 12px;
+  margin-top: 4px;
+}
+/* petals that fall from under the cloud (moved by the scroll) */
+.cloud-petal {
+  position: absolute;
+  top: 82%;
+  width: 9px;
+  height: 12px;
+  border-radius: 50% 0 50% 50%;
+}
+/* then a light, steady fall */
+.cloud-rain {
+  position: absolute;
+  inset: 82% 0 auto;
+  height: 0;
+}
+.cloud-rain-petal {
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 11px;
+  border-radius: 50% 0 50% 50%;
+  opacity: 0;
+  animation: cloud-rain linear infinite;
+}
+@keyframes cloud-rain {
+  0% { transform: translate(0, 0) rotate(0); opacity: 0; }
+  10% { opacity: 0.9; }
+  85% { opacity: 0.8; }
+  100% { transform: translate(18px, 52cqh) rotate(400deg); opacity: 0; }
 }
 /* resting: each one breathes (scale 1 → 1.015 every 3 s), outside the scroll */
 @keyframes couple-idle {
@@ -1020,7 +1143,8 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
 /* the invitation's ground: parchment with the faint gold mango buttas (the sky stays in the hero) */
 .parchment-ground {
   background-color: #f7ecd3;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%23B8893E' fill-opacity='.1'%3E%3Cpath d='M11 26c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3Cpath d='M43 58c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3C/g%3E%3C/svg%3E");
+  /* gold mango (paisley) buttas, each with an inner curl and a dot, on a diagonal grid, 10% */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg' width%3D'72' height%3D'72'%3E%3Cg fill%3D'%23B8893E' fill-opacity%3D'.1'%3E%3Cg id%3D'm'%3E%3Cpath d%3D'M14 30c-7-1-10-9-6-15 5-6 14-5 17 2 3 8-2 17-11 21 5-3 7-7 4-9-1-1-3 0-4 1Z'%2F%3E%3Cpath d%3D'M15 19c2 0 3 2 2 3-2 1-4-1-2-3Z' fill-opacity%3D'.9'%2F%3E%3Ccircle cx%3D'20' cy%3D'13' r%3D'1.3'%2F%3E%3C%2Fg%3E%3Cuse href%3D'%23m' x%3D'36' y%3D'36'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 
 /* The hero's elephants walk on the spot: two steps per 1.1 s — a small bob and a gentle rock around the feet. */
@@ -1058,4 +1182,375 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
 @keyframes elephant-path {
   from { transform: translate(-35cqw, -9.24cqh) scale(0.754); }
   to { transform: translate(105cqw, -1.4cqh) scale(1.09); }
+}
+
+/* ── Hero text ── the block sits from 14% of the screen height; its lines fit above 68% */
+.hero-copy {
+  top: 14svh;
+}
+.hero-invocation {
+  margin-bottom: 18px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  color: #f3cf73;
+  text-shadow: 0 1px 8px rgb(0 40 110 / 0.45);
+}
+.hero-names {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  /* clamp(54px, 8vw, 104px), and on short screens no more than 12% of the height so the block ends above 68% */
+  font-size: min(clamp(54px, 8vw, 104px), 12svh);
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 2px 12px rgb(0 40 110 / 0.45);
+}
+.hero-weds {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0; /* clear space so it never touches either name's flourishes */
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: 0.3em;
+  color: #e8c56b;
+  text-shadow: 0 1px 6px rgb(0 40 110 / 0.4);
+}
+.hero-weds-line {
+  display: block;
+  width: clamp(28px, 4vw, 56px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e8c56b);
+}
+.hero-weds-line:last-child {
+  transform: scaleX(-1);
+}
+.hero-married {
+  margin-top: 20px;
+  font-size: clamp(12px, 1.2vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  margin-right: -0.35em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-shadow: 0 1px 8px rgb(0 40 110 / 0.45);
+}
+.hero-dear {
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(15px, 1.6vw, 20px);
+  font-style: italic;
+  line-height: 1.3;
+  color: rgb(255 255 255 / 0.95);
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgb(0 40 110 / 0.45);
+}
+/* narrow phones: it may wrap, but only after the comma */
+@media (max-width: 379px) {
+  .hero-dear {
+    white-space: normal;
+  }
+}
+
+/* ── Our Love Story: the photo board ──────────────────────────────── */
+.gb-viewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* the board: a warm wooden frame with a carved temple border, a recessed cream silk surface */
+.gb-board {
+  container-type: inline-size;
+  position: relative;
+  width: 94vw;
+  padding: 14px;
+  border-radius: 10px;
+  background:
+    repeating-linear-gradient(92deg, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #8a5a2e, #6b4220 45%, #7a4c26);
+  box-shadow: 0 18px 40px rgb(10 20 50 / 0.45), inset 0 0 0 1px rgb(255 220 160 / 0.25);
+}
+/* phones: the board is taller than the screen and the view follows the plane */
+.gb-viewport > .gb-board {
+  align-self: flex-start;
+  margin-top: 16px;
+}
+.gb-board::before {
+  /* the carved border: a row of little temple towers (gopuram steps) around the edge */
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 7px;
+  pointer-events: none;
+  border: 6px solid transparent;
+  background:
+    conic-gradient(from 135deg at 50% 0, #c9954f 0 90deg, transparent 0) 0 0 / 12px 6px repeat-x border-box,
+    conic-gradient(from -45deg at 50% 100%, #c9954f 0 90deg, transparent 0) 0 100% / 12px 6px repeat-x border-box;
+  -webkit-mask: linear-gradient(#000 0 0) border-box, linear-gradient(#000 0 0) padding-box;
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) border-box exclude, linear-gradient(#000 0 0) padding-box;
+}
+.gb-surface {
+  position: relative;
+  height: 668cqw;
+  border-radius: 4px;
+  background-color: #f7ecd3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%23B8893E' fill-opacity='.1'%3E%3Cpath d='M11 26c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3Cpath d='M43 58c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3C/g%3E%3C/svg%3E");
+  box-shadow: inset 0 3px 10px rgb(58 31 22 / 0.35), inset 0 0 26px rgb(58 31 22 / 0.18);
+}
+@media (min-width: 768px) {
+  /* desktop: the whole board fits the screen */
+  .gb-board {
+    width: min(94vw, calc((100svh - 48px) * 1.7));
+  }
+  .gb-viewport > .gb-board {
+    align-self: center;
+    margin-top: 0;
+  }
+  .gb-surface {
+    height: auto;
+    aspect-ratio: 1.7;
+  }
+}
+/* the title plaque on the top of the frame */
+.gb-plaque {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  z-index: 4;
+  translate: -50% 0;
+  padding: 2px 22px 4px;
+  border: 1px solid #b8893e;
+  border-radius: 999px;
+  background: #fbf2dc;
+  box-shadow: 0 4px 10px rgb(58 31 22 / 0.3);
+  white-space: nowrap;
+}
+.gb-plaque h2 {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1.2;
+  color: #5e1220;
+}
+/* the polaroids: phones in a vertical zigzag (about 62vw wide), desktop in a loose zigzag */
+.gb-photo {
+  position: absolute;
+  z-index: 2;
+  width: 71%; /* about 62vw */
+  left: var(--mx);
+  top: calc(16cqw + var(--i) * 100cqw);
+  cursor: zoom-in;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .gb-photo {
+    width: 14.5%;
+    left: var(--dx);
+    top: var(--dy);
+  }
+}
+.gb-polaroid {
+  display: block;
+  padding: 6% 6% 3%;
+  background: #fff;
+  box-shadow: 0 6px 14px rgb(58 31 22 / 0.28);
+}
+.gb-pic {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #efe5d2;
+}
+/* "slightly desaturated" until the plane lands: a grey layer in saturation blend, faded out */
+.gb-desat {
+  position: absolute;
+  inset: 0;
+  background: hsl(0 0% 55%);
+  mix-blend-mode: saturation;
+  opacity: 0.75;
+}
+.gb-caption {
+  display: block;
+  margin-top: 4%;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.25rem, 5.4cqw, 1.6rem);
+  line-height: 1.15;
+  color: #5e1220;
+}
+@media (min-width: 768px) {
+  .gb-caption {
+    font-size: clamp(0.95rem, 1.35cqw, 1.35rem);
+  }
+}
+/* holders: a brass pin, or a strip of maroon and gold washi tape */
+.gb-pin {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff4c8, #d4a94a 45%, #8a6420);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.35);
+}
+.gb-tape {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 34%;
+  height: 18px;
+  translate: -50% 0;
+  rotate: -3deg;
+  opacity: 0.88;
+  background: repeating-linear-gradient(45deg, #7a1f2b 0 6px, #c9954f 6px 10px);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+}
+.gb-marigold {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  width: 26px;
+  height: 26px;
+}
+.gb-burst {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 7px;
+  height: 9px;
+  border-radius: 50% 0 50% 50%;
+}
+/* the extras between the photos (phones / desktop) */
+.gb-extra {
+  position: absolute;
+  z-index: 1;
+}
+.gb-jasmine { left: 74%; top: 222cqw; width: 23%; rotate: -12deg; }
+.gb-kolam { left: 5%; top: 138cqw; width: 17%; }
+.gb-heart { left: 80%; top: 44cqw; width: 11%; rotate: 10deg; }
+.gb-datetag { left: 56%; top: 642cqw; }
+@media (min-width: 768px) {
+  .gb-jasmine { left: 2%; top: 86%; width: 15%; rotate: -4deg; }
+  .gb-kolam { left: 40%; top: 83%; width: 6%; }
+  .gb-heart { left: 26%; top: 24%; width: 3.2%; }
+  .gb-datetag { left: 87.5%; top: 9%; }
+}
+.gb-datetag,
+.gb-endtag {
+  padding: 4px 12px 4px 18px;
+  border: 1px solid #b8893e;
+  border-radius: 4px 12px 12px 4px;
+  background: #fffaf0;
+  box-shadow: 0 3px 6px rgb(58 31 22 / 0.2);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #7a1f2b;
+  white-space: nowrap;
+  rotate: -6deg;
+}
+.gb-datetag::before,
+.gb-endtag::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  translate: 0 -50%;
+  border-radius: 50%;
+  border: 1px solid #b8893e;
+}
+.gb-endtag {
+  position: absolute;
+  z-index: 2;
+  left: 6%;
+  top: 624cqw;
+  font-family: "Great Vibes", cursive;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  padding: 2px 14px 4px 20px;
+  rotate: 3deg;
+}
+@media (min-width: 768px) {
+  .gb-endtag { left: 72%; top: 85%; font-size: clamp(1.1rem, 1.6cqw, 1.5rem); }
+}
+/* the flight: the trail under the plane */
+.gb-flight {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.gb-plane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  width: 46px;
+  height: 31px;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 5px rgb(58 31 22 / 0.3));
+}
+
+/* each elephant's own size (the second one is 8% smaller), from its feet */
+.el-body {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  transform: scale(var(--el-scale, 1));
+  transform-origin: 50% 100%;
+}
+/* soft contact shadow on the ground, a little left of the feet (the light comes from the right);
+   smaller and lighter at the top of each step, in time with .elephant-walk */
+.el-shadow {
+  position: absolute;
+  left: 2%;
+  bottom: -3%;
+  width: 85%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(60 35 10 / 0.35), rgb(60 35 10 / 0.18) 60%, rgb(60 35 10 / 0));
+  transform-origin: 50% 50%;
+  animation: el-shadow 1.1s ease-in-out infinite;
+}
+@keyframes el-shadow {
+  0%, 50%, 100% { transform: scale(1); opacity: 1; }
+  25%, 75% { transform: scale(0.92); opacity: 0.75; }
+}
+
+/* the stone floor ends on a carved sandstone kerb: lotus petals, a dark outline, a shadow onto the parchment.
+   It overlaps the temple's ground by 2px so no sky shows between them. */
+.ground-kerb {
+  position: relative;
+  z-index: 3;
+  height: 26px;
+  margin-top: -2px;
+  border-top: 1.5px solid #5a3a1a;
+  border-bottom: 1.5px solid #5a3a1a;
+  background:
+    radial-gradient(ellipse 6px 8px at 50% 100%, #c79a5c 0 5px, #6b4520 5.6px 6.4px, transparent 7px) 0 3px / 16px 14px repeat-x,
+    linear-gradient(#e2bf86, #c99d62 55%, #a97c45);
+  box-shadow: 0 10px 18px rgb(60 35 10 / 0.25);
+}
+.ground-kerb::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 4px;
+  height: 2px;
+  background: #8a6232;
+  opacity: 0.6;
 }

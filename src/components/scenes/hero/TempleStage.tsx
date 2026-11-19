@@ -19,12 +19,11 @@ export const STAGE_RATIO = "1493 / 2000";
 const EL_RATIO = "897 / 893";
 /** Where they stand when nothing moves (reduced motion): left edge, feet, height — in % of the stage, on the walking path. */
 const ELEPHANTS = [
-  { left: 4, feet: 93.1, height: 17.2 },
-  { left: 35, feet: 94.8, height: 18.5 },
-  { left: 66, feet: 96.5, height: 19.9 },
+  { left: 4, feet: 93.1, height: 17.2, scale: 1, art: "/media/elephant-warm.webp", delay: 0 },
+  // the second one: green and gold cloth, 8% smaller
+  { left: 37, feet: 94.8, height: 18.5, scale: 0.92, art: "/media/elephant-green.webp", delay: 9 },
+  { left: 66, feet: 96.5, height: 19.9, scale: 1, art: "/media/elephant-warm.webp", delay: 21 },
 ];
-/** How long one elephant takes to cross the scene (s). */
-const WALK_SECONDS = 30;
 
 export const TempleStage = forwardRef<HTMLDivElement, { className?: string; style?: CSSProperties; eager?: boolean }>(function TempleStage(
   { className = "", style, eager },
@@ -54,11 +53,16 @@ export const TempleStage = forwardRef<HTMLDivElement, { className?: string; styl
               ["--rest-b" as string]: `${100 - e.feet}%`,
               ["--rest-h" as string]: `${e.height}%`,
               aspectRatio: EL_RATIO,
-              // one after another, a third of the walk apart
-              animationDelay: `${-k * (WALK_SECONDS / 3)}s`,
+              // one after another, with uneven gaps (9 s, then 12 s)
+              animationDelay: `${-e.delay}s`,
+              ["--el-scale" as string]: e.scale,
             }}
           >
-            <img src={p.elephant} alt="" decoding="async" className="elephant-walk block h-full w-full" style={{ animationDelay: `${-k * 0.37}s` }} draggable={false} />
+            <div className="el-body">
+              {/* a soft contact shadow on the ground, a little to the left (the light comes from the right) */}
+              <span className="el-shadow" style={{ animationDelay: `${-k * 0.37}s` }} />
+              <img src={e.art} alt="" decoding="async" className="elephant-walk block h-full w-full" style={{ animationDelay: `${-k * 0.37}s` }} draggable={false} />
+            </div>
           </div>
         ))}
     </div>
