@@ -6,7 +6,6 @@ import { useRevealed } from "@/context/IntroContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Cloud, Leaf, rand } from "@/components/scene/Decor";
 import { TempleStage } from "./hero/TempleStage";
-import { ScrollCue } from "@/components/ui/ScrollCue";
 
 /** The solid sky colour sampled from the top of temple-hero.webp (the hero's only sky). */
 export const TEMPLE_SKY = "#0061C2";
@@ -45,7 +44,6 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const copy = useRef<HTMLDivElement>(null);
   const lines = useRef<HTMLDivElement>(null);
   const temple = useRef<HTMLDivElement>(null);
-  const cue = useRef<HTMLAnchorElement>(null);
   const clouds = useRef<(HTMLDivElement | null)[]>([]);
   const leaves = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -79,7 +77,6 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0)
       .to(copy.current, { y: () => -travel() * 0.5, duration: RISE, ease: "none" }, 0)
       .to(copy.current, { autoAlpha: 0, duration: RISE * meet * 0.55, ease: "none" }, RISE * meet * 0.3)
-      .to(cue.current, { autoAlpha: 0, duration: Math.min(0.17, RISE * 0.3) }, 0)
       .to({}, { duration: T - RISE }, RISE);
 
     // clouds drift sideways only, each at its own speed — they stay in the top quarter
@@ -131,6 +128,13 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
           <p className="hero-dear">
             <span className="whitespace-nowrap">Dear {guestName},</span> <span className="whitespace-nowrap">you are invited</span>
           </p>
+          {/* plain bold "scroll down" under the text (no button), fading away with it */}
+          <a href="#invite-heading" className="hero-scroll">
+            Scroll down
+            <svg aria-hidden viewBox="0 0 24 14" className="hero-scroll-chevron">
+              <path d="M3 3l9 8 9-8" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
         </div>
       </div>
 
@@ -145,7 +149,6 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
         />
       ))}
 
-      <ScrollCue ref={cue} href="#invite-heading" className="absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] left-1/2 z-10 -translate-x-1/2" />
     </Scene>
   );
 }

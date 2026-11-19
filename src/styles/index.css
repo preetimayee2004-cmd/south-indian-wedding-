@@ -1200,7 +1200,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   font-family: "Great Vibes", cursive;
   font-weight: 400;
   /* clamp(54px, 8vw, 104px), and on short screens no more than 12% of the height so the block ends above 68% */
-  font-size: min(clamp(54px, 8vw, 104px), 12svh);
+  font-size: min(clamp(54px, 8vw, 104px), 10.5svh);
   line-height: 1.15;
   color: #fff;
   text-shadow: 0 2px 12px rgb(0 40 110 / 0.45);
@@ -1239,12 +1239,15 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   text-shadow: 0 1px 8px rgb(0 40 110 / 0.45);
 }
 .hero-dear {
-  margin-top: 10px;
+  /* the guest's line: a little lower, larger, bold and in gold so it stands out */
+  margin-top: 22px;
   font-family: "EB Garamond", Georgia, serif;
-  font-size: clamp(15px, 1.6vw, 20px);
+  font-size: clamp(18px, 2vw, 25px);
   font-style: italic;
+  font-weight: 700;
   line-height: 1.3;
-  color: rgb(255 255 255 / 0.95);
+  letter-spacing: 0.02em;
+  color: #f3cf73;
   white-space: nowrap;
   text-shadow: 0 1px 8px rgb(0 40 110 / 0.45);
 }
@@ -1553,4 +1556,31 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   height: 2px;
   background: #8a6232;
   opacity: 0.6;
+}
+
+/* "Scroll down": plain bold text under the hero text, with a small bouncing chevron */
+.hero-scroll {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: clamp(14px, 3svh, 26px);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  margin-right: -0.32em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 8px rgb(0 40 110 / 0.5);
+}
+.hero-scroll-chevron {
+  width: 20px;
+  height: 12px;
+  color: #f3cf73;
+  animation: hero-scroll-bounce 1.6s ease-in-out infinite;
+}
+@keyframes hero-scroll-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(5px); opacity: 1; }
 }
