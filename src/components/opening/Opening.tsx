@@ -37,8 +37,6 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const flap = useRef<HTMLDivElement>(null);
   const sealL = useRef<HTMLSpanElement>(null);
   const sealR = useRef<HTMLSpanElement>(null);
-  const zoom = useRef<HTMLDivElement>(null);
-  const sky = useRef<HTMLDivElement>(null);
   const letter = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLParagraphElement>(null);
   const finished = useRef(false);
@@ -78,35 +76,52 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       return;
     }
     gsap.killTweensOf(hint.current);
-    // the seal cracks into two pieces, the flap opens, the card rises out, then
-    // zooms to fill the screen and its paper turns into the sky — the hero
-    const toCard = () => {
+    // the seal cracks into two pieces, the flap opens and the card rises a little; then the
+    // hero itself — temple, names and sky — grows smoothly out of the card to fill the screen,
+    // and the page carries on from there as normal
+    const hero = () => document.querySelector<HTMLElement>("#invitation-hero .sticky");
+    const heroSec = () => hero()?.closest<HTMLElement>(".sec") ?? null;
+    const grow = () => {
+      onReveal(); // scrolls to the top and starts the hero's text entrance
+      const el = hero();
+      const sec = heroSec();
+      if (!el || !sec) return;
       const r = letter.current!.getBoundingClientRect();
-      gsap.set(zoom.current, { autoAlpha: 1, x: r.left, y: r.top, width: r.width, height: r.height, scaleX: 1, scaleY: 1 });
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      sec.style.zIndex = "200"; // above this overlay while it grows
       gsap.set(env.current, { autoAlpha: 0 });
+      gsap.fromTo(
+        el,
+        { x: r.left, y: r.top, scaleX: r.width / vw, scaleY: r.height / vh, transformOrigin: "0 0", borderRadius: 8, autoAlpha: 0.85 },
+        {
+          x: 0,
+          y: 0,
+          scaleX: 1,
+          scaleY: 1,
+          borderRadius: 0,
+          autoAlpha: 1,
+          duration: 1.1,
+          ease: "power3.inOut",
+          onComplete: () => {
+            gsap.set(el, { clearProps: "transform,transformOrigin,borderRadius,opacity,visibility" });
+            sec.style.zIndex = "";
+            gsap.set(root.current, { autoAlpha: 0 });
+            finish();
+          },
+        },
+      );
     };
     tl.current = gsap
-      .timeline({ onComplete: finish })
+      .timeline()
       .to(hint.current, { autoAlpha: 0, duration: 0.2 })
       .to(sealL.current, { x: -26, y: 34, rotate: -28, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
       .to(sealR.current, { x: 26, y: 38, rotate: 30, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
       .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.25)
       .set(flap.current, { zIndex: 1 })
       .to(letter.current, { yPercent: -42, duration: 0.6, ease: "power2.out" }, 0.8)
-      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.2)
-      .to(letter.current!.firstElementChild, { opacity: 0, duration: 0.2 }, 1.2)
-      .add(toCard, 1.4)
-      .to(zoom.current, {
-        x: 0,
-        y: 0,
-        scaleX: () => window.innerWidth / Math.max(1, zoom.current!.offsetWidth),
-        scaleY: () => window.innerHeight / Math.max(1, zoom.current!.offsetHeight),
-        duration: 0.9,
-        ease: "power3.inOut",
-      }, 1.4)
-      .to(sky.current, { opacity: 1, duration: 0.5, ease: "power1.in" }, 1.85)
-      .add(() => onReveal(), 2.3)
-      .to(root.current, { autoAlpha: 0, duration: 0.45 }, 2.35);
+      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.1)
+      .add(grow, 1.35);
   }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
 
   const skip = useCallback(() => {
@@ -184,11 +199,6 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
           </div>
         </div>
       </button>
-
-      {/* the card that grows to fill the screen; its paper turns into the hero's sky */}
-      <div ref={zoom} aria-hidden className="invisible fixed left-0 top-0 z-20 origin-top-left rounded-sm bg-[#fbf2dc]">
-        <div ref={sky} className="cobalt absolute inset-0 opacity-0" />
-      </div>
 
       <p ref={hint} className="open-fade mt-7 text-[0.74rem] font-bold uppercase tracking-[0.3em] text-[#fbf2dc]">
         {opening.tapLabel}

@@ -128,13 +128,19 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
           <p className="hero-dear" data-fit=".hero-copy">
             <span className="whitespace-nowrap">Dear {guestName},</span> <span className="whitespace-nowrap">you are invited</span>
           </p>
-          {/* plain bold "scroll down" under the text (no button), fading away with it */}
-          <a href="#invite-heading" className="hero-scroll">
-            Scroll down
-            <svg aria-hidden viewBox="0 0 24 14" className="hero-scroll-chevron">
-              <path d="M3 3l9 8 9-8" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          {/* plain bold "scroll down" (not clickable) with a hand that swipes up, so anyone knows to scroll */}
+          <div className="hero-scroll" aria-hidden>
+            <svg viewBox="0 0 40 48" className="hero-hand">
+              <path
+                d="M15 22V8a3 3 0 0 1 6 0v11l1-1a3 3 0 0 1 5 2v1a3 3 0 0 1 5 1v1a3 3 0 0 1 5 1v8c0 7-5 12-12 12h-2c-4 0-7-2-9-5l-6-9a3 3 0 0 1 4-4l3 3Z"
+                fill="#fbf2dc"
+                stroke="#5e1220"
+                strokeWidth="1.6"
+                strokeLinejoin="round"
+              />
             </svg>
-          </a>
+            Scroll down
+          </div>
         </div>
       </div>
 

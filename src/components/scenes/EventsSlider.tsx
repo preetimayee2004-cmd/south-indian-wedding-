@@ -46,7 +46,8 @@ function when(e: WeddingEvent, timeZone: string) {
 }
 
 /** One event's words inside the doorway. */
-function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: number; timeZone: string }) {
+function EventText({ e, i, n, timeZone, venueQuery }: { e: WeddingEvent; i: number; n: number; timeZone: string; venueQuery?: string }) {
+  const maps = e.mapsQuery ?? venueQuery; // the event's own place, else the wedding venue
   const w = when(e, timeZone);
   return (
     <div className="ev-text">
@@ -68,9 +69,13 @@ function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: numbe
         <div className="ev-plaque">
           <span className="ev-label">Venue</span>
           <span className="ev-venue">{e.venue}</span>
-          {e.mapsQuery && (
-            <a href={mapsUrl(e.mapsQuery)} target="_blank" rel="noopener noreferrer" className="ev-map">
-              Directions
+          {maps && (
+            <a href={mapsUrl(maps)} target="_blank" rel="noopener noreferrer" className="ev-map">
+              <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
+                <circle cx="12" cy="9.5" r="2.5" />
+              </svg>
+              Get Directions
             </a>
           )}
         </div>
@@ -102,13 +107,13 @@ function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: numbe
  * every few seconds until the guest takes over.
  */
 export function EventsSlider() {
-  const { events, wedding } = useWedding();
+  const { events, wedding, venue } = useWedding();
   const reduced = usePrefersReducedMotion();
   const n = events.length;
   const [cur, setCur] = useState(0);
+  const [touched, setTouched] = useState(false);
   const root = useRef<HTMLElement>(null);
   const door = useRef<HTMLDivElement>(null);
-  const rail = useRef<HTMLDivElement>(null);
   const stopped = useRef(false);
   const visible = useRef(false);
   const timer = useRef(0);
@@ -178,19 +183,11 @@ export function EventsSlider() {
     return () => ro.disconnect();
   }, [n]);
 
-  // phones: keep the current event's name in view in the strip beneath the doorway
-  useEffect(() => {
-    const strip = rail.current;
-    const item = strip?.querySelectorAll<HTMLElement>('.ev-rail-item')[cur];
-    if (!strip || !item || strip.scrollWidth <= strip.clientWidth) return;
-    strip.scrollTo({ left: item.offsetLeft + item.offsetWidth / 2 - strip.clientWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
-  }, [cur, reduced]);
-
-  // the doorway and the list come up as the section arrives
+  // the doorway comes up as the section arrives
   useLayoutEffect(() => {
     if (reduced || !root.current) return;
     const ctx = gsap.context(() => {
-      gsap.from([door.current, rail.current], {
+      gsap.from(door.current, {
         opacity: 0,
         y: 26,
         duration: 0.9,
@@ -206,6 +203,7 @@ export function EventsSlider() {
 
   const byGuest = (i: number) => {
     stop();
+    setTouched(true);
     show(i);
   };
   const onDown = (e: React.PointerEvent) => {
@@ -277,7 +275,7 @@ export function EventsSlider() {
                     aria-hidden={i !== cur}
                     inert={i !== cur}
                   >
-                    <EventText e={e} i={i} n={n} timeZone={wedding.timeZone} />
+                    <EventText e={e} i={i} n={n} timeZone={wedding.timeZone} venueQuery={venue.mapsQuery} />
                   </div>
                 ))}
               </div>
@@ -285,28 +283,25 @@ export function EventsSlider() {
           </div>
         </div>
 
-        {/* the list of events: a slim rail in the sky to the right (a strip beneath on phones) */}
+        {/* arrows on both sides to change the event; a tapping hand shows the way until the guest uses them */}
         {n > 1 && (
-          <div className="ev-rail-pos">
-          <nav ref={rail} className="ev-rail" aria-label="Choose an event">
-            <ol>
-              {events.map((e, i) => (
-                <li key={e.id}>
-                  <button type="button" aria-current={i === cur ? "true" : undefined} onClick={() => byGuest(i)} className="ev-rail-item">
-                    <span aria-hidden className="ev-rail-mark">
-                      <svg viewBox="-6 -6 12 12">
-                        <path d="M0-5 5 0 0 5-5 0Z" />
-                      </svg>
-                    </span>
-                    <span className="ev-rail-num">{two(i + 1)}</span>
-                    <span aria-hidden className="ev-rail-dash" />
-                    <span className="ev-rail-name">{e.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </nav>
-          </div>
+          <>
+            <button type="button" className="ev-arrow ev-arrow--prev" aria-label="Previous event" onClick={() => byGuest(cur - 1)}>
+              <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 5l-7 7 7 7" />
+              </svg>
+            </button>
+            <button type="button" className="ev-arrow ev-arrow--next" aria-label="Next event" onClick={() => byGuest(cur + 1)}>
+              <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+              {!touched && (
+                <svg viewBox="0 0 40 48" aria-hidden className="ev-tap-hand">
+                  <path d="M15 22V8a3 3 0 0 1 6 0v11l1-1a3 3 0 0 1 5 2v1a3 3 0 0 1 5 1v1a3 3 0 0 1 5 1v8c0 7-5 12-12 12h-2c-4 0-7-2-9-5l-6-9a3 3 0 0 1 4-4l3 3Z" fill="#fbf2dc" stroke="#5e1220" strokeWidth="1.6" strokeLinejoin="round" />
+                </svg>
+              )}
+            </button>
+          </>
         )}
       </div>
     </section>

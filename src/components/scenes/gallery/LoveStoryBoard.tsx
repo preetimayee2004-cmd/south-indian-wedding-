@@ -172,13 +172,6 @@ function Board({ r, still, onOpen, story }: { r: MutableRefObject<BoardRefs>; st
             );
           })}
         </svg>
-        <svg aria-hidden viewBox="-30 -30 60 60" className="gb-extra gb-kolam">
-          {[[-12, -12], [12, -12], [-12, 12], [12, 12], [0, 0]].map(([x, y], i) => (
-            <circle key={i} cx={x} cy={y} r="1.8" fill="#b8893e" />
-          ))}
-          <path d="M0-24C14-24 24-14 24 0S14 24 0 24-24 14-24 0-14-24 0-24ZM-18 0C-18-10-10-18 0-18M18 0C18 10 10 18 0 18" fill="none" stroke="#b8893e" strokeWidth="1.3" />
-          <path d="M-24 0H24M0-24V24" stroke="#b8893e" strokeWidth="0.8" strokeDasharray="2 3" />
-        </svg>
         <svg aria-hidden viewBox="0 0 32 28" className="gb-extra gb-heart">
           <path d="M16 26C6 18 1 13 1 8a7 7 0 0 1 15-3 7 7 0 0 1 15 3c0 5-5 10-15 18Z" fill="#c8323e" />
           <path d="M8 6c-2 1-3 3-3 5" stroke="#fff" strokeOpacity="0.6" strokeWidth="1.4" fill="none" strokeLinecap="round" />
