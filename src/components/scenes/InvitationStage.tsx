@@ -7,7 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, Kolam, LotusMedallion, Pin } from "./invite/Ornaments";
+import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
 function dateParts(iso: string, timeZone: string) {
@@ -120,8 +120,6 @@ export function ArchScene() {
       // the flourishes under the names draw themselves (left → right) when the names appear
       const names = col.querySelector(".ic-names");
       gsap.fromTo(col.querySelectorAll(".ic-flourish [data-draw]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, stagger: 0.35, delay: 0.3, ease: "power2.inOut", scrollTrigger: { trigger: names, start: "top 90%", once: true } });
-      // the kolam behind the names draws itself with the scroll
-      gsap.fromTo(col.querySelectorAll("[data-kolam]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", stagger: 0.02, scrollTrigger: { trigger: names, start: "top 95%", end: "center 40%", scrub: SCRUB } });
       // jasmine buds pop in one by one from the centre outward
       col.querySelectorAll<SVGElement>("[data-jasmine]").forEach((svg) => {
         const buds = [...svg.querySelectorAll<SVGGElement>("[data-bud] > .ic-bud")].sort((a, b) => Number(a.parentElement!.dataset.d) - Number(b.parentElement!.dataset.d));
@@ -197,8 +195,7 @@ export function ArchScene() {
             <p data-line className="ic-guest mt-2.5">{isPersonalized ? guestName : "Family & Friends"}</p>
             <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
             <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
-            <div className="ic-names-wrap ic-clean">
-              <Kolam className="ic-kolam" />
+            <div className="ic-names-wrap">
               <h2 data-line id="invite-heading" className="ic-names">
                 <span className="ic-name-row">
                   <span className="ic-name" data-text={first.name} onClick={(e) => petalBurst(e)}>
@@ -219,7 +216,7 @@ export function ArchScene() {
 
             <JasmineDivider className="ic-divider" />
             <GoldLabel>Counting the days</GoldLabel>
-            <div className="ic-clean mt-3.5 w-full">
+            <div className="mt-3.5 w-full">
               <Countdown iso={wedding.dateISO} />
             </div>
             <p data-line className="ic-until">

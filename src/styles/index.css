@@ -861,36 +861,12 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
 @media (prefers-reduced-motion: reduce) {
   .ic-drift { display: none; }
 }
-/* a clean cream glow (no pattern) behind the names and the countdown */
-.ic-clean {
-  position: relative;
-}
-.ic-clean::before {
-  content: "";
-  position: absolute;
-  inset: -14% -18%;
-  z-index: -1;
-  background: radial-gradient(ellipse closest-side, #f9f0dc 0 72%, rgb(247 236 211 / 0) 100%);
-  pointer-events: none;
-}
 .ic-names-wrap {
   display: flex;
   justify-content: center;
   width: 100%;
   isolation: isolate;
 }
-.ic-kolam {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  left: 50%;
-  width: min(330px, 118%);
-  height: auto;
-  opacity: 0.18;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-.ic-kolam [data-kolam],
 .ic-flourish [data-draw],
 .ic-gopuram [data-draw] {
   stroke-dasharray: 1;

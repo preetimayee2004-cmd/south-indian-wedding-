@@ -97,49 +97,6 @@ export function Flourish() {
 }
 
 /**
- * A pulli kolam: a 4×4 grid of dots, each ringed by a loop, woven together by
- * looping lines (drawn with the scroll via stroke-dashoffset).
- */
-export function Kolam({ className = "" }: { className?: string }) {
-  const n = 4, g = 40, o = 60; // dots, spacing, offset
-  const dots: [number, number][] = [];
-  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) dots.push([o + i * g, o + j * g]);
-  const last = o + (n - 1) * g;
-  // a weave of S-curves between the rows and columns
-  const weave: string[] = [];
-  for (let k = 0; k < n - 1; k++) {
-    const m = o + k * g + g / 2;
-    let h = `M${o - g / 2} ${m}`, v = `M${m} ${o - g / 2}`;
-    for (let i = 0; i < n; i++) {
-      const c = o + i * g, s1 = i % 2 ? 12 : -12;
-      h += ` Q${c} ${m + s1} ${c + g / 2} ${m}`;
-      v += ` Q${m + s1} ${c} ${m} ${c + g / 2}`;
-    }
-    weave.push(h, v);
-  }
-  const R = (last - o) / 2 + g * 0.95, C = (o + last) / 2;
-  const outer = `M${C} ${C - R}Q${C + R} ${C - R} ${C + R} ${C}Q${C + R} ${C + R} ${C} ${C + R}Q${C - R} ${C + R} ${C - R} ${C}Q${C - R} ${C - R} ${C} ${C - R}Z`;
-  return (
-    <svg aria-hidden viewBox="0 0 300 300" className={className}>
-      <g fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round">
-        {dots.map(([x, y], i) => (
-          <path key={i} data-kolam pathLength={1} d={`M${x} ${y - 11}a11 11 0 1 1 -0.1 0`} />
-        ))}
-        {weave.map((d, i) => (
-          <path key={`w${i}`} data-kolam pathLength={1} d={d} />
-        ))}
-        <path data-kolam pathLength={1} d={outer} />
-      </g>
-      <g fill={GOLD}>
-        {dots.map(([x, y], i) => (
-          <circle key={i} cx={x} cy={y} r="2.4" />
-        ))}
-      </g>
-    </svg>
-  );
-}
-
-/**
  * A string of jasmine buds (white, green tips) with one red rose in the centre.
  * Each bud is a [data-bud] group, with --d = its distance from the centre (they pop in centre-out).
  */
