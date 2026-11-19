@@ -31,9 +31,15 @@ export interface StoryMilestone {
   photo?: string;
 }
 
+export type EventTheme = "nalangu" | "mehendi" | "sangeet" | "muhurtham" | "reception";
+
 export interface WeddingEvent {
   id: string;
   name: string;
+  /** A short line under the name, e.g. "The Turmeric Celebration". */
+  subtitle?: string;
+  /** Which colours and ornaments this event gets in the events section (default: muhurtham). */
+  theme?: EventTheme;
   description?: string;
   startISO: string; // with timezone offset
   endISO?: string;

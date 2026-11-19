@@ -1,25 +1,92 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
-import { Ornament } from "@/components/ui/Ornament";
-import { EventPanel } from "@/components/sections/events/EventPanel";
+import { mapsUrl } from "@/lib/format";
+import type { EventTheme, WeddingEvent } from "@/config/types";
+import { DoorBase, DoorTop, Pillar, ThemeDecor } from "./events/TempleDoorway";
 
-const GAP = 5000; // each event stays 5 s while the section is on screen
+const GAP = 6000; // each event stays 6 s while the section is on screen, until the guest takes over
 
-const Chevron = ({ flip }: { flip?: boolean }) => (
-  <svg viewBox="0 0 24 24" aria-hidden className={`h-5 w-5 ${flip ? "rotate-180" : ""}`}>
-    <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+/** Each event's accent colour (title, marker) and its quieter second colour. */
+const THEMES: Record<EventTheme, { accent: string; soft: string }> = {
+  nalangu: { accent: "#b57d0c", soft: "#4e7a3c" },
+  mehendi: { accent: "#2f6b3a", soft: "#b58c3c" },
+  sangeet: { accent: "#7a1f2b", soft: "#b8893e" },
+  muhurtham: { accent: "#9e1f28", soft: "#b8893e" },
+  reception: { accent: "#6d1a2c", soft: "#b89a5e" },
+};
+
+const two = (n: number) => String(n).padStart(2, "0");
+
+function when(e: WeddingEvent, timeZone: string) {
+  const d = new Date(e.startISO);
+  const day = new Intl.DateTimeFormat("en-GB", { timeZone, weekday: "long", day: "numeric", month: "long" }).formatToParts(d);
+  const part = (t: string) => day.find((p) => p.type === t)?.value ?? "";
+  const t = (iso: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
+  return {
+    date: `${part("weekday")}, ${part("day")} ${part("month")}`,
+    time: e.endISO ? `${t(e.startISO)} – ${t(e.endISO)}` : `${t(e.startISO)} onwards`,
+  };
+}
+
+/** One event's words inside the doorway. */
+function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: number; timeZone: string }) {
+  const w = when(e, timeZone);
+  return (
+    <div className="ev-text">
+      <p className="ev-count">
+        {two(i + 1)} / {two(n)}
+      </p>
+      <h3 className="ev-name">{e.name}</h3>
+      {e.subtitle && <p className="ev-sub">{e.subtitle}</p>}
+      <p className="ev-date">{w.date}</p>
+      <p className="ev-time">{w.time}</p>
+      <span aria-hidden className="ev-rule">
+        <i />
+        <svg viewBox="-10 -8 20 12">
+          <path d="M0-7C2.6-4.4 2.6-1.6 0 1-2.6-1.6-2.6-4.4 0-7ZM-1 1C-5 .6-7-1.6-7.6-4.6-4.6-4-2-2.4-1 1ZM1 1C5 .6 7-1.6 7.6-4.6 4.6-4 2-2.4 1 1Z" />
+        </svg>
+        <i />
+      </span>
+      {e.venue && (
+        <div className="ev-plaque">
+          <span className="ev-label">Venue</span>
+          <span className="ev-venue">{e.venue}</span>
+          {e.mapsQuery && (
+            <a href={mapsUrl(e.mapsQuery)} target="_blank" rel="noopener noreferrer" className="ev-map">
+              Directions
+            </a>
+          )}
+        </div>
+      )}
+      {e.dressCode && (
+        <div className="ev-dress">
+          <span className="ev-label">Dress code</span>
+          <span className="ev-dress-line">
+            {e.dressColors?.slice(0, 3).map((c) => (
+              <i key={c} style={{ background: c }} />
+            ))}
+            {e.dressCode}
+          </span>
+        </div>
+      )}
+      {e.description && <p className="ev-desc">{e.description}</p>}
+    </div>
+  );
+}
 
 /**
- * The celebrations, on parchment before the couple (as in the reference
- * invitation): one framed card at a time that slides sideways to the next.
- * The events move on by themselves every 5 s while the section is on screen,
- * until the guest touches anything in it (arrow, dot, swipe, key) — from then
- * on only the guest changes the event. Arrows on the card's sides, dots and a
- * "1 / 3" counter below; swipe or drag works too.
+ * The celebrations, on the blue sky: one temple doorway in antique gold —
+ * a small gopuram crest, a cusped arch, carved pillars and a stepped pedestal —
+ * holding one event at a time. The doorway never changes; each event's words
+ * glide in sideways like turning the page of an invitation, while its own
+ * ornaments (turmeric bowls and banana leaves for Nalangu, henna vines for
+ * Mehendi, a festoon for Sangeet, brass lamps and jasmine for the Muhurtham,
+ * flowers for the Reception) fade in around the doorway. The events are listed
+ * on a slim rail in the sky to the right (beneath the doorway on phones); swipe,
+ * the arrow keys or the list change the event, and they move on by themselves
+ * every few seconds until the guest takes over.
  */
 export function EventsSlider() {
   const { events, wedding } = useWedding();
@@ -27,8 +94,8 @@ export function EventsSlider() {
   const n = events.length;
   const [cur, setCur] = useState(0);
   const root = useRef<HTMLElement>(null);
-  const head = useRef<HTMLDivElement>(null);
-  const card = useRef<HTMLDivElement>(null);
+  const door = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLDivElement>(null);
   const stopped = useRef(false);
   const visible = useRef(false);
   const timer = useRef(0);
@@ -40,7 +107,7 @@ export function EventsSlider() {
     window.clearTimeout(timer.current);
   }, []);
 
-  // auto-advance while on screen, until the guest takes over
+  // move on by themselves while on screen, until the guest takes over
   const arm = useCallback(() => {
     window.clearTimeout(timer.current);
     if (stopped.current || !visible.current || reduced || n < 2) return;
@@ -70,15 +137,23 @@ export function EventsSlider() {
     };
   }, [arm]);
 
-  // the heading and card fade up as the section arrives
+  // phones: keep the current event's name in view in the strip beneath the doorway
+  useEffect(() => {
+    const strip = rail.current;
+    const item = strip?.querySelectorAll<HTMLElement>('.ev-rail-item')[cur];
+    if (!strip || !item || strip.scrollWidth <= strip.clientWidth) return;
+    strip.scrollTo({ left: item.offsetLeft + item.offsetWidth / 2 - strip.clientWidth / 2, behavior: reduced ? 'auto' : 'smooth' });
+  }, [cur, reduced]);
+
+  // the doorway and the list come up as the section arrives
   useLayoutEffect(() => {
     if (reduced || !root.current) return;
     const ctx = gsap.context(() => {
-      gsap.from([...head.current!.children, card.current], {
+      gsap.from([door.current, rail.current], {
         opacity: 0,
-        y: 24,
-        duration: 0.8,
-        stagger: 0.1,
+        y: 26,
+        duration: 0.9,
+        stagger: 0.15,
         ease: "power2.out",
         scrollTrigger: { trigger: root.current, start: "top 70%", once: true },
       });
@@ -105,88 +180,91 @@ export function EventsSlider() {
     const dy = e.clientY - d.y;
     if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) byGuest(cur + (dx < 0 ? 1 : -1));
   };
-  const arrowBtn =
-    "absolute top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#d9b25f] bg-[#fbf2dc] text-maroon shadow-[0_6px_16px_rgb(5_15_45/0.35)] transition-transform active:scale-90";
+  const theme = (e: WeddingEvent): EventTheme => e.theme ?? "muhurtham";
+  const t = THEMES[theme(events[cur])];
 
   return (
     <section
       ref={root}
       id="events"
       aria-labelledby="events-heading"
-      className="parchment-ground relative flex min-h-[100svh] flex-col items-center justify-center px-gutter py-14"
+      className="cobalt ev-section relative"
+      style={{ ["--ev-accent" as string]: t.accent, ["--ev-soft" as string]: t.soft } as CSSProperties}
       onPointerDown={stop}
       onKeyDown={stop}
     >
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f7ecd3" }} />
-      {/* as in the reference: no heading on screen, just the framed event (named for screen readers) */}
-      <div ref={head} className="flex justify-center">
-        <h2 id="events-heading" className="sr-only">
-          The wedding celebrations
-        </h2>
-        <Ornament className="text-[#b8893e]" />
-      </div>
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
+      <h2 id="events-heading" className="sr-only">
+        The wedding celebrations
+      </h2>
 
-      <div ref={card} className="relative mt-5 w-full max-w-[27rem]">
-        <div
-          role="region"
-          aria-roledescription="carousel"
-          aria-label="Wedding events"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "ArrowRight") (e.preventDefault(), byGuest(cur + 1));
-            else if (e.key === "ArrowLeft") (e.preventDefault(), byGuest(cur - 1));
-          }}
-          onPointerDown={onDown}
-          onPointerUp={onUp}
-          onPointerCancel={() => (drag.current = null)}
-          className="parchment frieze-border touch-pan-y select-none overflow-hidden rounded-[6px] outline-none"
-        >
-          <div className="flex transition-transform duration-[650ms] ease-silk will-change-transform" style={{ transform: `translateX(${-cur * 100}%)` }}>
-            {events.map((e, i) => (
-              <div
-                key={e.id}
-                className="w-full shrink-0 px-6 pb-7 pt-7"
-                role="group"
-                aria-roledescription="slide"
-                aria-label={`${i + 1} of ${n}: ${e.name}`}
-                aria-hidden={i !== cur}
-                inert={i !== cur}
-              >
-                <EventPanel event={e} index={i} total={n} timeZone={wedding.timeZone} variant="flow" />
+      <div className="ev-stage">
+        {/* the doorway (the same for every event) with each event's own ornaments around it */}
+        <div ref={door} className="ev-door">
+          {events.map((e, i) => (
+            <ThemeDecor key={e.id} theme={theme(e)} active={i === cur} />
+          ))}
+          <DoorTop />
+          <div className="ev-door-body">
+            <Pillar side="l" />
+            <div
+              className="ev-panel"
+              role="region"
+              aria-roledescription="carousel"
+              aria-label="Wedding events"
+              tabIndex={0}
+              onKeyDown={(ev) => {
+                if (ev.key === "ArrowRight" || ev.key === "ArrowDown") (ev.preventDefault(), byGuest(cur + 1));
+                else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") (ev.preventDefault(), byGuest(cur - 1));
+              }}
+              onPointerDown={onDown}
+              onPointerUp={onUp}
+              onPointerCancel={() => (drag.current = null)}
+            >
+              <div className="ev-track" style={{ transform: `translateX(${-cur * 100}%)` }}>
+                {events.map((e, i) => (
+                  <div
+                    key={e.id}
+                    className={`ev-slide ${i === cur ? "is-on" : ""}`}
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label={`${i + 1} of ${n}: ${e.name}`}
+                    aria-hidden={i !== cur}
+                    inert={i !== cur}
+                    style={{ ["--ev-accent" as string]: THEMES[theme(e)].accent } as CSSProperties}
+                  >
+                    <EventText e={e} i={i} n={n} timeZone={wedding.timeZone} />
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <Pillar side="r" />
           </div>
+          <DoorBase />
         </div>
+
+        {/* the list of events: a slim rail in the sky to the right (a strip beneath on phones) */}
         {n > 1 && (
-          <>
-            <button type="button" aria-label="Previous event" onClick={() => byGuest(cur - 1)} className={`${arrowBtn} -left-3`}>
-              <Chevron flip />
-            </button>
-            <button type="button" aria-label="Next event" onClick={() => byGuest(cur + 1)} className={`${arrowBtn} -right-3`}>
-              <Chevron />
-            </button>
-          </>
+          <nav ref={rail} className="ev-rail" aria-label="Choose an event">
+            <ol>
+              {events.map((e, i) => (
+                <li key={e.id}>
+                  <button type="button" aria-current={i === cur ? "true" : undefined} onClick={() => byGuest(i)} className="ev-rail-item">
+                    <span aria-hidden className="ev-rail-mark">
+                      <svg viewBox="-6 -6 12 12">
+                        <path d="M0-5 5 0 0 5-5 0Z" />
+                      </svg>
+                    </span>
+                    <span className="ev-rail-num">{two(i + 1)}</span>
+                    <span aria-hidden className="ev-rail-dash" />
+                    <span className="ev-rail-name">{e.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </nav>
         )}
       </div>
-
-      {n > 1 && (
-        <div className="mt-6 flex items-center gap-3" role="tablist" aria-label="Choose an event">
-          {events.map((e, i) => (
-            <button
-              key={e.id}
-              type="button"
-              role="tab"
-              aria-selected={i === cur}
-              aria-label={`Show ${e.name}`}
-              onClick={() => byGuest(i)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${i === cur ? "w-6 bg-[#b8893e]" : "w-2.5 bg-[#7a1f2b]/30"}`}
-            />
-          ))}
-          <span aria-live="polite" className="ml-1 text-[0.72rem] tabular-nums tracking-[0.2em] text-[#7a1f2b]">
-            {cur + 1} / {n}
-          </span>
-        </div>
-      )}
     </section>
   );
 }
