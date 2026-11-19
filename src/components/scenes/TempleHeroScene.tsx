@@ -5,7 +5,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { useRevealed } from "@/context/IntroContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Cloud, Leaf, rand } from "@/components/scene/Decor";
-import { ScenePicture, showsWide } from "@/components/scene/ScenePicture";
+import { TempleStage } from "./hero/TempleStage";
 import { ScrollCue } from "@/components/ui/ScrollCue";
 
 /** The exact sky colour of temple-hero.webp. */
@@ -33,12 +33,11 @@ const CLOUDS: [number, number, number, number, number][] = [
  * invitation arch then rises over it on a scalloped edge (`tail`).
  */
 export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
-  const { couple, wedding, media } = useWedding();
+  const { couple, wedding } = useWedding();
   const { guestName, isPersonalized } = useGuest();
   const revealed = useRevealed();
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
-  const wide = media.invitationWide;
 
   const copy = useRef<HTMLDivElement>(null);
   const lines = useRef<HTMLDivElement>(null);
@@ -63,7 +62,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     const vh = () => window.innerHeight;
     const vw = () => window.innerWidth;
     const H = () => temple.current!.offsetHeight; // full-width height at scale 1
-    const peek = () => (showsWide(wide?.src) ? wide!.peek : PEEK);
+    const peek = () => PEEK;
     const yStart = () => vh() - peek() * H(); // only the finials and roof top show
     const yEnd = () => Math.min(yStart(), vh() - H()); // the stone base and tree at the bottom edge
     const travel = () => yStart() - yEnd();
@@ -96,15 +95,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   return (
     <Scene id="invitation-hero" labelledBy="couple-names" className="cobalt" build={build} tail={tail}>
       {/* the temple: full screen width, height from the picture; rises 1:1 with the scroll */}
-      <ScenePicture
-        ref={temple}
-        src={media.invitation}
-        ratio="3 / 4"
-        wide={wide?.src}
-        alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
-        className="z-[2]"
-        eager
-      />
+      <TempleStage ref={temple} className="z-[2]" eager />
 
       {/* clouds: above the temple, inside the top 25% of the screen */}
       {CLOUDS.map(([left, top, w, h], i) => (
