@@ -189,20 +189,20 @@ export function ArchScene() {
               </div>
             )}
             <GoldLabel className="mt-5">Dear</GoldLabel>
-            <p data-line className="ic-guest mt-2.5">{guestName}</p>
+            <p data-line className="ic-guest mt-2.5" data-fit=".invite-card">{guestName}</p>
             <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
             <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
             <div className="ic-names-wrap">
               <h2 data-line id="invite-heading" className="ic-names">
                 <span className="ic-name-row">
-                  <span className="ic-name" data-text={first.name} onClick={(e) => petalBurst(e)}>
+                  <span className="ic-name" data-fit=".invite-card" data-text={first.name} onClick={(e) => petalBurst(e)}>
                     {first.name}
                   </span>
                   <Flourish />
                 </span>
                 <LotusMedallion>&amp;</LotusMedallion>
                 <span className="ic-name-row">
-                  <span className="ic-name" data-text={second.name} onClick={(e) => petalBurst(e)}>
+                  <span className="ic-name" data-fit=".invite-card" data-text={second.name} onClick={(e) => petalBurst(e)}>
                     {second.name}
                   </span>
                   <Flourish />

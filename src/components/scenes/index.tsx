@@ -47,12 +47,12 @@ export const SCENES: Record<SectionId, SceneEntry> = {
   events: { Component: EventsSlider, enter: "flow", z: 12 }, // one event at a time, sliding sideways
   couple: { Component: CoupleScene, enter: "flow", z: 14 }, // bride and groom walk in from both sides and meet
   gallery: { Component: LoveStoryScene, enter: "flow", z: 18 }, // our love story: a photo board and a paper plane
-  family: { Component: FamiliesScene, enter: "cover", z: 16 }, // rises over the couple scene; lotus plants grow
-  rsvp: { Component: RsvpScene, enter: "cover", z: 40 },
+  family: { Component: FamiliesScene, enter: "flow", z: 16 }, // follows the couple scene (no overlap); lotus plants grow
+  rsvp: { Component: RsvpScene, enter: "flow", z: 40 },
   wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },
   travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue
   contact: { Component: sheet(Contact), enter: "flow", z: 55 },
-  thankYou: { Component: ThankYouScene, enter: "cover", z: 80 }, // thank you, save the date, replay
-  loveNote: { Component: sheet(LoveNote), enter: "cover", z: 90 },
+  thankYou: { Component: ThankYouScene, enter: "flow", z: 80 }, // thank you, save the date, replay
+  loveNote: { Component: sheet(LoveNote), enter: "flow", z: 90 },
   closing: { Component: ClosingScene, enter: "flow", z: 92 },
 };

@@ -518,12 +518,7 @@
 svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 
 
-/* Sections after the invitation end on their scalloped gold hems (each section's top edge).
-   The section after the couple scene rises over it with a soft leading edge instead. */
-html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 4rem);
-  mask-image: linear-gradient(to bottom, transparent, #000 4rem);
-}
+/* Sections after the invitation end on their scalloped gold hems (each section's top edge). */
 
 /* ── The invitation card in the arch ──────────────────────────────── */
 .invite-card {
@@ -1324,7 +1319,8 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
 }
 .gb-surface {
   position: relative;
-  height: 668cqw;
+  /* phones: a row per photo, plus room for the tags at the foot */
+  height: calc(16cqw + var(--count, 6) * 100cqw + 52cqw);
   border-radius: 4px;
   /* deep peacock teal velvet with gold paisley buttas, recessed into the frame */
   background-color: #0f5c5a;
@@ -1467,7 +1463,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
 .gb-jasmine { left: 74%; top: 222cqw; width: 23%; rotate: -12deg; }
 .gb-kolam { left: 5%; top: 138cqw; width: 17%; }
 .gb-heart { left: 80%; top: 44cqw; width: 11%; rotate: 10deg; }
-.gb-datetag { left: 56%; top: 642cqw; }
+.gb-datetag { left: 56%; top: calc(16cqw + var(--count, 6) * 100cqw + 26cqw); }
 @media (min-width: 768px) {
   .gb-jasmine { left: 2%; top: 86%; width: 15%; rotate: -4deg; }
   .gb-kolam { left: 40%; top: 83%; width: 6%; }
@@ -1505,7 +1501,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   position: absolute;
   z-index: 2;
   left: 6%;
-  top: 624cqw;
+  top: calc(16cqw + var(--count, 6) * 100cqw + 8cqw);
   font-family: "Great Vibes", cursive;
   font-size: 1.5rem;
   font-weight: 400;
@@ -1627,79 +1623,67 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   50% { transform: translateY(5px); opacity: 1; }
 }
 
-/* ── The events: a temple doorway on the sky, one event at a time ───────── */
+/* ── The events: the painted temple doorway on the sky, one event at a time ── */
 .ev-section {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100svh;
-  padding: 72px var(--space-gutter) 56px;
+  padding: 64px 0 48px;
   overflow-x: clip;
 }
 .ev-stage {
-  /* the doorway's width: substantial, never oversized, and always fitting the screen height */
-  --door-w: min(86vw, 30rem, calc((100svh - 150px) * 0.6));
+  /* the doorway's width (the art is 860×742): substantial, never oversized, fitting the
+     screen height; on phones a little wider than the screen so the words stay readable
+     (the outer leaves and lamps run just past the edges) */
+  --door-w: min(112vw, 40rem, calc((100svh - 150px) * 1.159));
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
 }
+@media (min-width: 1180px) {
+  .ev-stage {
+    --door-w: min(52rem, 58vw, calc((100svh - 110px) * 1.159));
+  }
+}
 .ev-door {
   container-type: inline-size;
   position: relative;
   width: var(--door-w);
-  filter: drop-shadow(0 16px 26px rgb(0 30 80 / 0.35));
+  max-width: none;
 }
-.ev-door-top,
-.ev-door-base {
+.ev-door-art {
   position: relative;
-  z-index: 2;
-  display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 860 / 742;
+  filter: drop-shadow(0 18px 28px rgb(0 30 80 / 0.32));
 }
-.ev-door-top {
-  margin-bottom: -1px;
+.ev-door-slice {
+  position: absolute;
+  inset-inline: 0;
+  background-image: var(--door-art);
+  background-size: 100% auto;
+  background-repeat: no-repeat;
 }
-.ev-door-base {
-  margin-top: -1px;
-  overflow: visible;
-}
-.ev-door-body {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 14% 1fr 14%;
-}
-/* the carved pillars: a rounded gold shaft, fine flutes, and a carved band every so often */
-.ev-pillar {
-  margin-inline: 1.6cqw;
-  border-inline: 1px solid #6e4c1a;
-  background:
-    repeating-linear-gradient(180deg, transparent 0 calc(24cqw - 5px), #6e4c1a calc(24cqw - 5px) calc(24cqw - 4px), #e3c172 calc(24cqw - 4px) calc(24cqw - 1px), #6e4c1a calc(24cqw - 1px) 24cqw),
-    repeating-linear-gradient(90deg, rgb(110 76 26 / 0.35) 0 1px, transparent 1px 2.2cqw),
-    linear-gradient(90deg, #8f6726, #e3c172 38%, #c49a4a 62%, #8f6726);
-}
-/* the ivory panel in the opening, softly woven */
+/* the event's words on the ivory panel between the pillars */
 .ev-panel {
-  position: relative;
+  position: absolute;
+  left: 25%;
+  right: 25%;
   overflow: hidden;
   touch-action: pan-y;
   outline: none;
-  background:
-    repeating-linear-gradient(45deg, rgb(184 137 62 / 0.035) 0 1px, transparent 1px 4px),
-    radial-gradient(ellipse 80% 60% at 50% 20%, rgb(255 252 240 / 0.8), transparent 70%),
-    #f8efda;
-  box-shadow: inset 0 0 18px rgb(110 76 26 / 0.18);
 }
 .ev-panel:focus-visible {
   outline: 2px solid #c49a4a;
-  outline-offset: -4px;
+  outline-offset: 2px;
 }
 /* turning the page: the words glide sideways and the next event fades in */
 .ev-track {
   display: flex;
+  align-items: flex-start;
   transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .ev-slide {
@@ -1714,52 +1698,60 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* room at the foot for each event's small ornament */
-  padding: 1cqw 5cqw 15cqw;
+  padding: 0 1cqw 1cqw;
   text-align: center;
-  color: #3a1f16;
+  color: #4a2a1a;
   font-family: "EB Garamond", Georgia, serif;
 }
 .ev-count {
-  font-size: clamp(10px, 2.6cqw, 13px);
+  font-size: clamp(10px, 1.6cqw, 14px);
   font-weight: 600;
-  letter-spacing: 0.32em;
-  margin-right: -0.32em;
-  color: #8f6726;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
+  color: #7a5a3a;
 }
 .ev-name {
-  margin-top: 0.5cqw;
+  margin-top: 0.4cqw;
+  padding: 0 0.15em;
   font-family: "Great Vibes", cursive;
   font-weight: 400;
-  font-size: clamp(36px, 12.5cqw, 62px);
-  line-height: 1.1;
-  color: var(--ev-accent);
+  font-size: clamp(38px, 9cqw, 78px);
+  line-height: 1.02;
+  /* antique gold, as in the painting */
+  color: #b98424;
+  background: linear-gradient(180deg, #d9a93c, #b07a1c 60%, #94640f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .ev-sub {
-  font-size: clamp(14px, 4cqw, 19px);
+  margin-top: -0.4cqw;
+  font-size: clamp(13px, 1.9cqw, 17px);
   font-style: italic;
-  color: #5c3a2b;
+  color: #6b4a33;
 }
 .ev-date {
-  margin-top: 3.4cqw;
-  font-size: clamp(11px, 3cqw, 14px);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  margin-right: -0.22em;
+  margin-top: 1.2cqw;
+  font-size: clamp(11px, 2cqw, 17px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  margin-right: -0.2em;
   text-transform: uppercase;
+  color: #4a2a1a;
 }
 .ev-time {
-  margin-top: 0.6cqw;
-  font-size: clamp(18px, 5.4cqw, 27px);
+  margin-top: 0.4cqw;
+  font-size: clamp(18px, 3.7cqw, 32px);
   font-weight: 500;
   line-height: 1.2;
+  color: #5a1f14;
 }
 .ev-rule {
   display: flex;
   align-items: center;
   gap: 8px;
-  width: 62%;
-  margin: 3cqw 0 3.4cqw;
+  width: 64%;
+  margin: 1.2cqw 0 1.4cqw;
 }
 .ev-rule i {
   flex: 1;
@@ -1770,46 +1762,48 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   transform: scaleX(-1);
 }
 .ev-rule svg {
-  width: 18px;
-  height: 12px;
-  fill: #c49a4a;
+  width: clamp(18px, 3cqw, 28px);
+  height: auto;
+  fill: #c9952f;
 }
-/* the venue in a small ornamental plaque (notched ends, a fine gold line) */
+/* the venue in a small ornamental plaque (notched ends, a fine gold line), as painted */
 .ev-plaque {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.8cqw 8cqw 2.2cqw;
-  background: rgb(196 154 74 / 0.1);
-  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%);
+  min-width: 62%;
+  padding: 0.9cqw 5cqw 1.1cqw;
+  background: linear-gradient(180deg, #fbf1d8, #f2e0b6);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
 }
 .ev-plaque::before {
   content: "";
   position: absolute;
   inset: 0;
   background: #c49a4a;
-  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0 50%, 1.2px 50%, 10.6px calc(100% - 1px), calc(100% - 10.6px) calc(100% - 1px), calc(100% - 1.2px) 50%, calc(100% - 10.6px) 1px, 10.6px 1px, 1.2px 50%, 0 50%);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%, 1.4px 50%, 14.6px calc(100% - 1.2px), calc(100% - 14.6px) calc(100% - 1.2px), calc(100% - 1.4px) 50%, calc(100% - 14.6px) 1.2px, 14.6px 1.2px, 1.4px 50%, 0 50%);
 }
 .ev-label {
-  font-size: clamp(9.5px, 2.5cqw, 12px);
-  font-weight: 600;
+  font-size: clamp(9.5px, 1.55cqw, 13px);
+  font-weight: 500;
   letter-spacing: 0.3em;
   margin-right: -0.3em;
   text-transform: uppercase;
-  color: #8f6726;
+  color: #7a5a3a;
 }
 .ev-venue {
-  margin-top: 0.4cqw;
-  font-size: clamp(15px, 4.4cqw, 20px);
+  margin-top: 0.3cqw;
+  font-size: clamp(15px, 2.55cqw, 22px);
   font-weight: 500;
+  color: #4a2a1a;
 }
 .ev-map {
-  margin-top: 0.6cqw;
+  margin-top: 0.4cqw;
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--ev-accent);
+  color: #7a1f2b;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -1817,65 +1811,35 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 3.4cqw;
+  margin-top: 1.6cqw;
 }
 .ev-dress-line {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 0.6cqw;
-  font-size: clamp(14px, 4cqw, 18px);
+  gap: 0.6em;
+  margin-top: 0.5cqw;
+  font-size: clamp(14px, 2.3cqw, 20px);
+  color: #4a2a1a;
 }
 .ev-dress-line i {
-  width: 11px;
-  height: 11px;
+  width: 0.85em;
+  height: 0.85em;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgb(110 76 26 / 0.45);
+  box-shadow: inset 0 -1px 2px rgb(0 0 0 / 0.2);
 }
 .ev-desc {
-  max-width: 30ch;
-  margin-top: 4cqw;
-  font-size: clamp(14px, 4cqw, 18px);
+  max-width: 32ch;
+  margin-top: 1.8cqw;
+  font-size: clamp(14px, 2.2cqw, 19px);
   font-style: italic;
-  line-height: 1.5;
-  color: #4a2e22;
+  line-height: 1.35;
+  color: #4a2a1a;
 }
-
-/* each event's ornaments, fading between events (the doorway stays) */
-.ev-decor {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-}
-.ev-decor.is-on {
-  opacity: 1;
-}
-.ev-d {
-  position: absolute;
-  height: auto;
-  overflow: visible;
-}
-.ev-d-crown { top: 19.5cqw; left: 50%; width: 11cqw; translate: -50% 0; }
-.ev-d-crown--wide { width: 24cqw; top: 21cqw; }
-.ev-d-kolam { bottom: 18cqw; left: 50%; width: 11cqw; translate: -50% 0; opacity: 0.85; }
-.ev-d-kolam--wide { width: 26cqw; }
-.ev-d-foot--l { left: -3cqw; bottom: 2.4cqw; width: 14cqw; }
-.ev-d-foot--r { right: -3cqw; bottom: 2.4cqw; width: 14cqw; }
-.ev-d-foot--big { width: 20cqw; }
-.ev-d-leaf--l { left: -8cqw; bottom: 9cqw; width: 14cqw; rotate: -8deg; z-index: -1; }
-.ev-d-leaf--r { right: -8cqw; bottom: 9cqw; width: 14cqw; scale: -1 1; rotate: 8deg; z-index: -1; }
-.ev-d-vine--l { left: 0.6cqw; top: 31cqw; width: 5cqw; }
-.ev-d-vine--r { right: 0.6cqw; top: 31cqw; width: 5cqw; scale: -1 1; }
-.ev-d-festoon { top: 17.4cqw; left: 14%; width: 72%; }
-.ev-d-jasmine--l { left: 12cqw; top: 27cqw; width: 3.6cqw; }
-.ev-d-jasmine--r { right: 12cqw; top: 27cqw; width: 3.6cqw; }
-.ev-d-lamp--l { left: -9cqw; bottom: 3cqw; width: 9cqw; }
-.ev-d-lamp--r { right: -9cqw; bottom: 3cqw; width: 9cqw; }
 
 /* the list of events: phones — a slim strip beneath the doorway */
+.ev-rail-pos {
+  width: 100%;
+}
 .ev-rail {
   width: 100%;
   margin-top: 22px;
@@ -1936,15 +1900,19 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   transform: scale(1);
 }
 /* desktop — a slim vertical rail in the open sky to the right of the doorway */
-@media (min-width: 900px) {
-  .ev-rail {
+@media (min-width: 1180px) {
+  /* placed by a wrapper, so the entrance animation on the list never moves it */
+  .ev-rail-pos {
     position: absolute;
     top: 50%;
-    left: calc(50% + var(--door-w) / 2 + clamp(48px, 6vw, 110px));
+    left: calc(50% + var(--door-w) / 2 + clamp(28px, 3vw, 64px));
+    width: auto;
+    transform: translateY(-50%);
+  }
+  .ev-rail {
     width: auto;
     margin: 0;
     overflow: visible;
-    translate: 0 -50%;
   }
   .ev-rail ol {
     flex-direction: column;

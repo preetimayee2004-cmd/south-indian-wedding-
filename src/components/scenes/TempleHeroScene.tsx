@@ -115,7 +115,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
       <div ref={copy} data-layer className="hero-copy absolute inset-x-0 z-[1] flex justify-center px-gutter">
         <div ref={lines} className="flex max-w-full flex-col items-center text-center text-white">
           {wedding.invocation && <p className="hero-invocation">{wedding.invocation}</p>}
-          <h1 id="couple-names" className="hero-names">
+          <h1 id="couple-names" className="hero-names" data-fit=".hero-copy">
             <span className="block">{first.name}</span>
             <span className="hero-weds">
               <span aria-hidden className="hero-weds-line" />
@@ -125,7 +125,7 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
             <span className="block">{second.name}</span>
           </h1>
           <p className="hero-married">are getting married</p>
-          <p className="hero-dear">
+          <p className="hero-dear" data-fit=".hero-copy">
             <span className="whitespace-nowrap">Dear {guestName},</span> <span className="whitespace-nowrap">you are invited</span>
           </p>
           {/* plain bold "scroll down" under the text (no button), fading away with it */}

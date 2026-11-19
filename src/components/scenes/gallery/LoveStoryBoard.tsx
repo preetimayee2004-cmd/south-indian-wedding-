@@ -4,18 +4,13 @@ import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
 import { gsap, MotionPathPlugin, ScrollTrigger } from "@/lib/gsap";
 
-/* ── Edit here: the love story, in order ───────────────────────────── */
-const HEADING = "Our Love Story";
-const PHOTOS = [
-  { src: "/media/gallery/photo-1.webp", caption: "Where it all began" },
-  { src: "/media/gallery/photo-2.webp", caption: "Our first adventure" },
-  { src: "/media/gallery/photo-3.webp", caption: "She said yes" },
-  { src: "/media/gallery/photo-4.webp", caption: "Two families, one promise" },
-  { src: "/media/gallery/photo-5.webp", caption: "Counting down" },
-  { src: "/media/gallery/photo-6.webp", caption: "And the story continues" },
-];
-const ENDING = "to be continued...";
-/* ───────────────────────────────────────────────────────────────────── */
+/** The love story comes from the config (wedding.config.ts → gallery): up to 6 photos. */
+type Photo = { src: string; caption: string; alt: string };
+function useStory() {
+  const { gallery } = useWedding();
+  const photos: Photo[] = (gallery?.photos ?? []).slice(0, 6).map((p) => ({ src: p.src, caption: p.caption ?? "", alt: p.alt || p.caption || "A photo from our story" }));
+  return { heading: gallery?.heading ?? "Our Love Story", ending: gallery?.ending ?? "to be continued...", photos };
+}
 
 /** Where each polaroid sits: desktop [left %, top %] of the board (a loose zigzag, top left → bottom right);
  *  phones alternate left / right down the board. Each has its own small tilt, holder and maybe a marigold. */
@@ -44,14 +39,14 @@ interface BoardRefs {
   planeBody: HTMLDivElement | null;
 }
 
-const emptyRefs = (): BoardRefs => ({
+const emptyRefs = (n: number): BoardRefs => ({
   board: null,
   surface: null,
   plaque: null,
   photos: [],
   desat: [],
-  letters: PHOTOS.map(() => []),
-  bursts: PHOTOS.map(() => []),
+  letters: Array.from({ length: n }, () => []),
+  bursts: Array.from({ length: n }, () => []),
   tag: null,
   svg: null,
   trail: null,
@@ -147,7 +142,8 @@ function Plane() {
   );
 }
 
-function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: boolean; onOpen: (i: number) => void }) {
+function Board({ r, still, onOpen, story }: { r: MutableRefObject<BoardRefs>; still: boolean; onOpen: (i: number) => void; story: ReturnType<typeof useStory> }) {
+  const PHOTOS = story.photos;
   const { wedding } = useWedding();
   const d = new Date(wedding.dateISO);
   const f = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, ...o }).format(d);
@@ -156,9 +152,9 @@ function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: bo
 
   return (
     <div ref={(el) => void (r.current.board = el)} className="gb-board">
-      <div ref={(el) => void (r.current.surface = el)} className="gb-surface">
+      <div ref={(el) => void (r.current.surface = el)} className="gb-surface" style={{ ["--count" as string]: PHOTOS.length } as CSSProperties}>
         <div ref={(el) => void (r.current.plaque = el)} className="gb-plaque">
-          <h2 id="gallery-heading">{HEADING}</h2>
+          <h2 id="gallery-heading">{story.heading}</h2>
         </div>
 
         {/* little things stuck between the photos */}
@@ -205,7 +201,7 @@ function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: bo
             >
               <span className="gb-polaroid">
                 <span className="gb-pic">
-                  <img src={p.src} alt={p.caption} loading="lazy" decoding="async" className="block h-full w-full object-cover" draggable={false} />
+                  <img src={p.src} alt={p.alt} loading="lazy" decoding="async" className="block h-full w-full object-cover" draggable={false} />
                   {!still && <span ref={(el) => void (r.current.desat[i] = el)} aria-hidden className="gb-desat" />}
                 </span>
                 <span className="gb-caption" aria-hidden>
@@ -233,7 +229,7 @@ function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: bo
         })}
 
         <div ref={(el) => void (r.current.tag = el)} className="gb-endtag">
-          <span>{ENDING}</span>
+          <span>{story.ending}</span>
         </div>
 
         {/* the flight path: a dotted gold trail, revealed behind the plane */}
@@ -299,7 +295,9 @@ const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
  * board is taller than the screen and the view follows the plane.
  */
 export function LoveStoryScene() {
-  const r = useRef<BoardRefs>(emptyRefs());
+  const story = useStory();
+  const PHOTOS = story.photos;
+  const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
   const [open, setOpen] = useState<number | null>(null);
   /** the flight: where the scroll has the plane (p), which way the scroll goes, the path */
   const fly = useRef<{ p: number; dir: 1 | -1; raw: Raw | null }>({ p: 0, dir: 1, raw: null });
@@ -398,6 +396,7 @@ export function LoveStoryScene() {
     tl.to({}, { duration: 0.4 });
   };
 
+  if (!PHOTOS.length) return null;
   return (
     <Scene
       id="gallery"
@@ -408,18 +407,21 @@ export function LoveStoryScene() {
       edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#5a0f1c" }} />}
     >
       <div className="gb-viewport">
-        <Board r={r} still={false} onOpen={setOpen} />
+        <Board r={r} still={false} onOpen={setOpen} story={story} />
       </div>
-      {open !== null && <Lightbox images={PHOTOS.map((p) => ({ src: p.src, alt: p.caption, caption: p.caption }))} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      {open !== null && <Lightbox images={PHOTOS.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </Scene>
   );
 }
 
 /** Reduced motion: no pinning, every photo in full colour, the plane resting on the last photo. */
 export function LoveStoryStill() {
-  const r = useRef<BoardRefs>(emptyRefs());
+  const story = useStory();
+  const PHOTOS = story.photos;
+  const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
   const [open, setOpen] = useState<number | null>(null);
   useLayoutEffect(() => {
+    if (!r.current.surface) return; // no photos listed
     const place = () => {
       const f = setupFlight(r.current);
       restPlane(r.current, f.raw, f.at[PHOTOS.length - 1]);
@@ -429,10 +431,11 @@ export function LoveStoryStill() {
     ro.observe(r.current.surface!);
     return () => ro.disconnect();
   }, []);
+  if (!PHOTOS.length) return null;
   return (
     <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
-      <Board r={r} still onOpen={setOpen} />
-      {open !== null && <Lightbox images={PHOTOS.map((p) => ({ src: p.src, alt: p.caption, caption: p.caption }))} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
+      <Board r={r} still onOpen={setOpen} story={story} />
+      {open !== null && <Lightbox images={PHOTOS.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </section>
   );
 }

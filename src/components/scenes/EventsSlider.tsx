@@ -4,7 +4,6 @@ import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { mapsUrl } from "@/lib/format";
 import type { EventTheme, WeddingEvent } from "@/config/types";
-import { DoorBase, DoorTop, Pillar, ThemeDecor } from "./events/TempleDoorway";
 
 const GAP = 6000; // each event stays 6 s while the section is on screen, until the guest takes over
 
@@ -18,6 +17,22 @@ const THEMES: Record<EventTheme, { accent: string; soft: string }> = {
 };
 
 const two = (n: number) => String(n).padStart(2, "0");
+
+/*
+ * The painted temple doorway (events-door, 860×742: gopuram crest, carved arch with
+ * jasmine garlands and bells, a brass lamp, carved pillars, banana leaves, brass lamps
+ * and a stepped pedestal with a lotus), its sky cut away and its panel left plain.
+ * Rows of the art: the event's words sit on the ivory panel from PANEL_TOP down to
+ * PANEL_BOTTOM; when they need more room, only the plain middle of the pillars
+ * (rows SLICE_TOP–SLICE_END) is drawn taller, so the crest, arch and pedestal keep their shape.
+ */
+const DOOR = "/media/events-door.webp";
+const ART_W = 860;
+const ART_H = 742;
+const PANEL_TOP = 250;
+const PANEL_BOTTOM = 700;
+const SLICE_TOP = 340;
+const SLICE_END = 530;
 
 function when(e: WeddingEvent, timeZone: string) {
   const d = new Date(e.startISO);
@@ -38,7 +53,7 @@ function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: numbe
       <p className="ev-count">
         {two(i + 1)} / {two(n)}
       </p>
-      <h3 className="ev-name">{e.name}</h3>
+      <h3 className="ev-name" data-fit=".ev-text">{e.name}</h3>
       {e.subtitle && <p className="ev-sub">{e.subtitle}</p>}
       <p className="ev-date">{w.date}</p>
       <p className="ev-time">{w.time}</p>
@@ -77,13 +92,11 @@ function EventText({ e, i, n, timeZone }: { e: WeddingEvent; i: number; n: numbe
 }
 
 /**
- * The celebrations, on the blue sky: one temple doorway in antique gold —
- * a small gopuram crest, a cusped arch, carved pillars and a stepped pedestal —
- * holding one event at a time. The doorway never changes; each event's words
- * glide in sideways like turning the page of an invitation, while its own
- * ornaments (turmeric bowls and banana leaves for Nalangu, henna vines for
- * Mehendi, a festoon for Sangeet, brass lamps and jasmine for the Muhurtham,
- * flowers for the Reception) fade in around the doorway. The events are listed
+ * The celebrations, on the blue sky: one painted golden temple doorway (crest,
+ * garlands and bells, carved pillars, banana leaves, brass lamps, a pedestal with
+ * a lotus) holding one event at a time on its ivory panel. The doorway never
+ * changes; each event's words glide in sideways like turning the page of an
+ * invitation. The events are listed
  * on a slim rail in the sky to the right (beneath the doorway on phones); swipe,
  * the arrow keys or the list change the event, and they move on by themselves
  * every few seconds until the guest takes over.
@@ -137,6 +150,34 @@ export function EventsSlider() {
     };
   }, [arm]);
 
+  // the doorway: its natural shape, plus taller pillars when the words need room
+  const art = useRef<Record<string, HTMLDivElement | null>>({});
+  const setArt = (k: string) => (el: HTMLDivElement | null) => void (art.current[k] = el);
+  useLayoutEffect(() => {
+    const $ = art.current;
+    if (!$.box || !$.panel) return;
+    const fit = () => {
+      const W = $.box!.offsetWidth;
+      const k = W / ART_W;
+      const Hn = ART_H * k;
+      const room = (PANEL_BOTTOM - PANEL_TOP) * k;
+      const need = Math.max(...[...$.panel!.querySelectorAll<HTMLElement>(".ev-text")].map((t) => t.offsetHeight));
+      const extra = Math.max(0, need - room);
+      const slice = (SLICE_END - SLICE_TOP) * k;
+      const f = (slice + extra) / slice;
+      $.box!.style.height = `${Hn + extra}px`;
+      $.top!.style.height = `${SLICE_TOP * k}px`;
+      Object.assign($.mid!.style, { top: `${SLICE_TOP * k}px`, height: `${slice + extra}px`, backgroundSize: `100% ${Hn * f}px`, backgroundPosition: `center ${-SLICE_TOP * k * f}px` });
+      $.bot!.style.height = `${(ART_H - SLICE_END) * k}px`;
+      Object.assign($.panel!.style, { top: `${PANEL_TOP * k}px`, height: `${room + extra}px` });
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe($.box);
+    $.panel.querySelectorAll(".ev-text").forEach((t) => ro.observe(t));
+    return () => ro.disconnect();
+  }, [n]);
+
   // phones: keep the current event's name in view in the strip beneath the doorway
   useEffect(() => {
     const strip = rail.current;
@@ -189,7 +230,7 @@ export function EventsSlider() {
       id="events"
       aria-labelledby="events-heading"
       className="cobalt ev-section relative"
-      style={{ ["--ev-accent" as string]: t.accent, ["--ev-soft" as string]: t.soft } as CSSProperties}
+      style={{ ["--ev-accent" as string]: t.accent, ["--ev-soft" as string]: t.soft, ["--door-art" as string]: `image-set(url("${DOOR}") 1x, url("${DOOR.replace(/\.webp$/, "@2x.webp")}") 2x)` } as CSSProperties}
       onPointerDown={stop}
       onKeyDown={stop}
     >
@@ -201,13 +242,17 @@ export function EventsSlider() {
       <div className="ev-stage">
         {/* the doorway (the same for every event) with each event's own ornaments around it */}
         <div ref={door} className="ev-door">
-          {events.map((e, i) => (
-            <ThemeDecor key={e.id} theme={theme(e)} active={i === cur} />
-          ))}
-          <DoorTop />
-          <div className="ev-door-body">
-            <Pillar side="l" />
+          <div
+            ref={setArt("box")}
+            className="ev-door-art"
+            role="img"
+            aria-label="A carved golden temple doorway with jasmine garlands and bells, banana leaves and brass lamps"
+          >
+            <div ref={setArt("top")} className="ev-door-slice" style={{ top: 0, backgroundPosition: "center top" }} />
+            <div ref={setArt("mid")} className="ev-door-slice" />
+            <div ref={setArt("bot")} className="ev-door-slice" style={{ bottom: 0, backgroundPosition: "center bottom" }} />
             <div
+              ref={setArt("panel")}
               className="ev-panel"
               role="region"
               aria-roledescription="carousel"
@@ -231,20 +276,18 @@ export function EventsSlider() {
                     aria-label={`${i + 1} of ${n}: ${e.name}`}
                     aria-hidden={i !== cur}
                     inert={i !== cur}
-                    style={{ ["--ev-accent" as string]: THEMES[theme(e)].accent } as CSSProperties}
                   >
                     <EventText e={e} i={i} n={n} timeZone={wedding.timeZone} />
                   </div>
                 ))}
               </div>
             </div>
-            <Pillar side="r" />
           </div>
-          <DoorBase />
         </div>
 
         {/* the list of events: a slim rail in the sky to the right (a strip beneath on phones) */}
         {n > 1 && (
+          <div className="ev-rail-pos">
           <nav ref={rail} className="ev-rail" aria-label="Choose an event">
             <ol>
               {events.map((e, i) => (
@@ -263,6 +306,7 @@ export function EventsSlider() {
               ))}
             </ol>
           </nav>
+          </div>
         )}
       </div>
     </section>

@@ -170,6 +170,8 @@ export interface WeddingConfig {
   };
   events: WeddingEvent[];
   family?: { bride?: FamilySide; groom?: FamilySide };
+  /** Our Love Story: the photo board (up to 6 photos, in order). */
+  gallery?: { heading?: string; ending?: string; photos: GalleryImage[] };
   rsvp: {
     deadlineISO?: string;
     maxAttendees: number;

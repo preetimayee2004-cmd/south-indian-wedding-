@@ -152,6 +152,21 @@ const weddingConfig: WeddingConfig = {
     },
   },
 
+  // Our Love Story: up to 6 photos, in order (square-ish WebP photos look best; any size works).
+  // Put the files in public/media/gallery/ and list them here.
+  gallery: {
+    heading: "Our Love Story",
+    ending: "to be continued...",
+    photos: [
+      { src: "/media/gallery/photo-1.webp", caption: "Where it all began", alt: "Where it all began" },
+      { src: "/media/gallery/photo-2.webp", caption: "Our first adventure", alt: "Our first adventure" },
+      { src: "/media/gallery/photo-3.webp", caption: "She said yes", alt: "She said yes" },
+      { src: "/media/gallery/photo-4.webp", caption: "Two families, one promise", alt: "Two families, one promise" },
+      { src: "/media/gallery/photo-5.webp", caption: "Counting down", alt: "Counting down" },
+      { src: "/media/gallery/photo-6.webp", caption: "And the story continues", alt: "And the story continues" },
+    ],
+  },
+
   rsvp: { deadlineISO: "2027-01-31T23:59:00+05:30", maxAttendees: 6 },
 
   venue: {

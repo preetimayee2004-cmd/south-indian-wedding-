@@ -89,7 +89,7 @@ export function CloudMessage({ first, second, refs, still = false }: { first: st
               <p ref={(el) => void (refs && (refs.current.label = el))} className={`cloud-label ${hide}`}>
                 The Couple
               </p>
-              <h2 id="couple-heading" className="cloud-names">
+              <h2 id="couple-heading" className="cloud-names" data-fit=".cloud-msg">
                 <Letters text={first} refs={refs} still={still} />
                 <span ref={(el) => void (refs && (refs.current.amp = el))} className={`cloud-amp ${hide}`} aria-label="and">
                   <svg aria-hidden viewBox="-20 -20 40 40" className="cloud-amp-lotus">

@@ -186,13 +186,6 @@ export function CoupleScene() {
     const lamps = refs.lamps.current.filter(Boolean);
     const c = refs.cloud.current;
 
-    // as the section comes up, the toran arrives first and the scene rises in under it
-    gsap.fromTo(
-      stage,
-      { y: () => window.innerHeight * 0.22 },
-      { y: 0, ease: "none", scrollTrigger: { trigger: section, start: "top bottom", end: "top top", scrub: 1.2, invalidateOnRefresh: true } },
-    );
-
     // 0–15%: the background settles
     tl.fromTo(refs.bg.current, { scale: 1.12 }, { scale: 1, duration: at(0.15), ease: "power1.out" }, 0);
 
@@ -220,24 +213,24 @@ export function CoupleScene() {
     tl.to(refs.brideTilt.current, { rotate: 0, duration: at(0.05), ease: "sine.inOut" }, at(0.45));
 
     // the lamps glow up as they meet
-    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.42))
-      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.48))
-      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.52))
-      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.56));
+    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.36))
+      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.42))
+      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.46))
+      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.5));
 
-    // 50–62%: two small clouds drift in from the edges, meet in the centre and merge into the big one
+    // 36–45%, right as they stop: two small clouds drift in from the edges, meet in the centre and merge into the big one
     const edge = () => window.innerWidth * 0.62;
-    tl.fromTo(c.left, { x: () => -edge(), autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.5));
-    tl.fromTo(c.right, { x: edge, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.5));
-    tl.to([c.left, c.right], { autoAlpha: 0, scale: 1.2, duration: at(0.03) }, at(0.59));
-    tl.fromTo(c.main, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: at(0.05), ease: "back.out(2)" }, at(0.585));
+    tl.fromTo(c.left, { x: () => -edge(), autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.36));
+    tl.fromTo(c.right, { x: edge, autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: at(0.09), ease: "power2.out" }, at(0.36));
+    tl.to([c.left, c.right], { autoAlpha: 0, scale: 1.2, duration: at(0.03) }, at(0.45));
+    tl.fromTo(c.main, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: at(0.05), ease: "back.out(2)" }, at(0.445));
 
     // 63–78%: "THE COUPLE", then the names write in letter by letter, the "&" in its lotus, then the flourish draws
-    tl.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: at(0.025), ease: "power2.out" }, at(0.63));
+    tl.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: at(0.025), ease: "power2.out" }, at(0.49));
     const half = c.letters.length;
-    tl.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: at(0.02), stagger: at(0.11) / Math.max(1, half), ease: "power2.out" }, at(0.655));
-    tl.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: at(0.03), ease: "back.out(2)" }, at(0.7));
-    tl.fromTo(c.flourish, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: at(0.04), ease: "power1.inOut" }, at(0.775));
+    tl.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: at(0.02), stagger: at(0.11) / Math.max(1, half), ease: "power2.out" }, at(0.515));
+    tl.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: at(0.03), ease: "back.out(2)" }, at(0.56));
+    tl.fromTo(c.flourish, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: at(0.04), ease: "power1.inOut" }, at(0.635));
 
     // 82–97%: petals fall from under the cloud onto the couple, then keep falling lightly
     c.petals.forEach((el, i) => {
@@ -250,20 +243,14 @@ export function CoupleScene() {
         el,
         { y: 0, x: 0, rotate: rand(i, 71) * 180, autoAlpha: 1 },
         { y: fall, x: (rand(i, 73) - 0.5) * 80, rotate: `+=${200 + rand(i, 79) * 260}`, autoAlpha: 0.2, duration: at(0.08 + rand(i, 83) * 0.05), ease: "none" },
-        at(0.82 + (i / c.petals.length) * 0.05),
+        at(0.68 + (i / c.petals.length) * 0.05),
       );
     });
-    tl.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: at(0.03) }, at(0.93));
+    tl.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: at(0.03) }, at(0.79));
 
-    // hold to the end (the next section then rises over the scene)
+    // hold to the end
     tl.to({}, { duration: Math.max(0, T - tl.duration()) });
 
-    // as the next section rises over the scene, the cloud drifts upward and fades
-    gsap.fromTo(
-      c.drift,
-      { y: 0, autoAlpha: 1 },
-      { y: () => -0.18 * window.innerHeight, autoAlpha: 0, ease: "none", scrollTrigger: { trigger: section, start: () => `bottom-=${window.innerHeight} bottom`, end: "bottom bottom", scrub: 1.2, invalidateOnRefresh: true } },
-    );
   };
 
   return (
