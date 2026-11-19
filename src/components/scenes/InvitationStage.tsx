@@ -16,14 +16,19 @@ function dateParts(iso: string, timeZone: string) {
   return { weekday: f({ weekday: "long" }), day: f({ day: "numeric" }), month: f({ month: "long" }), year: f({ year: "numeric" }) };
 }
 
-/** The temple arch, drawn in the hero temple's style (1249×1765, cropped to the arch; its flat
- *  blue background cut away by scripts/cut-flat-bg.mjs, so the sky shows through). */
+/** The temple mandapam: tiled roof on two pillars over a carved plinth with steps in the middle
+ *  (1192×742, cropped; its flat blue background keyed out and its colours matched to the hero
+ *  with scripts/match-hero-colours.mjs, so the sky shows through). */
 const ARCH = "/media/invite-arch.webp";
-const ARCH_W = 1249;
-const ARCH_H = 1765;
+const ARCH_W = 1192;
+const ARCH_H = 742;
 const ARCH_RATIO = ARCH_W / ARCH_H;
-/** The opening between the pillars, as fractions of the arch: where the invitation panel sits. */
-const PANEL = { top: 0.36, bottom: 0.15, side: 0.21 };
+/** The opening between the pillars, as fractions of the arch: where the cream sheet sits —
+ *  from under the lintel down to the top of the steps. */
+const PANEL = { top: 0.3935, bottom: 0.2008, side: 0.1284 };
+/** The brass lamps, lotus bowls and steps that stand in front of the sheet's foot
+ *  (cut from the same art: x 348–848, y 511–742 of 1192×742). */
+const FRONT = { src: "/media/invite-arch-front.webp", left: 348 / ARCH_W, width: 500 / ARCH_W, ratio: "1000 / 462" };
 
 /**
  * The invitation section: scene 1 (hero + temple) scrolls away upward, and the
@@ -41,8 +46,8 @@ export function InvitationStage() {
 
 /** Rows of the arch (of ARCH_H): the roof, lintel and capitals end at SLICE_TOP, and the plain
  *  fluted stretch of the pillars that can be drawn taller runs to SLICE_END. */
-const SLICE_TOP = 1110;
-const SLICE_END = 1460;
+const SLICE_TOP = 416;
+const SLICE_END = 506;
 
 /**
  * The painted temple arch with the invitation (as the reference's gate). It
@@ -146,10 +151,10 @@ export function ArchScene() {
       {/* the hero's sky continues: on mouse screens held on the screen like the hero's; on phones
           the section's own sky picks up where the hero's ends (index.css .sky-pinned) */}
       <div aria-hidden className="sky-layer" />
-      {/* the arch: full width, and at least 37rem so the card in its opening holds the countdown in one row
-          (on phones the pillars sit at the screen edges); full width on large screens */}
-      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(40.5rem, 100vw)" }}>
-      <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">
+      {/* the mandapam: full width, and at least 31.75rem so the sheet in its opening keeps the
+          countdown in one row (on phones the pillars sit just past the screen edges) */}
+      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(31.75rem, 100vw)" }}>
+      <div ref={set("box")} data-layer className="relative w-full" aria-label="A painted temple mandapam: a red tiled roof with goddess niches and golden finials on two teal pillars, over a carved plinth with steps, brass lamps and lotus bowls">
         <div ref={set("top")} className="absolute inset-x-0 top-0" style={{ backgroundImage: art, backgroundSize: "100% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat" }} />
         <div ref={set("mid")} className="absolute inset-x-0" style={{ backgroundImage: art, backgroundRepeat: "no-repeat" }} />
         <div ref={set("bot")} className="absolute inset-x-0 bottom-0" style={{ backgroundImage: art, backgroundSize: "100% auto", backgroundPosition: "center bottom", backgroundRepeat: "no-repeat" }} />
@@ -244,6 +249,16 @@ export function ArchScene() {
             )}
           </div>
         </div>
+        {/* the lamps, lotus bowls and steps stand in front of the sheet's foot */}
+        <img
+          aria-hidden
+          src={FRONT.src}
+          alt=""
+          decoding="async"
+          className="pointer-events-none absolute bottom-0 z-[2]"
+          style={{ left: `${FRONT.left * 100}%`, width: `${FRONT.width * 100}%`, aspectRatio: FRONT.ratio }}
+          draggable={false}
+        />
       </div>
       </div>
     </section>
