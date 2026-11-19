@@ -54,8 +54,9 @@ export function addPetals(tl: Parameters<Build>[0], petals: (HTMLDivElement | nu
  * against the original picture with both of them in it (couple-scene.webp),
  * in % of the background. left / bottom / height of each cutout's box.
  */
-const BRIDE = { left: 39.61, bottom: 6.12, height: 54.17, ratio: "464 / 875" };
-const GROOM = { left: 50.36, bottom: 6.25, height: 61.46, ratio: "258 / 901" };
+// they stop a little apart (her garland just reaching him), not pressed together
+const BRIDE = { left: 37.32, bottom: 6.12, height: 54.17, ratio: "464 / 875" };
+const GROOM = { left: 52.65, bottom: 6.25, height: 61.46, ratio: "258 / 901" };
 /** The brass lamp flames, [x%, y%]. */
 const LAMPS: [number, number][] = [
   [9.7, 67.7],
@@ -154,10 +155,11 @@ function CoupleRoom({
 }
 
 /**
- * Scene 2 — the couple. The section pins for 350vh (scrub 1.2): the
- * background settles (1.12 → 1), the bride walks in from the left and the
- * groom from the right with a small walking bob that fades as they stop, she
- * leans in 2° to place the garland, then petals fall, the lamps glow and the
+ * Scene 2 — the couple. As soon as the section comes onto the screen the
+ * bride walks in from the left and the groom from the right (scrub 1.2), with
+ * a small walking bob that fades as they stop a little apart, a short way into
+ * the pin. The section pins for 350vh: the background settles (1.12 → 1), she
+ * leans in 2° offering the garland, then petals fall, the lamps glow and the
  * names appear above them. It holds, and the next section rises over it.
  * Scrolling back plays it in reverse. While resting each one breathes
  * (CSS couple-idle, outside the scrub).
@@ -183,7 +185,7 @@ export function CoupleScene() {
     return () => window.removeEventListener("resize", on);
   }, []);
 
-  const build: Build = (tl) => {
+  const build: Build = (tl, section) => {
     const stage = refs.stage.current!;
     const bride = refs.bride.current!;
     const groom = refs.groom.current!;
@@ -193,32 +195,38 @@ export function CoupleScene() {
     // 0–15%: the background settles
     tl.fromTo(refs.bg.current, { scale: 1.12 }, { scale: 1, duration: at(0.15), ease: "power1.out" }, 0);
 
-    // 15–55%: they walk in from beyond the edges to where they meet
-    const walk = at(0.4);
-    tl.fromTo(bride, { x: () => -(stage.offsetLeft + bride.offsetLeft + bride.offsetWidth + 24) }, { x: 0, duration: walk, ease: "power2.out" }, at(0.15));
-    tl.fromTo(groom, { x: () => window.innerWidth - (stage.offsetLeft + groom.offsetLeft) + 24 }, { x: 0, duration: walk, ease: "power2.out" }, at(0.15));
-    // the walking bob: 6px, ~5 steps, fading out as they stop (scrubbed, so it reverses too)
+    // They start walking in the moment the section comes onto the screen (its top at the
+    // screen's bottom) and arrive a little after it pins (35% of the pinned scroll), from
+    // beyond the edges to where they meet, smoothly with the scroll (and back in reverse).
+    const walkEnd = () => `top+=${Math.round(at(0.35) * window.innerHeight)} top`;
+    const walkIn = gsap.timeline({
+      defaults: { ease: "none" },
+      scrollTrigger: { trigger: section, start: "top bottom", end: walkEnd, scrub: 1.2, invalidateOnRefresh: true },
+    });
+    walkIn.fromTo(bride, { x: () => -(stage.offsetLeft + bride.offsetLeft + bride.offsetWidth + 24) }, { x: 0, duration: 1, ease: "power2.out" }, 0);
+    walkIn.fromTo(groom, { x: () => window.innerWidth - (stage.offsetLeft + groom.offsetLeft) + 24 }, { x: 0, duration: 1, ease: "power2.out" }, 0);
+    // the walking bob: 6px, ~7 steps, fading out as they stop (scrubbed, so it reverses too)
     const step = { t: 0 };
     const bob = () => {
       const fade = (1 - step.t) ** 1.5;
-      gsap.set(refs.brideBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 5)) * fade });
-      gsap.set(refs.groomBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 5 + 0.9)) * fade });
+      gsap.set(refs.brideBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 7)) * fade });
+      gsap.set(refs.groomBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 7 + 0.9)) * fade });
     };
-    tl.fromTo(step, { t: 0 }, { t: 1, duration: walk, ease: "none", onUpdate: bob }, at(0.15));
+    walkIn.fromTo(step, { t: 0 }, { t: 1, duration: 1, onUpdate: bob }, 0);
 
-    // 55–65%: she leans in 2° and back, placing the garland
-    tl.to(refs.brideTilt.current, { rotate: 2, duration: at(0.05), ease: "sine.inOut" }, at(0.55));
-    tl.to(refs.brideTilt.current, { rotate: 0, duration: at(0.05), ease: "sine.inOut" }, at(0.6));
+    // 40–50%: she leans in 2° and back, offering the garland
+    tl.to(refs.brideTilt.current, { rotate: 2, duration: at(0.05), ease: "sine.inOut" }, at(0.4));
+    tl.to(refs.brideTilt.current, { rotate: 0, duration: at(0.05), ease: "sine.inOut" }, at(0.45));
 
-    // 65–85%: petals at three speeds, the lamps glow, the names one line at a time
-    addPetals(tl, petals.current, at(0.65), at(0.2));
-    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.65))
-      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.71))
-      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.75))
-      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.79));
-    tl.fromTo(lines, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: at(0.06), stagger: at(0.055), ease: "power2.out" }, at(0.66));
+    // 50–70%: petals at three speeds, the lamps glow, the names one line at a time
+    addPetals(tl, petals.current, at(0.5), at(0.2));
+    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.5))
+      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.56))
+      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.6))
+      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.64));
+    tl.fromTo(lines, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: at(0.06), stagger: at(0.055), ease: "power2.out" }, at(0.51));
 
-    // 85–100%: hold (the next section then rises over the scene)
+    // 70–100%: hold (the next section then rises over the scene)
     tl.to({}, { duration: Math.max(0, T - tl.duration()) });
   };
 
