@@ -219,14 +219,6 @@ export interface WeddingConfig {
      * Used only once the file exists (prepared into art-manifest.json).
      */
     invitationWide?: { src: string; peek: number };
-    /** The hero's elephant procession (transparent cutout, faces right) and the tree's leaves cut from the hero picture (drawn in front of them). */
-    procession?: { elephant: string; treeFront: string };
-    /**
-     * The street strip between the hero and the invitation: a horizontally repeating tile, and
-     * sprites that move along it with the scroll (ratio = width / height, height = share of the strip,
-     * dir 1 = left → right, -1 = right → left, speed = how far they travel while the strip passes).
-     */
-    street?: { tile: string; sprites: { src: string; ratio: number; height: number; dir: 1 | -1; speed: number }[] };
     /** The couple scene (landscape), also used by Thank You. */
     couple: string;
     /**

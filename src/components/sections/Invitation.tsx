@@ -2,7 +2,7 @@ import { useGuest } from "@/context/GuestContext";
 import { useWedding } from "@/context/WeddingContext";
 import { ScrollCue } from "@/components/ui/ScrollCue";
 import { InvitationFrame } from "@/components/frame/InvitationFrame";
-import { TempleStage } from "@/components/scenes/hero/TempleStage";
+import { artProps } from "@/lib/art";
 
 function useDateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -18,7 +18,7 @@ function useDateParts(iso: string, timeZone: string) {
  */
 export function Invitation() {
   const { guestName } = useGuest();
-  const { couple, wedding } = useWedding();
+  const { couple, wedding, media } = useWedding();
   const date = useDateParts(wedding.dateISO, wedding.timeZone);
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
@@ -26,8 +26,13 @@ export function Invitation() {
   return (
     <section id="invitation" aria-labelledby="couple-names" className="relative isolate">
       <div className="cobalt relative overflow-hidden" style={{ minHeight: "100svh" }}>
-        {/* the temple with the elephants already standing at the steps (no walking, no bobbing) */}
-        <TempleStage still eager style={{ top: "auto", bottom: 0 }} />
+        <img
+          {...artProps(media.invitation, "100vw")}
+          alt="A colourful gopuram against a deep blue sky, with a flowering tree in front"
+          fetchPriority="high"
+          className="absolute bottom-0 left-0 w-full"
+          draggable={false}
+        />
         <div className="relative z-10 flex flex-col items-center px-gutter text-center text-white [text-shadow:0_2px_16px_rgb(0_30_90/0.55)]" style={{ paddingTop: "max(3.75rem, 8svh)" }}>
           {wedding.blessing && <p className="text-[0.8rem] tracking-[0.32em]">{wedding.blessing}</p>}
           <p className="mt-3 font-script text-[clamp(1.9rem,min(8.5vw,5svh),2.8rem)] leading-tight">Dear {guestName},</p>

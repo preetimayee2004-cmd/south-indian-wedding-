@@ -7,7 +7,6 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { StreetStrip } from "./hero/StreetStrip";
 import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
@@ -40,7 +39,6 @@ export function InvitationStage() {
   return (
     <>
       <TempleHeroScene tail={0} />
-      <StreetStrip />
       <ArchScene />
     </>
   );

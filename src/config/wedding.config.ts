@@ -181,16 +181,6 @@ const weddingConfig: WeddingConfig = {
 
     opening: "/media/pillar-frame.webp",
     invitation: "/media/temple-hero.webp",
-    // the hero's living layers: the elephant procession and the tree's leaves in front of it
-    procession: { elephant: "/media/elephant.webp", treeFront: "/media/tree-front.webp" },
-    // the street between the hero and the invitation: a repeating paving strip and what moves on it.
-    // dir 1 = left → right, -1 = right → left; speed = screens crossed while the strip passes.
-    // Add more when the art is ready, e.g. { src: "/media/auto.webp", ratio: 1.4, height: 0.62, dir: 1, speed: 1.8 },
-    // { src: "/media/flower-cart.webp", ratio: 1.3, height: 0.66, dir: -1, speed: 1.1 }
-    street: {
-      tile: "/media/street.webp",
-      sprites: [{ src: "/media/elephant.webp", ratio: 897 / 893, height: 0.86, dir: 1, speed: 0.7 }],
-    },
     // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
     invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
     couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky
