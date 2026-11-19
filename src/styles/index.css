@@ -133,25 +133,41 @@
       background-attachment: fixed;
     }
   }
-  /* A section that slides over a pinned cobalt scene: its sky stays put on the screen
-     (a fixed layer clipped to the section — works on phones, unlike background-attachment),
-     so both show the very same sky and the hand-over has no seam. The scalloped edge
-     is drawn as a gold line only, the sky showing through it. */
+  /* A section that follows the hero on one continuous sky. Mouse screens: the hero's sky
+     is fixed to the screen, so this one is too (a fixed layer clipped to the section).
+     Touch screens (no fixed backgrounds): the section's own sky continues at the hero's
+     scale — the picture mirrored, then upright, repeated — so its top matches the
+     hero's bottom edge exactly as the two scroll by together. */
   .sky-pinned {
     isolation: isolate;
-    clip-path: inset(-24px 0 0 0);
-    --edge: transparent;
   }
   .sky-pinned > .sky-layer {
-    position: fixed;
-    inset: 0 0 auto;
-    height: 100svh;
-    z-index: -1;
-    pointer-events: none;
-    background-color: #0d84e6;
-    background-image: url("/media/invite-sky.webp");
-    background-size: cover;
-    background-position: center top;
+    display: none;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .sky-pinned {
+      clip-path: inset(0);
+    }
+    .sky-pinned > .sky-layer {
+      display: block;
+      position: fixed;
+      inset: 0 0 auto;
+      height: 100svh;
+      z-index: -1;
+      pointer-events: none;
+      background-color: #0d84e6;
+      background-image: url("/media/invite-sky.webp");
+      background-size: cover;
+      background-position: center top;
+    }
+  }
+  @media not ((hover: hover) and (pointer: fine)) {
+    .cobalt.sky-pinned {
+      background-image: url("/media/invite-sky-tile.webp");
+      background-size: max(100%, 100svh * 0.5627) auto; /* 736×1308, as the hero shows it */
+      background-repeat: repeat-y;
+      background-position: center top;
+    }
   }
   .cobalt [class*="text-[#fbf2dc]"],
   .cobalt [class*="text-[#f3cf73]"],

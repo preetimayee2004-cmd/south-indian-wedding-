@@ -25,17 +25,15 @@ const ARCH_RATIO = ARCH_W / ARCH_H;
 const PANEL = { top: 0.36, bottom: 0.15, side: 0.21 };
 
 /**
- * The invitation section on phones: scene 1 (hero + temple), then the temple
- * arch rises over it with a scalloped edge and holds the invitation and the
- * celebrations.
+ * The invitation section: scene 1 (hero + temple) scrolls away upward, and the
+ * temple arch follows right below it on the same sky (no overlap), easing up
+ * into place as it arrives, holding the invitation and the celebrations.
  */
 export function InvitationStage() {
   return (
     <>
-      <TempleHeroScene tail={1} />
-      <div className="relative z-[1]" style={{ marginTop: "-100svh" }}>
-        <ArchScene />
-      </div>
+      <TempleHeroScene tail={0} />
+      <ArchScene />
     </>
   );
 }
@@ -47,7 +45,7 @@ const SLICE_END = 1460;
 
 /**
  * The painted temple arch with the invitation (as the reference's gate). It
- * rises over the hero on a scalloped edge and docks, then simply scrolls with
+ * follows the hero, easing up into place as it arrives, then simply scrolls with
  * the page — nothing is pinned, so nothing is ever cut off. The whole letter
  * sits on the cream sheet in the opening: when it needs more room than the
  * arch has, only the plain fluted stretch of the pillars is drawn taller (the
@@ -126,9 +124,9 @@ export function ArchScene() {
       aria-labelledby="invite-heading"
       className="cobalt sky-pinned relative overflow-x-clip pb-10"
     >
-      {/* the hero's sky, held on the screen so the arch slides over one continuous sky */}
+      {/* the hero's sky continues: on mouse screens held on the screen like the hero's; on phones
+          the section's own sky picks up where the hero's ends (index.css .sky-pinned) */}
       <div aria-hidden className="sky-layer" />
-      <div aria-hidden className="edge edge-scallop-top" />
       {/* the arch: full width, and at least 37rem so the card in its opening holds the countdown in one row
           (on phones the pillars sit at the screen edges); full width on large screens */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(37rem, 100vw)" }}>
