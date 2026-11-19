@@ -14,7 +14,7 @@ const Chevron = ({ flip }: { flip?: boolean }) => (
 );
 
 /**
- * The celebrations, on the cobalt sky after the couple (as in the reference
+ * The celebrations, on parchment before the couple (as in the reference
  * invitation): one framed card at a time that slides sideways to the next.
  * The events move on by themselves every 5 s while the section is on screen,
  * until the guest touches anything in it (arrow, dot, swipe, key) — from then
@@ -113,17 +113,17 @@ export function EventsSlider() {
       ref={root}
       id="events"
       aria-labelledby="events-heading"
-      className="cobalt relative flex min-h-[100svh] flex-col items-center justify-center px-gutter py-14"
+      className="parchment-ground relative flex min-h-[100svh] flex-col items-center justify-center px-gutter py-14"
       onPointerDown={stop}
       onKeyDown={stop}
     >
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#f7ecd3" }} />
       {/* as in the reference: no heading on screen, just the framed event (named for screen readers) */}
       <div ref={head} className="flex justify-center">
         <h2 id="events-heading" className="sr-only">
           The wedding celebrations
         </h2>
-        <Ornament className="text-[#f3cf73]" />
+        <Ornament className="text-[#b8893e]" />
       </div>
 
       <div ref={card} className="relative mt-5 w-full max-w-[27rem]">
@@ -179,10 +179,10 @@ export function EventsSlider() {
               aria-selected={i === cur}
               aria-label={`Show ${e.name}`}
               onClick={() => byGuest(i)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${i === cur ? "w-6 bg-[#f3cf73]" : "w-2.5 bg-[#fbf2dc]/45"}`}
+              className={`h-2.5 rounded-full transition-all duration-300 ${i === cur ? "w-6 bg-[#b8893e]" : "w-2.5 bg-[#7a1f2b]/30"}`}
             />
           ))}
-          <span aria-live="polite" className="ml-1 text-[0.72rem] tabular-nums tracking-[0.2em] text-[#fbf2dc]">
+          <span aria-live="polite" className="ml-1 text-[0.72rem] tabular-nums tracking-[0.2em] text-[#7a1f2b]">
             {cur + 1} / {n}
           </span>
         </div>

@@ -7,7 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { Flourish, GopuramLine, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
+import { Flourish, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
 function dateParts(iso: string, timeZone: string) {
@@ -125,9 +125,6 @@ export function ArchScene() {
         const buds = [...svg.querySelectorAll<SVGGElement>("[data-bud] > .ic-bud")].sort((a, b) => Number(a.parentElement!.dataset.d) - Number(b.parentElement!.dataset.d));
         gsap.from(buds, { scale: 0, opacity: 0, transformOrigin: "50% 50%", duration: 0.35, stagger: 0.07, ease: "back.out(2)", scrollTrigger: { trigger: svg, start: "top 92%", once: true } });
       });
-      // the gopuram by the venue draws itself
-      const gop = col.querySelector(".ic-gopuram");
-      if (gop) gsap.fromTo(gop.querySelectorAll("[data-draw]"), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, stagger: 0.12, ease: "power1.inOut", scrollTrigger: { trigger: gop, start: "top 92%", once: true } });
       // the marigold strings grow down the zari borders as you read through the sheet
       gsap.fromTo(panel.querySelectorAll("[data-garland]"), { yPercent: -100 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: panel, start: "top 60%", end: "bottom bottom", scrub: SCRUB } });
       gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
@@ -226,7 +223,6 @@ export function ArchScene() {
             <JasmineDivider className="ic-divider" />
             <GoldLabel>The Destination</GoldLabel>
             <p data-line className="ic-venue mt-2.5">
-              <GopuramLine className="ic-gopuram" />
               <span>{venue.name}</span>
             </p>
             <p data-line className="ic-city mt-2">

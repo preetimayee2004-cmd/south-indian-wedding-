@@ -251,11 +251,14 @@
    couple meet (x 49.9%) with their feet and a strip of floor in view. */
 .couple-room {
   --r: 1.7917;
-  --H: max(100cqh, 100cqw / var(--r));
+  /* the tallest tower's finial (7.2% down the picture) sits 130px below the screen's top:
+     under the 70px toran with 60px of sky above it, while the floor ends at the bottom edge */
+  --sky: 130px;
+  --H: max((100cqh - var(--sky)) / 0.928, 100cqw / var(--r));
   --W: calc(var(--H) * var(--r));
-  --top: clamp(100cqh - var(--H), 100cqh - var(--H) * 0.97, 0px);
-  /* the names fill the sky above their heads (heads at 31.5% of the stage) */
-  --names-top: max(env(safe-area-inset-top), 2.5cqh);
+  --top: calc(var(--sky) - var(--H) * 0.072);
+  /* the names fill the sky above their heads (heads at 31.5% of the stage), below the toran */
+  --names-top: max(env(safe-area-inset-top), 80px);
   --names-h: calc(var(--top) + var(--H) * 0.315 - var(--names-top) - 12px);
 }
 .couple-stage {
@@ -406,6 +409,21 @@
   10% { opacity: 0.9; }
   85% { opacity: 0.8; }
   100% { transform: translate(18px, 52cqh) rotate(400deg); opacity: 0; }
+}
+/* the hanging toran over the top edge of the couple scene */
+.toran {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 30;
+  height: 70px;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  filter: drop-shadow(0 6px 6px rgb(0 20 60 / 0.35));
+  animation: toran-sway 4.5s ease-in-out infinite;
+}
+@keyframes toran-sway {
+  0%, 100% { transform: skewX(-0.8deg); }
+  50% { transform: skewX(0.8deg); }
 }
 /* resting: each one breathes (scale 1 → 1.015 every 3 s), outside the scroll */
 @keyframes couple-idle {
@@ -991,8 +1009,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   width: 100%;
   isolation: isolate;
 }
-.ic-flourish [data-draw],
-.ic-gopuram [data-draw] {
+.ic-flourish [data-draw] {
   stroke-dasharray: 1;
   stroke-dashoffset: 0;
 }
@@ -1080,11 +1097,6 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   justify-content: center;
   flex-wrap: wrap;
   gap: 0.1em 0.25em;
-}
-.ic-gopuram {
-  flex: none;
-  width: auto;
-  height: 0.95em;
 }
 
 /* hanging-bell countdown: boxes hung from a gold rod by short chains */
@@ -1267,16 +1279,34 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   justify-content: center;
 }
 /* the board: a warm wooden frame with a carved temple border, a recessed cream silk surface */
+/* the wall behind the board: deep maroon with a faint gold kolam */
+.gb-wall {
+  background-color: #5a0f1c;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'80'%20height%3D'80'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23E8C56B'%20stroke-opacity%3D'.08'%20stroke-width%3D'1.4'%3E%3Cpath%20d%3D'M40%206c19%200%2034%2015%2034%2034S59%2074%2040%2074%206%2059%206%2040%2021%206%2040%206Z'%2F%3E%3Cpath%20d%3D'M40%2018c12%200%2022%2010%2022%2022M40%2062c-12%200-22-10-22-22M18%2040c0-12%2010-22%2022-22M62%2040c0%2012-10%2022-22%2022'%2F%3E%3Cpath%20d%3D'M40%200v80M0%2040h80'%20stroke-dasharray%3D'2%206'%2F%3E%3C%2Fg%3E%3Cg%20fill%3D'%23E8C56B'%20fill-opacity%3D'.1'%3E%3Ccircle%20cx%3D'40'%20cy%3D'40'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'0'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'80'%20cy%3D'0'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'80'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'80'%20cy%3D'80'%20r%3D'2'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
 .gb-board {
   container-type: inline-size;
   position: relative;
   width: 94vw;
   padding: 14px;
   border-radius: 10px;
+  /* dark teak, a faint grain */
   background:
-    repeating-linear-gradient(92deg, rgb(255 255 255 / 0.05) 0 2px, transparent 2px 9px),
-    linear-gradient(180deg, #8a5a2e, #6b4220 45%, #7a4c26);
-  box-shadow: 0 18px 40px rgb(10 20 50 / 0.45), inset 0 0 0 1px rgb(255 220 160 / 0.25);
+    repeating-linear-gradient(92deg, rgb(255 255 255 / 0.04) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #55311a, #4a2a14 45%, #3f230f);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 220 160 / 0.18);
+}
+/* small gold ornaments in the frame's corners */
+.gb-board::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(1%201)%20translate(0%200)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") top left / 22px 22px no-repeat,
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(-1%201)%20translate(-28%200)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") top right / 22px 22px no-repeat,
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(1%20-1)%20translate(0%20-28)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") bottom left / 22px 22px no-repeat,
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(-1%20-1)%20translate(-28%20-28)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") bottom right / 22px 22px no-repeat;
 }
 /* phones: the board is taller than the screen and the view follows the plane */
 .gb-viewport > .gb-board {
@@ -1284,27 +1314,25 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   margin-top: 16px;
 }
 .gb-board::before {
-  /* the carved border: a row of little temple towers (gopuram steps) around the edge */
+  /* a thin gold inlay line inside the frame */
   content: "";
   position: absolute;
-  inset: 4px;
+  inset: 6px;
+  border: 1.5px solid #c9954f;
   border-radius: 7px;
   pointer-events: none;
-  border: 6px solid transparent;
-  background:
-    conic-gradient(from 135deg at 50% 0, #c9954f 0 90deg, transparent 0) 0 0 / 12px 6px repeat-x border-box,
-    conic-gradient(from -45deg at 50% 100%, #c9954f 0 90deg, transparent 0) 0 100% / 12px 6px repeat-x border-box;
-  -webkit-mask: linear-gradient(#000 0 0) border-box, linear-gradient(#000 0 0) padding-box;
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) border-box exclude, linear-gradient(#000 0 0) padding-box;
 }
 .gb-surface {
   position: relative;
   height: 668cqw;
   border-radius: 4px;
-  background-color: #f7ecd3;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='%23B8893E' fill-opacity='.1'%3E%3Cpath d='M11 26c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3Cpath d='M43 58c-6-1-8-8-4-13 4-4 11-3 13 3 2 7-2 14-9 17 4-2 5-5 3-7-1 0-2 0-3 0Z'/%3E%3C/g%3E%3C/svg%3E");
-  box-shadow: inset 0 3px 10px rgb(58 31 22 / 0.35), inset 0 0 26px rgb(58 31 22 / 0.18);
+  /* deep peacock teal velvet with gold paisley buttas, recessed into the frame */
+  background-color: #0f5c5a;
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'72'%20height%3D'72'%3E%3Cg%20fill%3D'%23E8C56B'%20fill-opacity%3D'.14'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Ccircle%20cx%3D'25'%20cy%3D'14'%20r%3D'1.6'%20fill-opacity%3D'.2'%2F%3E%3Cpath%20d%3D'M58%2044c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-6%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
+    radial-gradient(ellipse 80% 60% at 40% 30%, rgb(255 255 255 / 0.07), transparent 70%),
+    radial-gradient(ellipse 90% 80% at 60% 80%, rgb(0 0 0 / 0.18), transparent 70%);
+  box-shadow: inset 0 4px 14px rgb(0 0 0 / 0.5), inset 0 0 30px rgb(0 0 0 / 0.3);
 }
 @media (min-width: 768px) {
   /* desktop: the whole board fits the screen */
@@ -1330,7 +1358,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   padding: 2px 22px 4px;
   border: 1px solid #b8893e;
   border-radius: 999px;
-  background: #fbf2dc;
+  background: #f7ecd3;
   box-shadow: 0 4px 10px rgb(58 31 22 / 0.3);
   white-space: nowrap;
 }
@@ -1362,7 +1390,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   display: block;
   padding: 6% 6% 3%;
   background: #fff;
-  box-shadow: 0 6px 14px rgb(58 31 22 / 0.28);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.35);
 }
 .gb-pic {
   position: relative;
@@ -1377,7 +1405,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   inset: 0;
   background: hsl(0 0% 55%);
   mix-blend-mode: saturation;
-  opacity: 0.75;
+  opacity: 0.5;
 }
 .gb-caption {
   display: block;
@@ -1444,7 +1472,7 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   .gb-jasmine { left: 2%; top: 86%; width: 15%; rotate: -4deg; }
   .gb-kolam { left: 40%; top: 83%; width: 6%; }
   .gb-heart { left: 26%; top: 24%; width: 3.2%; }
-  .gb-datetag { left: 87.5%; top: 9%; }
+  .gb-datetag { left: 84%; top: 4%; }
 }
 .gb-datetag,
 .gb-endtag {
@@ -1503,10 +1531,24 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   left: 0;
   top: 0;
   z-index: 5;
-  width: 46px;
-  height: 31px;
+  width: 44px;
+  height: 29px;
   pointer-events: none;
-  filter: drop-shadow(0 6px 5px rgb(58 31 22 / 0.3));
+  filter: drop-shadow(0 6px 6px rgb(0 0 0 / 0.4));
+}
+@media (min-width: 768px) {
+  .gb-plane {
+    width: 56px;
+    height: 37px;
+  }
+}
+/* a gentle bob that never stops, so it never looks frozen */
+.gb-plane-bob {
+  animation: gb-plane-bob 1.6s ease-in-out infinite;
+}
+@keyframes gb-plane-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
 /* each elephant's own size (the second one is 8% smaller), from its feet */

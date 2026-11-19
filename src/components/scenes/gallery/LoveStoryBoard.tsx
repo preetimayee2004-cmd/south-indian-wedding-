@@ -1,8 +1,8 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
-import { MotionPathPlugin } from "@/lib/gsap";
+import { gsap, MotionPathPlugin, ScrollTrigger } from "@/lib/gsap";
 
 /* ── Edit here: the love story, in order ───────────────────────────── */
 const HEADING = "Our Love Story";
@@ -60,52 +60,70 @@ const emptyRefs = (): BoardRefs => ({
   planeBody: null,
 });
 
+type Pt = { x: number; y: number };
+
 /**
  * The plane's flight over the board, in board px: from just off the top left
  * to each photo's top right corner (by its pin, never over a face), swooping
  * between photos and looping twice on the way, then a last loop down to the
- * "to be continued..." tag. Returns the path and, for each landing, how far
- * along it is (0–1).
+ * "to be continued..." tag. The whole flight is one smooth curve: a
+ * Catmull-Rom spline through the waypoints, written as cubic Béziers (no
+ * corners anywhere, the loops included). Returns the path and, for each
+ * landing, how far along it is (0–1).
  */
 function planFlight(r: BoardRefs) {
   const s = r.surface!;
   const W = s.offsetWidth;
   const H = s.offsetHeight;
-  const stops = r.photos.map((p) => ({ x: p!.offsetLeft + p!.offsetWidth * 0.84, y: p!.offsetTop + p!.offsetWidth * 0.05 }));
+  const stops: Pt[] = r.photos.map((p) => ({ x: p!.offsetLeft + p!.offsetWidth * 0.84, y: p!.offsetTop + p!.offsetWidth * 0.05 }));
   const tag = r.tag!;
   stops.push({ x: tag.offsetLeft + tag.offsetWidth * 0.5, y: tag.offsetTop + tag.offsetHeight * 0.15 });
   const start = { x: -0.04 * W, y: Math.min(0.06 * H, 0.1 * W) };
-  const seg = (a: { x: number; y: number }, b: { x: number; y: number }, k: number) => {
+
+  // waypoints: between two stops a swoop (a point off to one side), and on some legs a loop
+  const pts: Pt[] = [start];
+  const landing: number[] = [];
+  stops.forEach((b, k) => {
+    const a = pts[pts.length - 1];
     const dx = b.x - a.x, dy = b.y - a.y;
     const len = Math.hypot(dx, dy) || 1;
     const nx = -dy / len, ny = dx / len;
-    const sw = (k % 2 ? 1 : -1) * Math.min(len * 0.35, 0.18 * Math.max(W, 300));
-    const c1 = { x: a.x + dx * 0.25 + nx * sw, y: a.y + dy * 0.25 + ny * sw };
-    const c2 = { x: a.x + dx * 0.75 + nx * sw, y: a.y + dy * 0.75 + ny * sw };
-    const loop = k === 2 || k === 4 || k === stops.length - 1;
-    if (!loop) return ` C${c1.x},${c1.y} ${c2.x},${c2.y} ${b.x},${b.y}`;
-    // swoop to the middle, turn a loop there, then swoop on
-    const m = { x: (a.x + b.x) / 2 + nx * sw * 0.6, y: (a.y + b.y) / 2 + ny * sw * 0.6 };
-    const rr = Math.max(18, Math.min(46, len * 0.12));
-    return (
-      ` Q${c1.x},${c1.y} ${m.x},${m.y}` +
-      ` a${rr},${rr} 0 1 1 0,${-2 * rr} a${rr},${rr} 0 1 1 0,${2 * rr}` +
-      ` Q${c2.x},${c2.y} ${b.x},${b.y}`
-    );
-  };
-  let d = `M${start.x},${start.y}`;
-  const parts: string[] = [];
-  stops.forEach((b, k) => {
-    d += seg(k ? stops[k - 1] : start, b, k);
-    parts.push(d);
+    const sw = (k % 2 ? 1 : -1) * Math.min(len * 0.22, 0.12 * Math.max(W, 300));
+    const mid = { x: a.x + dx * 0.5 + nx * sw, y: a.y + dy * 0.5 + ny * sw };
+    if (k === 2 || k === 4 || k === stops.length - 1) {
+      // a loop at the middle of the leg: in at the bottom, forward and up, over the top,
+      // back down behind, and out again a little ahead (u = along the leg, n = to its side)
+      const rr = Math.max(22, Math.min(50, len * 0.14));
+      const ux = dx / len, uy = dy / len;
+      const side = sw >= 0 ? 1 : -1;
+      const p = (fu: number, fn: number) => ({ x: mid.x + ux * fu * rr + nx * side * fn * rr, y: mid.y + uy * fu * rr + ny * side * fn * rr });
+      pts.push(p(0, 0), p(1, 1), p(0, 2), p(-1, 1), p(0.9, 0));
+    } else pts.push(mid);
+    pts.push(b);
+    landing.push(pts.length - 1);
   });
+
+  // Catmull-Rom → cubic Béziers (smooth through every point)
+  const seg = (i: number) => {
+    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+    return ` C${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  };
+  let d = `M${start.x.toFixed(1)},${start.y.toFixed(1)}`;
+  const upTo: string[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    d += seg(i);
+    upTo[i + 1] = d;
+  }
   // how far along the whole path each landing is
   const probe = document.createElementNS("http://www.w3.org/2000/svg", "path");
   r.svg!.appendChild(probe);
-  const lens = parts.map((p) => (probe.setAttribute("d", p), probe.getTotalLength()));
+  probe.setAttribute("d", d);
+  const total = probe.getTotalLength() || 1;
+  const at = landing.map((idx) => (probe.setAttribute("d", upTo[idx]), probe.getTotalLength() / total));
   probe.remove();
-  const total = lens[lens.length - 1] || 1;
-  return { d, W, H, at: lens.map((l) => l / total) };
+  return { d, W, H, at };
 }
 
 function Marigold() {
@@ -121,10 +139,10 @@ function Marigold() {
 
 function Plane() {
   return (
-    <svg viewBox="0 0 48 32" className="h-full w-full" aria-hidden>
-      <path d="M2 16 46 3 29 29 21 19Z" fill="#ffffff" stroke="#5e1220" strokeOpacity="0.35" strokeWidth="1" strokeLinejoin="round" />
-      <path d="M21 19 46 3 17 17Z" fill="#f2ece2" stroke="#5e1220" strokeOpacity="0.35" strokeWidth="1" strokeLinejoin="round" />
-      <path d="M21 19 46 3" stroke="#5e1220" strokeWidth="0.9" strokeOpacity="0.8" />
+    <svg viewBox="0 0 48 32" className="h-full w-full overflow-visible" aria-hidden>
+      <path d="M2 16 46 3 29 29 21 19Z" fill="#ffffff" stroke="#e8c56b" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M21 19 46 3 17 17Z" fill="#f4efe6" stroke="#e8c56b" strokeWidth="1.3" strokeLinejoin="round" />
+      <path d="M21 19 46 3" stroke="#7a1f2b" strokeWidth="1.1" />
     </svg>
   );
 }
@@ -225,12 +243,16 @@ function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: bo
               <path ref={(el) => void (r.current.mask = el)} fill="none" stroke="#fff" strokeWidth="10" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 }} />
             </mask>
           </defs>
-          <path ref={(el) => void (r.current.trail = el)} fill="none" stroke="#b8893e" strokeWidth="2" strokeLinecap="round" strokeDasharray="0.1 9" mask="url(#gb-trail-mask)" />
+          <path ref={(el) => void (r.current.trail = el)} fill="none" stroke="#e8c56b" strokeWidth="2.2" strokeLinecap="round" strokeDasharray="0.1 9" mask="url(#gb-trail-mask)" />
         </svg>
 
         <div ref={(el) => void (r.current.plane = el)} aria-hidden className="gb-plane">
+          {/* the turn: banking and a small upward arc during a U-turn */}
           <div ref={(el) => void (r.current.planeBody = el)} className="h-full w-full">
-            <Plane />
+            {/* a gentle bob that never stops (CSS) */}
+            <div className="gb-plane-bob h-full w-full">
+              <Plane />
+            </div>
           </div>
         </div>
       </div>
@@ -238,13 +260,10 @@ function Board({ r, still, onOpen }: { r: MutableRefObject<BoardRefs>; still: bo
   );
 }
 
-/** Puts the plane `p` (0–1) along the flight, and reveals the trail up to it. */
-function placePlane(r: BoardRefs, raw: ReturnType<typeof MotionPathPlugin.getRawPath>, p: number) {
-  const q = MotionPathPlugin.getPositionOnPath(raw, Math.min(1, Math.max(0, p)), true) as { x: number; y: number; angle: number };
-  if (r.plane) r.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${q.angle.toFixed(2)}deg)`;
-  if (r.mask) r.mask.style.strokeDashoffset = `${1 - p}`;
-  return q;
-}
+type Raw = ReturnType<typeof MotionPathPlugin.getRawPath>;
+
+/** Where the plane is at `p` (0–1) along the flight, with the path's direction there (degrees). */
+const onPath = (raw: Raw, p: number) => MotionPathPlugin.getPositionOnPath(raw, Math.min(1, Math.max(0, p)), true) as { x: number; y: number; angle: number };
 
 function setupFlight(r: BoardRefs) {
   const plan = planFlight(r);
@@ -256,51 +275,107 @@ function setupFlight(r: BoardRefs) {
   return { ...plan, raw };
 }
 
+/** Puts the plane at `p`, nose along the path, and the trail drawn up to it (the still board). */
+function restPlane(r: BoardRefs, raw: Raw, p: number) {
+  const q = onPath(raw, p);
+  if (r.plane) r.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${q.angle.toFixed(1)}deg)`;
+  if (r.mask) r.mask.style.strokeDashoffset = `${1 - p}`;
+}
+
+/** Shortest turn from a to b, in degrees (−180…180). */
+const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
+
 /**
- * Our Love Story — a photo board in a carved wooden frame with a paper plane
+ * Our Love Story — a photo board in a carved teak frame with a paper plane
  * that flies from photo to photo. The section pins (about one screen of scroll
- * per photo, scrub 1): the plane follows one curved path through the six
- * polaroids, swooping and looping, a dotted gold trail drawn behind it. Each
- * photo waits pale and small until the plane lands on it, then comes to full
- * colour with a little bounce, its caption writes in and petals burst from its
- * pin. After the sixth the plane loops down to "to be continued..." and all the
- * photos pulse once. On phones the board is taller than the screen and the view
- * follows the plane. Tap a photo to open it large. Scrolling back reverses it.
+ * per photo, scrub 1.8): the plane follows one smooth curve through the six
+ * polaroids, swooping and looping, a dotted gold trail drawn behind it (and
+ * erased again when it flies back). Each photo waits dimmed until the plane
+ * lands on it, then comes to full colour with a little bounce, its caption
+ * writes in and petals burst from its pin; flying back, they dim again. When
+ * the scroll changes direction the plane makes a quick U-turn (banking, with a
+ * small upward arc) so it always flies nose-first. After the sixth it loops
+ * down to "to be continued..." and all the photos pulse once. On phones the
+ * board is taller than the screen and the view follows the plane.
  */
 export function LoveStoryScene() {
   const r = useRef<BoardRefs>(emptyRefs());
   const [open, setOpen] = useState<number | null>(null);
+  /** the flight: where the scroll has the plane (p), which way the scroll goes, the path */
+  const fly = useRef<{ p: number; dir: 1 | -1; raw: Raw | null }>({ p: 0, dir: 1, raw: null });
 
-  const build: Build = (tl) => {
-    const R = r.current;
-    const f = setupFlight(R);
-    const vh = window.innerHeight;
-    const board = R.board!;
-    const tall = () => board.offsetHeight > vh - 24;
-    const proxy = { p: 0 };
-    const follow = () => {
-      const q = placePlane(R, f.raw, proxy.p);
-      // a slight tilt and bob while flying
-      if (R.planeBody) R.planeBody.style.transform = `translateY(${(Math.sin(proxy.p * 90) * 3).toFixed(1)}px) rotate(${(Math.sin(proxy.p * 70) * 6).toFixed(1)}deg)`;
+  // Every frame: place the plane on the path, its nose along the path (smoothed, never jumping
+  // more than a few degrees a frame), turning round when the scroll changes direction.
+  useEffect(() => {
+    let shown = 0; // the angle on screen
+    let offset = 0; // 0 = nose forward along the path, 180 = flying back
+    let facing: 1 | -1 = 1;
+    let turn = 1; // U-turn progress (1 = not turning)
+    let first = true;
+    const tick = (_t: number, dtMs: number) => {
+      const R = r.current;
+      const raw = fly.current.raw;
+      if (!raw || !R.plane) return;
+      const scene = R.board?.closest(".scene");
+      if (scene && !scene.classList.contains("is-live")) return;
+      const dt = Math.min(0.05, dtMs / 1000);
+      const q = onPath(raw, fly.current.p);
+      // a U-turn whenever the scroll turns round
+      if (fly.current.dir !== facing && turn >= 1) {
+        facing = fly.current.dir;
+        turn = 0;
+      }
+      let bank = 1;
+      let lift = 0;
+      if (turn < 1) {
+        turn = Math.min(1, turn + dt / 0.5);
+        const e = turn < 0.5 ? 2 * turn * turn : 1 - (-2 * turn + 2) ** 2 / 2; // ease in-out
+        offset = facing === 1 ? 180 * (1 - e) : 180 * e;
+        const k = Math.sin(Math.PI * turn);
+        bank = 1 - 0.35 * k; // tilts over as it banks
+        lift = -12 * k; // and rises a little through the turn
+      } else offset = facing === 1 ? 0 : 180;
+      const target = q.angle + offset;
+      if (first) {
+        shown = target;
+        first = false;
+      } else shown += Math.max(-7, Math.min(7, turnTo(shown, target)));
+      R.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${shown.toFixed(2)}deg)`;
+      if (R.planeBody) R.planeBody.style.transform = `translateY(${lift.toFixed(1)}px) scaleY(${bank.toFixed(3)})`;
+      // the trail: drawn up to the plane (erased behind it when it flies back)
+      if (R.mask) R.mask.style.strokeDashoffset = `${1 - fly.current.p}`;
       // phones: the view moves down the board so the plane stays near the middle of the screen
-      if (tall()) {
+      const board = R.board!;
+      const vh = window.innerHeight;
+      if (board.offsetHeight > vh - 24) {
         const top = R.surface!.offsetTop + board.offsetTop;
         const y = Math.min(16, Math.max(vh - board.offsetHeight - 16, vh * 0.5 - (top + q.y)));
         board.style.transform = `translateY(${y.toFixed(1)}px)`;
       } else board.style.transform = "";
     };
-    follow();
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
+  }, []);
+
+  const build: Build = (tl, section) => {
+    const R = r.current;
+    const f = setupFlight(R);
+    fly.current.raw = f.raw;
+    const proxy = fly.current;
+    proxy.p = 0;
+    // which way the scroll is going (ScrollTrigger's direction)
+    ScrollTrigger.create({ trigger: section, start: "top top", end: "bottom bottom", onUpdate: (self) => void (proxy.dir = self.direction === -1 ? -1 : 1) });
 
     tl.fromTo(R.plaque, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0);
     const LEG = 1; // one screen of scroll per photo
     PHOTOS.forEach((_, i) => {
       const t0 = 0.2 + i * LEG;
       const photo = R.photos[i];
-      // fly to the photo, slowing as it arrives
-      tl.fromTo(proxy, { p: i ? f.at[i - 1] : 0 }, { p: f.at[i], duration: 0.7 * LEG, ease: "power2.inOut", onUpdate: follow, immediateRender: false }, t0);
+      // fly to the photo (the path tween itself has no easing; the scroll is smoothed by scrub 1.8)
+      tl.fromTo(proxy, { p: i ? f.at[i - 1] : 0 }, { p: f.at[i], duration: 0.7 * LEG, ease: "none", immediateRender: false }, t0);
       // the landing: full colour, a small bounce, the caption writes in, petals burst from the pin
-      tl.fromTo(photo, { scale: 0.94, autoAlpha: 0.55 }, { scale: 1.06, autoAlpha: 1, duration: 0.14 * LEG, ease: "back.out(3)" }, t0 + 0.68 * LEG);
-      tl.fromTo(R.desat[i], { opacity: 0.75 }, { opacity: 0, duration: 0.14 * LEG }, t0 + 0.68 * LEG);
+      tl.fromTo(photo, { scale: 0.94, autoAlpha: 0.7 }, { scale: 1.06, autoAlpha: 1, duration: 0.14 * LEG, ease: "back.out(3)" }, t0 + 0.68 * LEG);
+      tl.fromTo(R.desat[i], { opacity: 0.5 }, { opacity: 0, duration: 0.14 * LEG }, t0 + 0.68 * LEG);
       tl.fromTo(R.letters[i], { autoAlpha: 0, y: 4 }, { autoAlpha: 1, y: 0, duration: 0.04, stagger: (0.22 * LEG) / Math.max(1, R.letters[i].length), ease: "power1.out" }, t0 + 0.74 * LEG);
       R.bursts[i].forEach((b, k) => {
         const a = (k / 5) * Math.PI * 2 - Math.PI / 2;
@@ -317,7 +392,7 @@ export function LoveStoryScene() {
 
     // the ending: a last loop down to "to be continued...", and all six pulse together
     const tEnd = 0.2 + PHOTOS.length * LEG;
-    tl.fromTo(proxy, { p: f.at[PHOTOS.length - 1] }, { p: 1, duration: 0.8 * LEG, ease: "power2.inOut", onUpdate: follow, immediateRender: false }, tEnd);
+    tl.fromTo(proxy, { p: f.at[PHOTOS.length - 1] }, { p: 1, duration: 0.8 * LEG, ease: "none", immediateRender: false }, tEnd);
     tl.fromTo(R.tag, { scale: 0.9, autoAlpha: 0.6 }, { scale: 1, autoAlpha: 1, duration: 0.15, ease: "back.out(3)" }, tEnd + 0.75 * LEG);
     tl.to(R.photos, { scale: 1.05, duration: 0.12, ease: "sine.out" }, tEnd + 0.95 * LEG).to(R.photos, { scale: 1, duration: 0.15, ease: "sine.in" }, tEnd + 1.07 * LEG);
     tl.to({}, { duration: 0.4 });
@@ -327,9 +402,10 @@ export function LoveStoryScene() {
     <Scene
       id="gallery"
       labelledBy="gallery-heading"
-      className="cobalt"
+      className="gb-wall"
+      scrub={1.8}
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#5a0f1c" }} />}
     >
       <div className="gb-viewport">
         <Board r={r} still={false} onOpen={setOpen} />
@@ -346,7 +422,7 @@ export function LoveStoryStill() {
   useLayoutEffect(() => {
     const place = () => {
       const f = setupFlight(r.current);
-      placePlane(r.current, f.raw, f.at[PHOTOS.length - 1]);
+      restPlane(r.current, f.raw, f.at[PHOTOS.length - 1]);
     };
     place();
     const ro = new ResizeObserver(place);
@@ -354,7 +430,7 @@ export function LoveStoryStill() {
     return () => ro.disconnect();
   }, []);
   return (
-    <section id="gallery" aria-labelledby="gallery-heading" className="cobalt relative px-[3vw] py-12">
+    <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
       <Board r={r} still onOpen={setOpen} />
       {open !== null && <Lightbox images={PHOTOS.map((p) => ({ src: p.src, alt: p.caption, caption: p.caption }))} index={open} onIndex={setOpen} onClose={() => setOpen(null)} />}
     </section>

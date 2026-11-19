@@ -127,22 +127,6 @@ export function JasmineDivider({ className = "" }: { className?: string }) {
   );
 }
 
-/** A small gold line-art gopuram (draws itself when it comes into view). */
-export function GopuramLine({ className = "" }: { className?: string }) {
-  const tiers = [0, 1, 2, 3];
-  return (
-    <svg aria-hidden viewBox="0 0 40 48" className={className}>
-      <g fill="none" stroke={GOLD} strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round">
-        {tiers.map((t) => {
-          const w = 32 - t * 6, y = 44 - t * 8, x = 20 - w / 2;
-          return <path key={t} data-draw pathLength={1} d={`M${x} ${y}V${y - 7}H${x + w}V${y}M${x + 3} ${y - 7}V${y - 9}H${x + w - 3}V${y - 7}`} />;
-        })}
-        <path data-draw pathLength={1} d="M13 12C13 6 27 6 27 12M20 6V2M18.5 3.5h3" />
-        <path data-draw pathLength={1} d="M17 44v-6a3 3 0 0 1 6 0v6M3 46h34" />
-      </g>
-    </svg>
-  );
-}
 
 /** A tiny brass bell hanging under each countdown box. */
 export function Bell() {

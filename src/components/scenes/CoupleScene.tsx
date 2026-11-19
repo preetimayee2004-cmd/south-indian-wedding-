@@ -4,6 +4,10 @@ import { Scene, type Build } from "@/components/scene/Scene";
 import { Petal, rand } from "@/components/scene/Decor";
 import { gsap, refreshSoon } from "@/lib/gsap";
 import { CloudMessage, type CloudRefs } from "./couple/CloudMessage";
+import { Toran } from "./couple/Toran";
+
+/** The couple picture's own sky colour at its top (couple-bg), continued above it. */
+const COUPLE_SKY = "#0058BE";
 
 /** Three groups of petals falling at different speeds: [count, duration, spread]. */
 const PETAL_GROUPS: [number, number, number][] = [
@@ -182,6 +186,13 @@ export function CoupleScene() {
     const lamps = refs.lamps.current.filter(Boolean);
     const c = refs.cloud.current;
 
+    // as the section comes up, the toran arrives first and the scene rises in under it
+    gsap.fromTo(
+      stage,
+      { y: () => window.innerHeight * 0.22 },
+      { y: 0, ease: "none", scrollTrigger: { trigger: section, start: "top bottom", end: "top top", scrub: 1.2, invalidateOnRefresh: true } },
+    );
+
     // 0–15%: the background settles
     tl.fromTo(refs.bg.current, { scale: 1.12 }, { scale: 1, duration: at(0.15), ease: "power1.out" }, 0);
 
@@ -259,13 +270,12 @@ export function CoupleScene() {
     <Scene
       id="couple"
       labelledBy="couple-heading"
-      className="cobalt"
-      style={{ containerType: "size" }}
+      style={{ containerType: "size", backgroundColor: COUPLE_SKY }}
       scrub={1.2}
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
     >
       <CoupleRoom refs={refs} />
+      <Toran />
     </Scene>
   );
 }
@@ -273,8 +283,9 @@ export function CoupleScene() {
 /** Reduced motion: no pinning; the couple simply stand where they meet, and the section fades in. */
 export function CoupleStill() {
   return (
-    <section id="couple" aria-labelledby="couple-heading" className="cobalt couple-fade relative h-[100svh] min-h-[520px] overflow-hidden" style={{ containerType: "size" }}>
+    <section id="couple" aria-labelledby="couple-heading" className="couple-fade relative h-[100svh] min-h-[520px] overflow-hidden" style={{ containerType: "size", backgroundColor: COUPLE_SKY }}>
       <CoupleRoom still />
+      <Toran />
     </section>
   );
 }
