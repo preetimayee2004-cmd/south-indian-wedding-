@@ -76,7 +76,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       return;
     }
     gsap.killTweensOf(hint.current);
-    // the seal cracks into two pieces, the flap opens and the card rises a little; then the
+    // the seal cracks into two pieces and the flap opens; then the
     // hero itself — temple, names and sky — grows smoothly out of the card to fill the screen,
     // and the page carries on from there as normal
     const hero = () => document.querySelector<HTMLElement>("#invitation-hero .sticky");
@@ -86,7 +86,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       const el = hero();
       const sec = heroSec();
       if (!el || !sec) return;
-      const r = letter.current!.getBoundingClientRect();
+      // it starts as the envelope's open mouth (no card comes out first) and grows from there
+      const r = letter.current!.parentElement!.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       sec.style.zIndex = "200"; // above this overlay while it grows
@@ -119,9 +120,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .to(sealR.current, { x: 26, y: 38, rotate: 30, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
       .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.25)
       .set(flap.current, { zIndex: 1 })
-      .to(letter.current, { yPercent: -42, duration: 0.6, ease: "power2.out" }, 0.8)
-      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 1.1)
-      .add(grow, 1.35);
+      .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 0.6)
+      .add(grow, 0.9);
   }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
 
   const skip = useCallback(() => {
@@ -155,13 +155,9 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
         <div ref={env} className={`relative w-full ${POCKET}`}>
           {/* back of the envelope */}
           <div className="absolute inset-0 rounded-md border border-[#cfb383] bg-[#e6d3a7] shadow-[0_18px_40px_rgb(74_40_20/0.28)]" />
-          {/* the letter peeking out */}
+          {/* the envelope's mouth: where the hero grows out from */}
           <div className="absolute inset-x-3 bottom-3 top-0 z-10 overflow-hidden">
-            <div ref={letter} className="absolute inset-x-0 top-[44%] h-full rounded-sm border border-gold/40 bg-[#fbf2dc] pt-5 text-center">
-              <p className="font-script text-[1.7rem] leading-none text-accent">
-                {couple.bride.name} &amp; {couple.groom.name}
-              </p>
-            </div>
+            <div ref={letter} className="absolute inset-0" />
           </div>
           {/* front pocket */}
           <div
