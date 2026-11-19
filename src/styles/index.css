@@ -133,6 +133,26 @@
       background-attachment: fixed;
     }
   }
+  /* A section that slides over a pinned cobalt scene: its sky stays put on the screen
+     (a fixed layer clipped to the section — works on phones, unlike background-attachment),
+     so both show the very same sky and the hand-over has no seam. The scalloped edge
+     is drawn as a gold line only, the sky showing through it. */
+  .sky-pinned {
+    isolation: isolate;
+    clip-path: inset(-24px 0 0 0);
+    --edge: transparent;
+  }
+  .sky-pinned > .sky-layer {
+    position: fixed;
+    inset: 0 0 auto;
+    height: 100svh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: #0d84e6;
+    background-image: url("/media/invite-sky.webp");
+    background-size: cover;
+    background-position: center top;
+  }
   .cobalt [class*="text-[#fbf2dc]"],
   .cobalt [class*="text-[#f3cf73]"],
   .cobalt .text-white {

@@ -120,9 +120,11 @@ export function ArchScene() {
       ref={root}
       id="invitation"
       aria-labelledby="invite-heading"
-      className="cobalt relative overflow-x-clip pb-10"
+      className="cobalt sky-pinned relative overflow-x-clip pb-10"
     >
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
+      {/* the hero's sky, held on the screen so the arch slides over one continuous sky */}
+      <div aria-hidden className="sky-layer" />
+      <div aria-hidden className="edge edge-scallop-top" />
       {/* the arch, a little wider than phones so the opening is roomy (pillars still in view); full width on large screens */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(min(118vw, 45rem), 100vw)" }}>
       <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">
