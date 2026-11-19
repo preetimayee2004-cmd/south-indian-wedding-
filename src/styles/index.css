@@ -377,19 +377,11 @@
 svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 
 
-/* Every section blends into the one before it (as after the couple scene): it overlaps
-   the previous section's end by 4rem and its top fades in softly — no hard line, no edge strip.
-   (A "cover"/"lift" section already overlaps by a whole screen; it gets just the fade.) */
-html.motion .sec:not(:empty) ~ .sec:not(:empty) {
+/* Sections after the invitation end on their scalloped gold hems (each section's top edge).
+   The section after the couple scene rises over it with a soft leading edge instead. */
+html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 4rem);
   mask-image: linear-gradient(to bottom, transparent, #000 4rem);
-}
-html.motion .sec:not(:empty) ~ .sec:not(:empty):not([data-enter="cover"]):not([data-enter="lift"]) {
-  margin-top: -4rem;
-}
-/* the scalloped hems on section tops are replaced by the blend */
-html.motion .sec:not(:empty) ~ .sec .edge-scallop-top {
-  display: none;
 }
 
 /* ── The invitation card in the arch ──────────────────────────────── */
