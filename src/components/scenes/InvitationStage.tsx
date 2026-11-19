@@ -14,14 +14,14 @@ function dateParts(iso: string, timeZone: string) {
   return { weekday: f({ weekday: "long" }), day: f({ day: "numeric" }), month: f({ month: "long" }), year: f({ year: "numeric" }) };
 }
 
-/** The temple arch, drawn in the hero temple's style (751×754, cropped to the arch; its flat
+/** The temple arch, drawn in the hero temple's style (1249×1765, cropped to the arch; its flat
  *  blue background cut away by scripts/cut-flat-bg.mjs, so the sky shows through). */
 const ARCH = "/media/invite-arch.webp";
-const ARCH_W = 751;
-const ARCH_H = 754;
+const ARCH_W = 1249;
+const ARCH_H = 1765;
 const ARCH_RATIO = ARCH_W / ARCH_H;
 /** The opening between the pillars, as fractions of the arch: where the invitation panel sits. */
-const PANEL = { top: 0.385, bottom: 0.13, side: 0.205 };
+const PANEL = { top: 0.36, bottom: 0.15, side: 0.21 };
 
 /**
  * The invitation section on phones: scene 1 (hero + temple), then the temple
@@ -41,8 +41,8 @@ export function InvitationStage() {
 
 /** Rows of the arch (of ARCH_H): the roof, lintel and capitals end at SLICE_TOP, and the plain
  *  fluted stretch of the pillars that can be drawn taller runs to SLICE_END. */
-const SLICE_TOP = 466;
-const SLICE_END = 576;
+const SLICE_TOP = 1110;
+const SLICE_END = 1460;
 
 /**
  * The painted temple arch with the invitation (as the reference's gate). It
