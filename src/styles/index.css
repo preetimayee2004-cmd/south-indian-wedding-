@@ -1042,8 +1042,9 @@ html.motion .sec:not(:empty) ~ .sec .edge-scallop-top {
   50% { transform: translate(0.6%, 0) rotate(0.6deg); }
   75% { transform: translate(0.3%, -1.1%) rotate(0deg); }
 }
-/* the elephants cross the scene one after another along the ground (feet on the paving, from
-   91.6% of the stage's height at the left to 99.9% at the right, larger as they come nearer) */
+/* the elephants cross the scene one after another along the open paving in front of the temple
+   (feet from 90.8% of the stage's height at the left to 98.6% at the right, larger as they come nearer;
+   20% tall where the path passes 67.5% across) */
 .temple-stage {
   container-type: size;
 }
@@ -1057,12 +1058,12 @@ html.motion .sec:not(:empty) ~ .sec .edge-scallop-top {
   .el-walker {
     left: 0;
     bottom: 0;
-    height: 23.5%;
+    height: 20%;
     transform-origin: 0 100%;
     animation: elephant-path 30s linear infinite;
   }
 }
 @keyframes elephant-path {
-  from { transform: translate(-35cqw, -8.37cqh) scale(0.688); }
-  to { transform: translate(105cqw, -0.08cqh) scale(1.114); }
+  from { transform: translate(-35cqw, -9.24cqh) scale(0.754); }
+  to { transform: translate(105cqw, -1.4cqh) scale(1.09); }
 }

@@ -181,8 +181,8 @@ const weddingConfig: WeddingConfig = {
 
     opening: "/media/pillar-frame.webp",
     invitation: "/media/temple-hero.webp",
-    // the elephants walking at the temple's foot, and the tree's leaves in front of them
-    procession: { elephant: "/media/elephant.webp", treeFront: "/media/tree-front.webp" },
+    // the elephants walking across the paving in front of the temple
+    procession: { elephant: "/media/elephant.webp" },
     // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
     invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
     couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky

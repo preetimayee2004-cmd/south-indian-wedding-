@@ -25,7 +25,8 @@ export default function App() {
   const [revealed, setRevealed] = useState(!showOpening);
   // The hero picture and the couple scene's three layers are decoded before anything animates.
   const artReady = usePreload([
-    media.invitation.replace(/\.webp$/, "@2x.webp"),
+    // the hero file this screen will actually show (the 2× one only on wide or sharp screens)
+    window.innerWidth * window.devicePixelRatio > 1493 ? media.invitation.replace(/\.webp$/, "@2x.webp") : media.invitation,
     media.coupleWalk.bg.replace(/\.webp$/, "@2x.webp"),
     media.coupleWalk.bride,
     media.coupleWalk.groom,

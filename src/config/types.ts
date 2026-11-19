@@ -219,8 +219,8 @@ export interface WeddingConfig {
      * Used only once the file exists (prepared into art-manifest.json).
      */
     invitationWide?: { src: string; peek: number };
-    /** The hero's elephants (transparent cutout, facing right, mahout included) and the tree's leaves cut from the hero picture, drawn in front of them. */
-    procession?: { elephant: string; treeFront: string };
+    /** The hero's elephants (transparent cutout, facing right, mahout included) that walk across the paving in front of the temple. */
+    procession?: { elephant: string };
     /** The couple scene (landscape), also used by Thank You. */
     couple: string;
     /**
