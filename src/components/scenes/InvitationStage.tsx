@@ -7,6 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
+import { GoldLabel, Kalasam, LotusDivider, LotusMedallion, Pin } from "./invite/Ornaments";
 
 function dateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -75,7 +76,7 @@ export function ArchScene() {
       const k = Hn / ARCH_H;
       const panelTop = PANEL.top * Hn;
       const panelBottom = PANEL.bottom * Hn;
-      const need = $.col!.offsetHeight + 56; // the letter + the sheet's padding
+      const need = $.col!.offsetHeight + 8; // the letter (its padding included)
       const extra = Math.max(0, need - (Hn - panelTop - panelBottom));
       const slice = (SLICE_END - SLICE_TOP) * k;
       const f = (slice + extra) / slice; // how much the plain stretch is drawn taller
@@ -106,6 +107,9 @@ export function ArchScene() {
         { y: () => window.innerHeight * 0.22 },
         { y: 0, ease: "power1.out", scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 45%", scrub: SCRUB, invalidateOnRefresh: true } },
       );
+      const boxes = gsap.utils.toArray<HTMLElement>("[data-box]", r.current.col);
+      if (boxes.length)
+        gsap.from(boxes, { y: 26, opacity: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", scrollTrigger: { trigger: boxes[0], start: "top 94%", once: true } });
       gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
         gsap.from(el, { opacity: 0, y: 18, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 94%", once: true } }),
       );
@@ -125,8 +129,9 @@ export function ArchScene() {
       {/* the hero's sky, held on the screen so the arch slides over one continuous sky */}
       <div aria-hidden className="sky-layer" />
       <div aria-hidden className="edge edge-scallop-top" />
-      {/* the arch, a little wider than phones so the opening is roomy (pillars still in view); full width on large screens */}
-      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(min(118vw, 45rem), 100vw)" }}>
+      {/* the arch: full width, and at least 37rem so the card in its opening holds the countdown in one row
+          (on phones the pillars sit at the screen edges); full width on large screens */}
+      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(37rem, 100vw)" }}>
       <div ref={set("box")} data-layer className="relative w-full" aria-label="A colourful carved temple arch with golden finials and a red tiled roof">
         <div ref={set("top")} className="absolute inset-x-0 top-0" style={{ backgroundImage: art, backgroundSize: "100% auto", backgroundPosition: "center top", backgroundRepeat: "no-repeat" }} />
         <div ref={set("mid")} className="absolute inset-x-0" style={{ backgroundImage: art, backgroundRepeat: "no-repeat" }} />
@@ -140,54 +145,59 @@ export function ArchScene() {
             left: `${PANEL.side * 100}%`,
             right: `${PANEL.side * 100}%`,
             borderRadius: "48% 48% 10px 10px / 9rem 9rem 10px 10px",
-            background: "radial-gradient(ellipse 70% 30% at 50% 12%, rgb(255 250 232 / 0.6), transparent 70%), rgb(250 239 212 / 0.96)",
+            background: "radial-gradient(ellipse 70% 30% at 50% 12%, rgb(255 250 235 / 0.7), transparent 70%), #F7ECD3",
           }}
         >
-          <div ref={set("col")} className="mx-auto flex max-w-[30rem] flex-col items-center px-3.5 pb-6 pt-8 text-center">
-                {wedding.invocation && <p data-line className="text-[0.82rem] font-bold tracking-[0.24em] text-maroon">{wedding.invocation}</p>}
-                <p data-line className="mt-3 text-[0.78rem] font-bold uppercase tracking-[0.42em] text-ink">Dear</p>
-                <p data-line className="mt-1 font-script text-[clamp(2.1rem,min(9.5vw,5.2svh),3rem)] leading-[1.1] text-accent">“{isPersonalized ? guestName : "Family & Friends"}”</p>
-                <p data-line className="mt-2.5 text-[clamp(1rem,min(4.3vw,2.45svh),1.2rem)] font-semibold italic leading-snug text-ink">
-                  Some moments are too precious to celebrate without the people we love.
+          <div ref={set("col")} className="invite-card mx-auto flex w-full flex-col items-center">
+            {wedding.invocation && (
+              <div data-line className="flex flex-col items-center">
+                <Kalasam className="h-[clamp(26px,2.4vw,34px)] w-auto" />
+                <p className="ic-invocation mt-2">
+                  <span aria-hidden className="ic-side-line" />
+                  <span>{wedding.invocation}</span>
+                  <span aria-hidden className="ic-side-line" />
                 </p>
-                <p data-line className="mt-2 text-[clamp(0.95rem,min(4.1vw,2.35svh),1.15rem)] font-medium leading-snug text-ink">{wedding.invitationLine}</p>
-                <h2 data-line id="invite-heading" className="mt-3 font-script font-normal leading-[1.08] text-accent">
-                  <span className="block text-[clamp(2.5rem,min(11.5vw,6.3svh),4.2rem)]">{first.name}</span>
-                  <span className="block text-[clamp(1.4rem,min(6vw,3.2svh),2.1rem)] leading-none text-gold">&amp;</span>
-                  <span className="block text-[clamp(2.5rem,min(11.5vw,6.3svh),4.2rem)]">{second.name}</span>
-                </h2>
-                {wedding.blessing && <p data-line className="mt-2 text-[0.95rem] font-bold tracking-[0.26em] text-maroon">{wedding.blessing}</p>}
-
-                <span data-line aria-hidden className="mt-4 block h-px w-28 bg-gold/80" />
-                <p data-line className="mt-4 text-[0.8rem] font-bold uppercase tracking-[0.32em] text-maroon">Counting the days</p>
-                <div data-line className="mt-2.5 w-full max-w-[19rem]">
-                  <Countdown iso={wedding.dateISO} />
-                </div>
-                <p data-line className="mt-2.5 text-[0.95rem] font-semibold italic text-ink">
-                  until the Muhurtham · {date.day} {date.month} {date.year}
-                </p>
-
-                <span data-line aria-hidden className="mt-5 block h-px w-28 bg-gold/80" />
-                <p data-line className="mt-5 text-[0.8rem] font-bold uppercase tracking-[0.32em] text-maroon">The Destination</p>
-                <p data-line className="mt-2 font-script text-[clamp(2.2rem,min(10vw,5.4svh),3.2rem)] leading-[1.05] text-accent">{venue.name}</p>
-                <p data-line className="mt-1 text-[1.02rem] font-semibold text-ink">{wedding.city}</p>
-                <a
-                  data-line
-                  href={mapsUrl(venue.mapsQuery)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3.5 inline-flex items-center gap-2 rounded-full bg-maroon px-6 py-3 text-[0.76rem] font-bold uppercase tracking-[0.2em] text-[#fbf2dc] shadow-[0_6px_16px_rgb(122_46_42/0.3)]"
-                >
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                    <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
-                    <circle cx="12" cy="9.5" r="2.5" />
-                  </svg>
-                  Get Directions
-                </a>
-
-                <p data-line className="mt-6 font-script text-[clamp(1.9rem,min(8.2vw,4.6svh),2.6rem)] leading-tight text-accent">We await your gracious presence</p>
-                {wedding.families && <p data-line className="mt-1 text-[1rem] font-semibold italic text-ink">— {wedding.families}</p>}
               </div>
+            )}
+            <GoldLabel className="mt-5">Dear</GoldLabel>
+            <p data-line className="ic-guest mt-2.5">{isPersonalized ? guestName : "Family & Friends"}</p>
+            <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
+            <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
+            <h2 data-line id="invite-heading" className="ic-names">
+              <span className="ic-name">{first.name}</span>
+              <LotusMedallion>&amp;</LotusMedallion>
+              <span className="ic-name">{second.name}</span>
+            </h2>
+            {wedding.blessing && <p data-line className="ic-blessing">{wedding.blessing}</p>}
+
+            <LotusDivider className="ic-divider" />
+            <GoldLabel>Counting the days</GoldLabel>
+            <div className="mt-3.5 w-full">
+              <Countdown iso={wedding.dateISO} />
+            </div>
+            <p data-line className="ic-until">
+              until the Muhurtham · <b>{date.day} {date.month} {date.year}</b>
+            </p>
+
+            <LotusDivider className="ic-divider" />
+            <GoldLabel>The Destination</GoldLabel>
+            <p data-line className="ic-venue mt-2.5">{venue.name}</p>
+            <p data-line className="ic-city mt-2">
+              <Pin className="h-[1em] w-auto" />
+              {wedding.city}
+            </p>
+            <a data-line href={mapsUrl(venue.mapsQuery)} target="_blank" rel="noopener noreferrer" className="ic-btn">
+              Get Directions
+            </a>
+
+            <p data-line className="ic-await">We await your gracious presence</p>
+            {wedding.families && (
+              <p data-line className="ic-families mt-2.5">
+                <span aria-hidden className="ic-families-line" />
+                {wedding.families}
+              </p>
+            )}
+          </div>
         </div>
       </div>
       </div>

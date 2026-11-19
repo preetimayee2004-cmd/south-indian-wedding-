@@ -366,3 +366,344 @@ html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 4rem);
   mask-image: linear-gradient(to bottom, transparent, #000 4rem);
 }
+
+/* ── The invitation card in the arch ──────────────────────────────── */
+.invite-card {
+  --gold: #b8893e;
+  --gold-l: #e8c56b;
+  --maroon: #7a1f2b;
+  --brown: #3a1f16;
+  --parch: #f7ecd3;
+  --parch-d: #efddb8;
+  padding: clamp(28px, 4vw, 56px);
+  text-align: center;
+  color: var(--brown);
+  font-family: "EB Garamond", Georgia, serif;
+}
+.invite-card .ic-deva,
+.ic-invocation,
+.ic-blessing {
+  font-family: "Tiro Devanagari Hindi", "EB Garamond", serif;
+  font-weight: 400;
+  color: var(--maroon);
+}
+.ic-invocation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: clamp(15px, 1.6vw, 20px);
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+}
+.ic-side-line {
+  display: block;
+  width: clamp(18px, 3vw, 44px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.ic-side-line:last-child {
+  transform: scaleX(-1);
+}
+
+/* "DEAR", "COUNTING THE DAYS", "THE DESTINATION" */
+.ic-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(5px, 0.6vw, 8px);
+  font-size: clamp(12px, 1.1vw, 15px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  line-height: 1.4;
+  color: var(--gold);
+}
+.ic-label-text {
+  margin-right: -0.4em; /* the tracking after the last letter */
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.ic-label-line {
+  display: block;
+  flex: 0 1 clamp(18px, 2.4vw, 34px);
+  min-width: 6px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold));
+}
+.ic-label-line--r {
+  transform: scaleX(-1);
+}
+.ic-diamond {
+  display: block;
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+.ic-guest {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(38px, 4.5vw, 60px);
+  line-height: 1.15;
+  color: var(--maroon);
+}
+.ic-lead {
+  max-width: 32ch;
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--brown);
+}
+.ic-body {
+  max-width: 34ch;
+  margin-bottom: 12px;
+  font-size: clamp(16px, 1.4vw, 19px);
+  font-weight: 400;
+  line-height: 1.6;
+  color: rgb(58 31 22 / 0.85);
+}
+
+/* the couple's names: gold gradient, a shine sweeping across every 5 s */
+.ic-names {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 400;
+}
+.ic-name {
+  display: block;
+  margin: -0.12em -0.25em;
+  padding: 0.12em 0.25em; /* room for the script's swashes inside the clipped gradient */
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(56px, 7.5vw, 92px);
+  line-height: 1.05;
+  white-space: nowrap;
+  color: transparent;
+  background-image:
+    linear-gradient(105deg, transparent 42%, rgb(255 248 225 / 0.95) 50%, transparent 58%),
+    linear-gradient(90deg, #b8893e, #e8c56b, #b8893e);
+  background-size: 250% 100%, 100% 100%;
+  background-repeat: no-repeat;
+  background-position: 150% 0, 0 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* the maroon edge for readability (a drop-shadow, so it sits under the gold) */
+  filter: drop-shadow(0 1px 0 #7a1f2b);
+  animation: ic-shimmer 5s ease-in-out infinite;
+}
+.ic-name + .ic-amp + .ic-name {
+  animation-delay: 0.25s;
+}
+@keyframes ic-shimmer {
+  0% { background-position: 150% 0, 0 0; }
+  28%, 100% { background-position: -50% 0, 0 0; }
+}
+/* "&" in a small gold lotus medallion, 1.6× the character height */
+.ic-amp {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 1.95em;
+  height: 1.95em;
+  margin: 0.08em 0;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(26px, 3vw, 38px);
+  line-height: 1;
+  color: var(--maroon);
+}
+.ic-amp-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ic-amp > .relative {
+  transform: translateY(0.06em);
+}
+.ic-blessing {
+  margin-top: 10px;
+  font-size: clamp(17px, 1.8vw, 23px);
+  letter-spacing: 0.2em;
+  line-height: 1.5;
+}
+.ic-divider {
+  margin: 28px auto;
+}
+
+.ic-until {
+  margin-top: 14px;
+  font-size: clamp(15px, 1.3vw, 18px);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--brown);
+}
+.ic-until b {
+  font-weight: 600;
+  color: var(--maroon);
+}
+
+.ic-venue {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(36px, 4.2vw, 56px);
+  line-height: 1.15;
+  color: var(--maroon);
+}
+.ic-city {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: clamp(16px, 1.4vw, 19px);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--brown);
+}
+
+.ic-btn {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  margin: 20px 0 28px;
+  padding: 14px 28px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: var(--maroon);
+  color: var(--parch);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  line-height: 1.2;
+  box-shadow: 0 6px 16px rgb(122 31 43 / 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ic-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(232 197 107 / 0.55) 50%, transparent 65%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.ic-btn:hover::after {
+  transform: translateX(120%);
+}
+.ic-btn:active {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 3px 8px rgb(122 31 43 / 0.25);
+}
+
+.ic-await {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(30px, 3.4vw, 44px);
+  line-height: 1.2;
+  color: var(--maroon);
+}
+.ic-families {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(15px, 1.3vw, 18px);
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--gold);
+}
+.ic-families-line {
+  display: block;
+  flex: none;
+  width: 22px;
+  height: 1px;
+  background: var(--gold);
+}
+
+/* ── Countdown: temple-niche boxes ── */
+.cd-row {
+  --cd-gap: clamp(8px, 1.2vw, 16px);
+  display: flex;
+  justify-content: center;
+  gap: var(--cd-gap);
+}
+.cd-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: clamp(64px, 8vw, 96px);
+  aspect-ratio: 1 / 1.15;
+  border: 1px solid #b8893e;
+  border-radius: 10px;
+  background: #efddb8;
+  box-shadow: 0 4px 10px rgb(122 31 43 / 0.15);
+}
+.cd-box::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgb(184 137 62 / 0.7);
+  border-radius: 7px;
+  pointer-events: none;
+}
+.cd-crest {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 46%;
+  height: 9px;
+  transform: translateX(-50%);
+  overflow: visible;
+}
+.cd-dot {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--cd-gap) / -2);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #b8893e;
+  transform: translate(-50%, -50%);
+}
+.cd-num {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 1.1em;
+  font-size: clamp(30px, 3.6vw, 46px);
+  font-weight: 600;
+  line-height: 1.1;
+  color: #7a1f2b;
+  font-variant-numeric: lining-nums tabular-nums;
+  perspective: 240px;
+}
+.cd-digit {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+.cd-out {
+  transform-origin: 50% 0%;
+  animation: cd-out 0.4s ease-in forwards;
+}
+.cd-in {
+  transform-origin: 50% 100%;
+  animation: cd-in 0.4s ease-out both;
+}
+@keyframes cd-out {
+  to { transform: rotateX(90deg) translateY(-20%); opacity: 0; }
+}
+@keyframes cd-in {
+  from { transform: rotateX(-90deg) translateY(20%); opacity: 0; }
+}
+.cd-label {
+  margin-top: 0.4em;
+  margin-right: -0.2em;
+  font-size: clamp(9px, 0.85vw, 12px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  line-height: 1;
+  color: #b8893e;
+}
