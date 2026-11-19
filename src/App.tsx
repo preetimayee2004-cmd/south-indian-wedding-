@@ -23,8 +23,13 @@ export default function App() {
   const scenes = !reduced;
   const [showOpening, setShowOpening] = useState(() => opening.enabled && !skipIntroByUrl());
   const [revealed, setRevealed] = useState(!showOpening);
-  // Both scene pictures are decoded before anything animates.
-  const artReady = usePreload([media.invitation, media.couple].map((s) => s.replace(/\.webp$/, "@2x.webp")));
+  // The hero picture and the couple scene's three layers are decoded before anything animates.
+  const artReady = usePreload([
+    media.invitation.replace(/\.webp$/, "@2x.webp"),
+    media.coupleWalk.bg.replace(/\.webp$/, "@2x.webp"),
+    media.coupleWalk.bride,
+    media.coupleWalk.groom,
+  ]);
 
   // 3 s after the envelope hands over, glide slowly through the hero down to the
   // invitation; any touch, wheel, key or click stops it (lib/smooth).

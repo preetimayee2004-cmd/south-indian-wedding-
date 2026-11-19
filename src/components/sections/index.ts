@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import type { SectionId } from "@/config/types";
 import { Invitation } from "./Invitation";
-import { CoupleFrame } from "./CoupleFrame";
+import { CoupleStill } from "@/components/scenes/CoupleScene";
 import { Gallery } from "./Gallery";
 import { Family } from "./Family";
 import { WishingWall } from "./WishingWall";
@@ -19,7 +19,7 @@ const InsideFrame: ComponentType = () => null;
 export const SECTION_REGISTRY: Record<SectionId, ComponentType> = {
   invitation: Invitation,
   events: InsideFrame,
-  couple: CoupleFrame,
+  couple: CoupleStill,
   gallery: Gallery,
   family: Family,
   wishingWall: WishingWall,

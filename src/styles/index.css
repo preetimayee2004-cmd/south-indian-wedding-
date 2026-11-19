@@ -209,6 +209,62 @@
   }
 }
 
+/* ── The couple scene ─────────────────────────────────────────────── */
+/* Sizes come from the scene box (container units): the stage keeps the
+   background's shape (1376×768), covers the box, and is framed on where the
+   couple meet (x 49.9%) with their feet and a strip of floor in view. */
+.couple-room {
+  --r: 1.7917;
+  --H: max(100cqh, 100cqw / var(--r));
+  --W: calc(var(--H) * var(--r));
+  --top: clamp(100cqh - var(--H), 100cqh - var(--H) * 0.97, 0px);
+  /* the names fill the sky above their heads (heads at 31.5% of the stage) */
+  --names-top: max(env(safe-area-inset-top), 2.5cqh);
+  --names-h: calc(var(--top) + var(--H) * 0.315 - var(--names-top) - 12px);
+}
+.couple-stage {
+  position: absolute;
+  width: var(--W);
+  height: var(--H);
+  left: clamp(100cqw - var(--W), 50cqw - var(--W) * 0.499, 0px);
+  top: var(--top);
+}
+.couple-names {
+  top: var(--names-top);
+  height: var(--names-h);
+  font-size: min(var(--names-h) / 2.75, 12.5cqw, 5.5rem);
+}
+.couple-amp {
+  font-size: 0.55em;
+}
+/* a soft cream glow behind the names so they read over the temples */
+.couple-glow {
+  text-shadow: 0 0 6px #fbf2dc, 0 0 16px #fbf2dc, 0 0 30px rgb(251 242 220 / 0.85);
+}
+.couple-glow::before {
+  content: "";
+  position: absolute;
+  inset: -16% -26%;
+  z-index: -1;
+  background: radial-gradient(ellipse closest-side, rgb(251 242 220 / 0.9), rgb(251 242 220 / 0.55) 55%, transparent);
+}
+/* resting: each one breathes (scale 1 → 1.015 every 3 s), outside the scroll */
+@keyframes couple-idle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.015); }
+}
+.couple-idle {
+  transform-origin: 50% 100%;
+  animation: couple-idle 3s ease-in-out infinite;
+}
+/* reduced motion: the still version simply fades in */
+@keyframes couple-fade {
+  from { opacity: 0; }
+}
+.couple-fade {
+  animation: couple-fade 0.8s ease-out both;
+}
+
 @keyframes chevron {
   0% { transform: translateY(-3px); opacity: 0; }
   40% { opacity: 1; }
@@ -284,3 +340,9 @@
 }
 svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 
+
+/* The section after the couple scene rises over it with a soft leading edge (no hard line). */
+html.motion .sec:has(#couple) + .sec[data-enter="cover"] {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 4rem);
+  mask-image: linear-gradient(to bottom, transparent, #000 4rem);
+}

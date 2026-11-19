@@ -45,9 +45,9 @@ export interface SceneEntry {
 export const SCENES: Record<SectionId, SceneEntry> = {
   invitation: { Component: InvitationStage, enter: "flow", z: 10 }, // hero → the arch with the invitation, countdown, destination
   events: { Component: EventsSlider, enter: "flow", z: 12 }, // one event at a time, sliding sideways
-  couple: { Component: CoupleScene, enter: "flow", z: 14 }, // the couple glide down and come to rest
+  couple: { Component: CoupleScene, enter: "flow", z: 14 }, // bride and groom walk in from both sides and meet
   gallery: { Component: JourneyScene, enter: "flow", z: 18 }, // the love-story runway
-  family: { Component: FamiliesScene, enter: "flow", z: 16 }, // scrolls normally; lotus plants grow
+  family: { Component: FamiliesScene, enter: "cover", z: 16 }, // rises over the couple scene; lotus plants grow
   rsvp: { Component: RsvpScene, enter: "cover", z: 40 },
   wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },
   travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue

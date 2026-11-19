@@ -221,6 +221,12 @@ export interface WeddingConfig {
     invitationWide?: { src: string; peek: number };
     /** The couple scene (landscape), also used by Thank You. */
     couple: string;
+    /**
+     * The couple scene in layers: the temple background with nobody in it (bg, landscape
+     * 1376×768, prepared with scripts/prepare-art.mjs) and the bride and groom as
+     * transparent cutouts (scripts/cut-white-bg.mjs), who walk in from both sides and meet.
+     */
+    coupleWalk: { bg: string; bride: string; groom: string };
     events: string;
     family: string;
     rsvp: string;

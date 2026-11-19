@@ -184,6 +184,8 @@ const weddingConfig: WeddingConfig = {
     // >900px wide screens; used automatically once prepared with scripts/prepare-art.mjs
     invitationWide: { src: "/media/temple-hero-wide.webp", peek: 0.3 },
     couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky
+    // the couple scene: empty temple background + the bride and groom cut out (they walk in and meet)
+    coupleWalk: { bg: "/media/couple-bg.webp", bride: "/media/couple-bride.webp", groom: "/media/couple-groom.webp" },
     events: "/media/pillar-frame.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
