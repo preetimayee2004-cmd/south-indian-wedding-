@@ -137,6 +137,9 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
               />
             </svg>
             Scroll down
+            <svg viewBox="0 0 24 22" className="hero-scroll-arrows">
+              <path d="M4 3l8 7 8-7M4 12l8 7 8-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
         </div>
       </div>

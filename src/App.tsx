@@ -12,7 +12,6 @@ import { useWedding } from "@/context/WeddingContext";
 import { IntroContext } from "@/context/IntroContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap, refreshSoon } from "@/lib/gsap";
-import { autoScrollAfterIntro } from "@/lib/smooth";
 import { watchFit } from "@/lib/fitText";
 
 const skipIntroByUrl = () => new URLSearchParams(window.location.search).has("nointro");
@@ -33,15 +32,8 @@ export default function App() {
     media.coupleWalk.groom,
   ]);
 
-  // 3 s after the envelope hands over, glide slowly through the hero down to the
-  // invitation; any touch, wheel, key or click stops it (lib/smooth).
   // long names or details never get cut: marked lines shrink just enough to fit (lib/fitText)
   useEffect(() => watchFit(), []);
-
-  useEffect(() => {
-    if (!revealed || reduced) return;
-    return autoScrollAfterIntro("#invitation");
-  }, [revealed, reduced]);
 
   // "Replay Invitation" (thank-you page): back to the top and the envelope opens again
   useEffect(() => {

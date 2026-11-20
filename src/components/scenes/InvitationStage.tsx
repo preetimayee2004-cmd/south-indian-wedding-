@@ -91,7 +91,7 @@ export function ArchScene() {
       // the mandapam rises a little faster than the page and docks as it arrives
       gsap.fromTo(
         r.current.box,
-        { y: () => window.innerHeight * 0.3 },
+        { y: () => window.innerHeight * 0.08 },
         { y: 0, ease: "power1.out", scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 45%", scrub: SCRUB, invalidateOnRefresh: true } },
       );
       gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
@@ -112,9 +112,9 @@ export function ArchScene() {
     <section ref={root} id="invitation" aria-labelledby="invite-heading" className="parchment-ground relative overflow-x-clip pb-10">
       {/* the temple's stone floor ends here on a carved kerb, then parchment */}
       <div aria-hidden className="ground-kerb" />
-      <div aria-hidden className="h-[96px]" />
-      {/* the mandapam: full width, at least 31.75rem (on phones the pillars sit at the screen edges) */}
-      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "max(31.75rem, 100vw)" }}>
+      <div aria-hidden className="h-[clamp(36px,6.5vw,96px)]" />
+      {/* the mandapam: the full screen width, the whole of it in view on phones as on laptops */}
+      <div className="relative left-1/2 -translate-x-1/2" style={{ width: "100vw" }}>
         <div ref={set("box")} data-layer className="relative w-full">
           <div aria-hidden ref={set("top")} className="absolute inset-x-0 top-0" style={{ ...layer, backgroundSize: "100% auto", backgroundPosition: "center top" }} />
           <div aria-hidden ref={set("mid")} className="absolute inset-x-0" style={layer} />
