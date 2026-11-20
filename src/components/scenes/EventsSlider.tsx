@@ -97,7 +97,7 @@ function EventText({ e, i, n, timeZone, venueQuery }: { e: WeddingEvent; i: numb
 }
 
 /**
- * The celebrations, on the blue sky: one painted golden temple doorway (crest,
+ * The celebrations, on red silk cloth: one painted golden temple doorway (crest,
  * garlands and bells, carved pillars, banana leaves, brass lamps, a pedestal with
  * a lotus) holding one event at a time on its ivory panel. The doorway never
  * changes; each event's words glide in sideways like turning the page of an
@@ -227,12 +227,12 @@ export function EventsSlider() {
       ref={root}
       id="events"
       aria-labelledby="events-heading"
-      className="cobalt ev-section relative"
+      className="ev-cloth ev-section relative"
       style={{ ["--ev-accent" as string]: t.accent, ["--ev-soft" as string]: t.soft, ["--door-art" as string]: `image-set(url("${DOOR}") 1x, url("${DOOR.replace(/\.webp$/, "@2x.webp")}") 2x)` } as CSSProperties}
       onPointerDown={stop}
       onKeyDown={stop}
     >
-      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />
+      <div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#870606" }} />
       <h2 id="events-heading" className="sr-only">
         The wedding celebrations
       </h2>

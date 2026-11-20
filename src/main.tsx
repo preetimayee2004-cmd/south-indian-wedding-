@@ -8,6 +8,7 @@ import "@fontsource/eb-garamond/600.css";
 import "@fontsource/eb-garamond/400-italic.css";
 import "@fontsource/eb-garamond/500-italic.css";
 import "@fontsource/tiro-devanagari-hindi/devanagari-400.css";
+import "@fontsource/yeseva-one/400.css";
 import "./styles/index.css";
 import weddingConfig from "@/config/wedding.config";
 import { WeddingProvider } from "@/context/WeddingContext";

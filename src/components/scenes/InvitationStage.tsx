@@ -7,7 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { Flourish, GoldLabel, JasmineDivider, Kalasam, LotusMedallion, Pin } from "./invite/Ornaments";
+import { Flourish, GoldLabel, JasmineDivider, LotusMedallion, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
 function dateParts(iso: string, timeZone: string) {
@@ -95,6 +95,7 @@ export function ArchScene() {
       Object.assign($.bot!.style, { height: `${(ARCH_H - SLICE_END) * k}px` });
       Object.assign($.panel!.style, { top: `${panelTop}px`, bottom: `${panelBottom}px` });
       $.panel!.style.setProperty("--sheet-h", `${Hn + extra - panelTop - panelBottom}px`);
+      $.panel!.style.setProperty("--sheet-w", `${$.panel!.offsetWidth}px`);
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -114,7 +115,7 @@ export function ArchScene() {
       );
       const boxes = gsap.utils.toArray<HTMLElement>("[data-box]", r.current.col);
       if (boxes.length)
-        gsap.from(boxes, { y: 26, opacity: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", scrollTrigger: { trigger: boxes[0], start: "top 94%", once: true } });
+        gsap.from(boxes, { y: 26, opacity: 0, duration: 0.6, stagger: 0.12, ease: "power2.out", scrollTrigger: { trigger: boxes[0], start: "top 85%", once: true } });
       const col = r.current.col!;
       const panel = r.current.panel!;
       // the flourishes under the names draw themselves (left → right) when the names appear
@@ -127,8 +128,10 @@ export function ArchScene() {
       });
       // the marigold strings grow down the zari borders as you read through the sheet
       gsap.fromTo(panel.querySelectorAll("[data-garland]"), { yPercent: -100 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: panel, start: "top 60%", end: "bottom bottom", scrub: SCRUB } });
+      const kalash = col.querySelector(".ic-kalash-wrap");
+      if (kalash) gsap.fromTo(kalash, { autoAlpha: 0, scale: 0.85 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "power2.out", scrollTrigger: { trigger: kalash, start: "top 85%", once: true } });
       gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
-        gsap.from(el, { opacity: 0, y: 18, duration: 0.7, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 94%", once: true } }),
+        gsap.fromTo(el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, delay: el.closest(".ic-top") ? 0.25 : 0, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 85%", once: true } }),
       );
     }, root);
     return () => ctx.revert();
@@ -172,6 +175,23 @@ export function ArchScene() {
             </span>
           ))}
           <span aria-hidden className="ic-pallu" />
+          <img aria-hidden src="/media/toran.webp" alt="" className="ic-toran" draggable={false} />
+          {["l", "r"].map((side) => (
+            <span key={`s${side}`} aria-hidden className={`ic-strand ic-strand--${side}`} />
+          ))}
+          {["l", "r"].map((side) => (
+            <span key={`lamp${side}`} aria-hidden className={`ic-oil-lamp ic-oil-lamp--${side}`}>
+              <svg viewBox="-20 -46 40 66">
+                <path className="ic-oil-flame" d="M0-44C4-37 4-31 0-27-4-31-4-37 0-44Z" />
+                <path d="M-15-26C-15-19-8-15 0-15S15-19 15-26Z" fill="#c8961e" stroke="#7a5418" strokeWidth="0.8" />
+                <ellipse cy="-26" rx="15" ry="3.4" fill="#e9c46a" stroke="#7a5418" strokeWidth="0.8" />
+                <path d="M-3-15H3L4 6H-4Z" fill="#b8862e" stroke="#7a5418" strokeWidth="0.7" />
+                <ellipse cy="-4" rx="6" ry="2" fill="#e9c46a" stroke="#7a5418" strokeWidth="0.6" />
+                <path d="M-13 6H13L17 16H-17Z" fill="#c8961e" stroke="#7a5418" strokeWidth="0.8" />
+                <rect x="-19" y="16" width="38" height="4" rx="1" fill="#8f6726" />
+              </svg>
+            </span>
+          ))}
           <span aria-hidden className="ic-drift">
             {Array.from({ length: 6 }, (_, i) => (
               <i key={i} style={{ left: `${12 + ((i * 37) % 76)}%`, animationDelay: `${-i * 4.3}s`, animationDuration: `${22 + (i % 3) * 5}s` }} />
@@ -179,9 +199,12 @@ export function ArchScene() {
           </span>
           <div ref={set("col")} className="invite-card mx-auto flex w-full flex-col items-center">
             {wedding.invocation && (
-              <div data-line className="flex flex-col items-center">
-                <Kalasam className="h-[clamp(26px,2.4vw,34px)] w-auto" />
-                <p className="ic-invocation mt-2">
+              <div className="ic-top flex flex-col items-center">
+                <span className="ic-kalash-wrap">
+                  <span aria-hidden className="ic-kalash-glow" />
+                  <img src="/media/kalash.webp" alt="A copper kalash with mango leaves and a coconut" className="ic-kalash" draggable={false} />
+                </span>
+                <p data-line className="ic-invocation">
                   <span aria-hidden className="ic-side-line" />
                   <span>{wedding.invocation}</span>
                   <span aria-hidden className="ic-side-line" />
@@ -212,8 +235,8 @@ export function ArchScene() {
             {wedding.blessing && <p data-line className="ic-blessing">{wedding.blessing}</p>}
 
             <JasmineDivider className="ic-divider" />
-            <GoldLabel>Counting the days</GoldLabel>
-            <div className="mt-3.5 w-full">
+            <div className="ic-cd-band">
+              <GoldLabel>Counting the days</GoldLabel>
               <Countdown iso={wedding.dateISO} />
             </div>
             <p data-line className="ic-until">

@@ -43,7 +43,20 @@ export function watchFit(): () => void {
   };
   soon();
   document.fonts?.ready.then(soon).catch(() => undefined);
+  // fonts used later on the page load later too
+  document.fonts?.addEventListener?.("loadingdone", soon);
   window.addEventListener("resize", soon);
+  // and when a box with fitted text changes size (a sheet growing, a column narrowing)
+  const ro = new ResizeObserver(soon);
+  const observeBoxes = () => {
+    ro.disconnect();
+    document.querySelectorAll<HTMLElement>("[data-fit]").forEach((el) => {
+      const box = el.dataset.fit ? el.parentElement?.closest<HTMLElement>(el.dataset.fit) : el.parentElement;
+      if (box) ro.observe(box);
+    });
+  };
+  observeBoxes();
+  window.setTimeout(observeBoxes, 1500);
   const mo = new MutationObserver((list) => {
     // only real content changes (not our own font sizes, and not the ticking countdown)
     const real = list.some((m) => {
@@ -56,6 +69,8 @@ export function watchFit(): () => void {
   return () => {
     window.clearTimeout(t);
     window.removeEventListener("resize", soon);
+    document.fonts?.removeEventListener?.("loadingdone", soon);
+    ro.disconnect();
     mo.disconnect();
   };
 }

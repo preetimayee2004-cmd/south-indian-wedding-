@@ -1629,7 +1629,18 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 }
 
 
-/* ── The events: the painted temple doorway on the sky, one event at a time ── */
+/* ── The events: the painted temple doorway on red silk, one event at a time ── */
+/* the red cloth with jasmine, banana leaves and gold kolam corners: upright on tall
+   screens, turned on its side for wide ones */
+.ev-cloth {
+  background: #870606 url("/media/red-cloth.webp") center / cover no-repeat;
+  color: #fbf2dc;
+}
+@media (min-aspect-ratio: 1/1) {
+  .ev-cloth {
+    background-image: url("/media/red-cloth-wide.webp");
+  }
+}
 .ev-section {
   display: flex;
   align-items: center;
@@ -1664,7 +1675,7 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   position: relative;
   width: 100%;
   aspect-ratio: 860 / 742;
-  filter: drop-shadow(0 18px 28px rgb(0 30 80 / 0.32));
+  filter: drop-shadow(0 18px 28px rgb(40 0 0 / 0.45));
 }
 .ev-door-slice {
   position: absolute;
@@ -1892,8 +1903,8 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(251 242 220 / 0.62);
-  text-shadow: 0 1px 8px rgb(0 30 90 / 0.6);
+  color: rgb(251 242 220 / 0.7);
+  text-shadow: 0 1px 6px rgb(40 0 0 / 0.6);
   transition: color 0.3s ease;
 }
 .ev-rail-num,
@@ -2014,4 +2025,276 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   0%, 100% { transform: translate(0, 0) scale(1); }
   45% { transform: translate(-6px, -8px) scale(0.92); }
   55% { transform: translate(-6px, -8px) scale(0.92); }
+}
+
+
+/* ── The invitation, bold and rich ─────────────────────────────────── */
+/* real paisley buttas in gold on the parchment and on the silk sheet */
+.parchment-ground {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'76'%20height%3D'76'%3E%3Cg%20fill%3D'%23C8961E'%20fill-opacity%3D'.12'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Cpath%20d%3D'M60%2046c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-8%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+.ic-sheet {
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'76'%20height%3D'76'%3E%3Cg%20fill%3D'%23C8961E'%20fill-opacity%3D'.12'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Cpath%20d%3D'M60%2046c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-8%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
+    repeating-linear-gradient(45deg, rgb(122 31 43 / 0.03) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgb(184 137 62 / 0.03) 0 1px, transparent 1px 4px);
+}
+/* the words: a wide column (78% of the sheet, at most 760px), larger and darker */
+.ic-sheet > .invite-card,
+.invite-card {
+  width: min(78%, 760px);
+  /* starts below the garland's centre fan (about 17% of the sheet's width down) */
+  /* and ends above the brass lamps in the bottom corners */
+  padding: calc(var(--sheet-w, 600px) * 0.17) 0 clamp(100px, 12vw, 160px);
+  --gold-x: #c8961e;
+}
+.invite-card .ic-lead,
+.invite-card .ic-body,
+.invite-card .ic-until,
+.invite-card .ic-city,
+.invite-card .ic-families {
+  max-width: none;
+  font-size: clamp(19px, 2.1vw, 27px);
+  font-weight: 500;
+  line-height: 1.45;
+  color: #3a1f16;
+}
+.invite-card .ic-families {
+  color: #8a5d12;
+}
+.invite-card .ic-lead {
+  margin-top: 10px;
+}
+.invite-card .ic-body {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+.invite-card .ic-label,
+.invite-card .cd-label {
+  font-size: clamp(14px, 1.4vw, 18px);
+}
+.invite-card .ic-label {
+  color: #a8740f;
+}
+/* gold accents, lines 2px */
+.invite-card .ic-label-line,
+.invite-card .ic-side-line,
+.invite-card .ic-rule i,
+.invite-card .ic-families-line {
+  height: 2px;
+}
+.invite-card .ic-label-line,
+.invite-card .ic-side-line {
+  background: linear-gradient(90deg, transparent, #c8961e);
+}
+.invite-card .ic-diamond {
+  background: #c8961e;
+}
+.invite-card .ic-families-line {
+  background: #c8961e;
+}
+.invite-card .ic-invocation {
+  margin-top: 8px;
+  font-size: clamp(17px, 1.9vw, 24px);
+}
+.invite-card .ic-divider {
+  margin: 18px auto;
+}
+/* the guest's name under "DEAR" */
+.invite-card .ic-guest {
+  margin-top: 4px;
+  font-size: clamp(54px, 7vw, 96px);
+  line-height: 1.1;
+}
+/* the couple's names: Yeseva One, a maroon gradient with a fine gold edge */
+.invite-card .ic-name {
+  font-family: "Yeseva One", Georgia, serif;
+  font-size: clamp(64px, 10.5vw, 140px);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: visible;
+  padding: 0.04em 0.06em 0.08em;
+  color: #5e1220;
+  background: linear-gradient(180deg, #8e1b2e, #5e1220);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px #c8961e;
+  text-shadow: none;
+  filter: drop-shadow(0 3px 6px rgb(94 18 32 / 0.25));
+}
+.invite-card .ic-name::after {
+  display: none;
+}
+/* "&" in gold, in a lotus medallion twice the size */
+.invite-card .ic-amp {
+  width: 2.6em;
+  height: 2.6em;
+  margin: 0.15em 0;
+  font-size: clamp(34px, 4.5vw, 56px);
+  color: #c8961e;
+}
+/* the kalash at the top, with a soft golden glow */
+.ic-kalash-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(150px, 20vw, 240px);
+}
+.ic-kalash {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.ic-kalash-glow {
+  position: absolute;
+  inset: -12% -16% -6%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(248 205 110 / 0.55), rgb(248 205 110 / 0.18) 55%, transparent);
+}
+/* the countdown on a full-width deep maroon band, gold above and below, a faint gold lattice */
+.ic-cd-band {
+  position: relative;
+  z-index: 2; /* the garland strings pass behind it */
+  width: var(--sheet-w, 100%);
+  margin: 14px calc((100% - var(--sheet-w, 100%)) / 2) 0;
+  padding: 18px 12px 22px;
+  border-block: 3px solid #c8961e;
+  box-shadow: inset 0 1px 0 #f0cf7a, inset 0 -1px 0 #f0cf7a;
+  background-color: #6b1424;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23C8961E'%20stroke-opacity%3D'.18'%20stroke-width%3D'1'%3E%3Cpath%20d%3D'M14%202%2026%2014%2014%2026%202%2014Z'%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D'14'%20cy%3D'14'%20r%3D'1.4'%20fill%3D'%23C8961E'%20fill-opacity%3D'.25'%2F%3E%3C%2Fsvg%3E");
+  color: #f7ecd3;
+}
+.ic-cd-band .ic-label {
+  color: #f0cf7a;
+}
+.ic-cd-band .ic-label-line,
+.ic-cd-band .ic-label-line--r {
+  background: linear-gradient(90deg, transparent, #f0cf7a);
+}
+.ic-cd-band .ic-diamond {
+  background: #f0cf7a;
+}
+.ic-cd-band .cd-hang {
+  margin-top: 10px;
+}
+.ic-cd-band .cd-box {
+  width: clamp(70px, 10vw, 128px);
+  background: rgb(255 255 255 / 0.05);
+  border: 2px solid #c8961e;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.3);
+}
+.ic-cd-band .cd-box::before {
+  border-color: rgb(240 207 122 / 0.45);
+}
+.ic-cd-band .cd-num {
+  font-size: clamp(40px, 5vw, 64px);
+  color: #f0cf7a;
+}
+.ic-cd-band .cd-label {
+  /* small enough to sit inside the boxes on a phone */
+  font-size: clamp(11px, 1.3vw, 17px);
+  letter-spacing: 0.1em;
+  margin-right: -0.1em;
+  color: #f7ecd3;
+}
+.ic-cd-band .cd-crest path {
+  fill: #6b1424;
+  stroke: #c8961e;
+}
+.ic-cd-band .cd-dot {
+  background: #f0cf7a;
+}
+.invite-card .ic-until {
+  margin-top: 14px;
+}
+/* the venue, back on the cream sheet */
+.invite-card .ic-venue {
+  font-family: "Yeseva One", Georgia, serif;
+  font-size: clamp(34px, 4.5vw, 60px);
+  line-height: 1.1;
+  color: #6b1424;
+}
+/* the garlands: the toran across the top of the sheet (its side strings are the short corner
+   garlands), and a long marigold string down each side to about 70% of the sheet */
+.ic-toran {
+  position: absolute;
+  top: 0;
+  left: 2%;
+  z-index: 1;
+  width: 96%;
+  height: auto;
+  pointer-events: none;
+  transform-origin: 50% 0;
+  animation: ic-sway 6s ease-in-out infinite;
+}
+.ic-strand {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: clamp(16px, 1.8vw, 26px);
+  height: calc(var(--sheet-h, 1000px) * 0.7);
+  pointer-events: none;
+  background: url("/media/marigold-tile.webp") top center / 100% auto repeat-y;
+  transform-origin: 50% 0;
+  animation: ic-sway 5s ease-in-out infinite;
+}
+.ic-strand::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 56 / 114;
+  background: url("/media/marigold-tip.webp") top center / 100% auto no-repeat;
+}
+.ic-strand--l {
+  left: max(10px, 4%);
+}
+.ic-strand--r {
+  right: max(10px, 4%);
+  animation-delay: -2.5s;
+}
+@keyframes ic-sway {
+  0%, 100% { transform: rotate(-0.6deg); }
+  50% { transform: rotate(0.6deg); }
+}
+/* a brass oil lamp with a flickering flame in each bottom corner of the sheet */
+.ic-oil-lamp {
+  position: absolute;
+  bottom: clamp(10px, 2vw, 26px);
+  z-index: 1;
+  width: clamp(36px, 5vw, 64px);
+  pointer-events: none;
+}
+.ic-oil-lamp--l { left: max(10px, 3%); }
+.ic-oil-lamp--r { right: max(10px, 3%); }
+.ic-oil-lamp svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.ic-oil-flame {
+  fill: #f6b532;
+  stroke: #e07a12;
+  stroke-width: 0.8;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 6px rgb(255 190 80 / 0.9));
+  animation: ic-flicker 1.6s ease-in-out infinite;
+}
+.ic-oil-lamp--r .ic-oil-flame {
+  animation-delay: -0.7s;
+}
+@keyframes ic-flicker {
+  0%, 100% { transform: scale(1, 1); opacity: 1; }
+  30% { transform: scale(0.92, 1.08) rotate(-3deg); opacity: 0.9; }
+  60% { transform: scale(1.05, 0.94) rotate(2deg); opacity: 1; }
+}
+/* the old growing marigolds in the zari borders give way to the new strings */
+.ic-sheet .ic-garland-clip {
+  display: none;
 }
