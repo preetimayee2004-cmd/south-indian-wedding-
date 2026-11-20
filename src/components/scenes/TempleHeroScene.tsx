@@ -65,18 +65,15 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     const H = () => temple.current!.offsetHeight; // full-width height at scale 1
     const peek = () => PEEK;
     const yStart = () => vh() - Math.min(peek() * H(), MAX_PEEK * vh()); // only the finials and roof top show, in the bottom 22% at most
-    const yEnd = () => Math.min(yStart(), vh() - H()); // the stone base and tree at the bottom edge
+    // the stone base at the bottom edge, 3px past it so no sliver of the blue sky can show beneath
+    const yEnd = () => Math.min(yStart(), vh() - H() + 3);
     const travel = () => yStart() - yEnd();
     // the temple rises exactly with the scroll (1:1), then holds while the leaves fall
     const RISE = Math.max(0.4, travel() / vh());
     const T = Math.max(1.6, RISE + 0.6);
 
-    // the text block moves up at half the temple's speed and has faded out before the temple reaches it
-    const textBottom = copy.current!.offsetTop + copy.current!.offsetHeight;
-    const meet = Math.min(1, Math.max(0.05, (yStart() - textBottom) / (0.5 * Math.max(1, travel())))); // share of the rise when they would touch
+    // the text stays where it is; the temple rises over it and covers it (it sits behind the temple)
     tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0)
-      .to(copy.current, { y: () => -travel() * 0.5, duration: RISE, ease: "none" }, 0)
-      .to(copy.current, { autoAlpha: 0, duration: RISE * meet * 0.55, ease: "none" }, RISE * meet * 0.3)
       .to({}, { duration: T - RISE }, RISE);
 
     // clouds drift sideways only, each at its own speed — they stay in the top quarter
