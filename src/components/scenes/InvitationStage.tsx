@@ -21,6 +21,9 @@ const SLICE_END = 506;
 /** Where the letter sits, in rows/columns of the art: under the lintel, between the pillars,
  *  ending above the lamps' flames. */
 const OPEN = { top: 300, bottom: 512, left: 168, right: 1024 };
+/** The cream between the pillars (under the lintel, down to the plinth, tucked under the shafts):
+ *  everything else behind the mandapam is filled with the carved, painted gopuram. */
+const CREAM = { top: 288, bottom: 596, left: 140, right: 1052 };
 
 function dateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -77,6 +80,7 @@ export function ArchScene() {
       });
       $.bot!.style.height = `${(ARCH_H - SLICE_END) * k}px`;
       Object.assign($.open!.style, { top: `${OPEN.top * k}px`, height: `${room + extra}px` });
+      Object.assign($.cream!.style, { top: `${CREAM.top * k}px`, height: `${(CREAM.bottom - CREAM.top) * k + extra}px` });
     };
     fit();
     const ro = new ResizeObserver(fit);
@@ -116,6 +120,14 @@ export function ArchScene() {
       {/* the mandapam: the full screen width, the whole of it in view on phones as on laptops */}
       <div className="relative left-1/2 -translate-x-1/2" style={{ width: "100vw" }}>
         <div ref={set("box")} data-layer className="relative w-full">
+          {/* behind the mandapam: the gopuram's tiers of painted deities, cornices and kudus */}
+          <div aria-hidden className="iv-temple" />
+          <div
+            aria-hidden
+            ref={set("cream")}
+            className="iv-cream parchment-ground absolute"
+            style={{ left: `${(CREAM.left / ARCH_W) * 100}%`, right: `${(1 - CREAM.right / ARCH_W) * 100}%` }}
+          />
           <div aria-hidden ref={set("top")} className="absolute inset-x-0 top-0" style={{ ...layer, backgroundSize: "100% auto", backgroundPosition: "center top" }} />
           <div aria-hidden ref={set("mid")} className="absolute inset-x-0" style={layer} />
           <div aria-hidden ref={set("bot")} className="absolute inset-x-0 bottom-0" style={{ ...layer, backgroundSize: "100% auto", backgroundPosition: "center bottom" }} />

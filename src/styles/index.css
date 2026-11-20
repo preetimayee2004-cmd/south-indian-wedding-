@@ -2586,3 +2586,46 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 .ic-sheet {
   background-color: #fbebc8;
 }
+
+/* behind the invitation's mandapam: the gopuram, from the hero's kerb down to the plinth,
+   easing in out of the parchment at the top; the cream sits only between the pillars */
+.iv-temple {
+  position: absolute;
+  inset: -96px 0 8% 0;
+  background: #3c8f86 url("/media/temple-facade.webp") center top / auto max(15vw, 96px) repeat;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 70px);
+  mask-image: linear-gradient(180deg, transparent, #000 70px);
+}
+.iv-temple::after {
+  /* a warm veil so the mandapam stays in front */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(247 236 211 / 0.18), rgb(247 236 211 / 0.05) 40%, rgb(60 20 10 / 0.12));
+}
+.iv-cream {
+  box-shadow: inset 0 14px 22px -14px rgb(80 40 10 / 0.35), inset 0 0 40px rgb(184 137 62 / 0.12);
+}
+
+/* ── The events: on the gopuram's painted tiers, drifting slowly sideways, under a deep
+   maroon veil so the doorway and the words stay in front ── */
+.ev-cloth,
+.ev-cloth:is(*) {
+  --ev-tile-h: clamp(190px, 30svh, 300px);
+  background-color: #4a0d0d;
+  background-image:
+    radial-gradient(ellipse at 50% 48%, rgb(40 6 8 / 0.42), rgb(40 6 8 / 0.08) 38%, rgb(50 6 10 / 0.35) 90%),
+    linear-gradient(180deg, rgb(70 8 12 / 0.5), transparent 22%, transparent 78%, rgb(70 8 12 / 0.55)),
+    url("/media/temple-facade.webp");
+  background-size: 100% 100%, 100% 100%, auto var(--ev-tile-h);
+  background-position: 0 0, 0 0, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat;
+  animation: ev-temple-drift 70s linear infinite;
+}
+@keyframes ev-temple-drift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to { background-position: 0 0, 0 0, calc(var(--ev-tile-h) * -4.886) 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ev-cloth { animation: none; }
+}
