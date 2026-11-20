@@ -1137,6 +1137,38 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   width: 14px;
   height: 16px;
   margin-top: -1px;
+  transform-origin: 50% 0%;
+  animation: bell-gentle-swing 3.2s ease-in-out infinite alternate;
+}
+@keyframes bell-gentle-swing {
+  0% {
+    transform: rotate(-2.5deg);
+  }
+  100% {
+    transform: rotate(2.5deg);
+  }
+}
+.cd-row > div:nth-child(1) .cd-bell {
+  animation-duration: 3.2s;
+  animation-delay: 0s;
+}
+.cd-row > div:nth-child(2) .cd-bell {
+  animation-duration: 2.8s;
+  animation-delay: -0.9s;
+}
+.cd-row > div:nth-child(3) .cd-bell {
+  animation-duration: 3.5s;
+  animation-delay: -1.8s;
+}
+.cd-row > div:nth-child(4) .cd-bell {
+  animation-duration: 3.1s;
+  animation-delay: -2.6s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-bell {
+    animation: none;
+    transform: none;
+  }
 }
 .cd-dot {
   top: calc(50% - 3px);
@@ -1273,11 +1305,6 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   justify-content: center;
 }
 /* the board: a warm wooden frame with a carved temple border, a recessed cream silk surface */
-/* the wall behind the board: deep maroon with a faint gold kolam */
-.gb-wall {
-  background-color: #5a0f1c;
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'80'%20height%3D'80'%3E%3Cg%20fill%3D'none'%20stroke%3D'%23E8C56B'%20stroke-opacity%3D'.08'%20stroke-width%3D'1.4'%3E%3Cpath%20d%3D'M40%206c19%200%2034%2015%2034%2034S59%2074%2040%2074%206%2059%206%2040%2021%206%2040%206Z'%2F%3E%3Cpath%20d%3D'M40%2018c12%200%2022%2010%2022%2022M40%2062c-12%200-22-10-22-22M18%2040c0-12%2010-22%2022-22M62%2040c0%2012-10%2022-22%2022'%2F%3E%3Cpath%20d%3D'M40%200v80M0%2040h80'%20stroke-dasharray%3D'2%206'%2F%3E%3C%2Fg%3E%3Cg%20fill%3D'%23E8C56B'%20fill-opacity%3D'.1'%3E%3Ccircle%20cx%3D'40'%20cy%3D'40'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'0'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'80'%20cy%3D'0'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'0'%20cy%3D'80'%20r%3D'2'%2F%3E%3Ccircle%20cx%3D'80'%20cy%3D'80'%20r%3D'2'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-}
 .gb-board {
   container-type: inline-size;
   position: relative;
@@ -1628,18 +1655,6 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 }
 
 
-/* ── The events: the painted temple doorway on red silk, one event at a time ── */
-/* the red cloth with jasmine, banana leaves and gold kolam corners: upright on tall
-   screens, turned on its side for wide ones */
-.ev-cloth {
-  background: #870606 url("/media/red-cloth.webp") center / cover no-repeat;
-  color: #fbf2dc;
-}
-@media (min-aspect-ratio: 1/1) {
-  .ev-cloth {
-    background-image: url("/media/red-cloth-wide.webp");
-  }
-}
 .ev-section {
   display: flex;
   align-items: center;
@@ -2413,151 +2428,385 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   letter-spacing: 0.18em;
 }
 
-/* ── The invitation letter, written straight on the cream between the mandapam's pillars ── */
+/* ── The luxury invitation letter card between the mandapam's pillars ── */
 .iv-letter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(88%, 640px);
-  padding: clamp(28px, 4vw, 56px) 0 clamp(36px, 5vw, 64px);
+  width: min(92%, 620px);
+  padding: clamp(24px, 3.5vw, 48px) 0 clamp(36px, 5vw, 64px);
   text-align: center;
-  color: #6e5b4b;
-  font-family: "EB Garamond", Georgia, serif;
+  box-sizing: border-box;
 }
+
+/* Card & Texture: double border (1px gold outer, 4px gap, thin inner gold line) + soft glow */
+.iv-card-panel {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 4px; /* 4px gap between outer and inner line */
+  border: 1px solid rgba(212, 175, 55, 0.7); /* 1px gold outer line */
+  border-radius: 6px;
+  background: #faf6ee;
+  box-shadow: 
+    0 16px 40px -10px rgba(70, 45, 15, 0.12),
+    0 4px 16px rgba(184, 137, 62, 0.08);
+  box-sizing: border-box;
+}
+
+.iv-card-inner {
+  position: relative;
+  width: 100%;
+  padding: clamp(28px, 4.5vw, 48px) clamp(12px, 3.2vw, 32px);
+  border: 1px solid rgba(212, 175, 55, 0.45); /* Thin inner gold line */
+  border-radius: 4px;
+  background: 
+    radial-gradient(ellipse at 50% 25%, #fffdfa 0%, #faf5ea 60%, #f4ede0 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
+  box-shadow: inset 0 0 40px rgba(180, 130, 40, 0.15); /* Soft inner glow */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Small ornamental corner motifs (kolam/lotus, SVG) */
+.iv-corner-motif {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  z-index: 2;
+}
+.iv-corner-motif--tl { top: 4px; left: 4px; }
+.iv-corner-motif--tr { top: 4px; right: 4px; transform: scaleX(-1); }
+.iv-corner-motif--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+.iv-corner-motif--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+.iv-card-corner-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Faint kolam/mandala watermark at 4-6% opacity */
+.iv-card-watermark {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(85%, 440px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  z-index: 0;
+}
+.iv-mandala-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Content items */
+.iv-card-inner > [data-line] {
+  position: relative;
+  z-index: 1;
+  will-change: transform, opacity, filter;
+}
+
 .iv-kalash {
-  width: clamp(54px, 6vw, 82px);
+  width: clamp(50px, 5.5vw, 76px);
   height: auto;
-  opacity: 0.92;
+  opacity: 0.95;
+  margin-bottom: 2px;
 }
 .iv-invocation {
   margin-top: 6px;
-  font-family: "Tiro Devanagari Hindi", "EB Garamond", serif;
+  font-family: "Tiro Devanagari Hindi", "Cormorant Garamond", serif;
   font-size: clamp(13px, 1.25vw, 16px);
-  letter-spacing: 0.04em;
-  color: #9a7a3c;
+  letter-spacing: 0.06em;
+  color: #8a6428;
 }
 .iv-dear {
-  margin-top: clamp(14px, 2vw, 22px);
+  margin-top: clamp(12px, 1.8vw, 20px);
+  font-family: "Cormorant Garamond", Georgia, serif;
   font-style: italic;
-  font-size: clamp(16px, 1.6vw, 20px);
-  color: #6e5b4b;
+  font-size: clamp(18px, 1.7vw, 22px);
+  color: #6b4a2a;
 }
 .iv-dear span {
   font-style: normal;
-  font-weight: 500;
-  color: #2c6e72;
+  font-weight: 600;
+  color: #8a5a14;
 }
-/* the big teal script word, like the reference's "Invite" */
+
+/* The flowing script accent: Pinyon Script / Great Vibes */
 .iv-script {
   margin-top: 2px;
-  font-family: "Great Vibes", cursive;
-  font-size: clamp(72px, 10vw, 132px);
-  line-height: 1.05;
-  color: #2c6e72;
-  background: linear-gradient(180deg, #3f8a8c, #24585c);
+  font-family: "Pinyon Script", "Great Vibes", cursive;
+  font-size: clamp(68px, 9vw, 116px);
+  line-height: 1;
+  color: #8a5a14;
+  background: linear-gradient(135deg, #8a5a14 0%, #e2b84f 50%, #8a5a14 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  padding: 0 0.12em;
+  filter: drop-shadow(0 1px 2px rgba(138, 90, 20, 0.12));
 }
-.iv-rule {
-  display: block;
-  width: clamp(120px, 22%, 200px);
-  height: 1px;
-  margin: clamp(14px, 2vw, 22px) auto;
-  background: linear-gradient(90deg, transparent, #b8893e 30%, #b8893e 70%, transparent);
-  transform-origin: 50% 50%;
+
+.iv-lead {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(15px, 1.4vw, 18px);
+  font-weight: 400;
+  line-height: 1.7;
+  color: #6b4a2a;
+  max-width: 32em;
+  margin-top: 8px;
 }
 .iv-small {
-  max-width: 34em;
-  margin-top: 6px;
-  font-size: clamp(14px, 1.35vw, 18px);
-  line-height: 1.6;
-  letter-spacing: 0.01em;
-  color: #6e5b4b;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(14px, 1.3vw, 17px);
+  font-weight: 400;
+  line-height: 1.7;
+  color: #6b4a2a;
+  max-width: 32em;
+}
+.iv-blessing-text {
+  margin-top: 10px;
+  font-size: clamp(13px, 1.2vw, 16px);
+  color: #7a5a3a;
+  opacity: 0.9;
 }
 .iv-family {
-  margin-top: 12px;
-  font-size: clamp(15px, 1.5vw, 19px);
-  color: #4f3f33;
+  margin-top: 10px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.6;
+  color: #5a412b;
 }
-.iv-family em {
-  font-size: 0.88em;
-  color: #8a7663;
+.iv-together {
+  display: block;
+  font-style: italic;
+  font-size: 0.82em;
+  color: #8c735b;
+  opacity: 0.72;
+  letter-spacing: 0.06em;
+  margin: 3px 0;
 }
-/* the names: tall, thin gold capitals */
+
+/* Ornamental divider: thin gold line with centered diamond/lotus motif & 32-40px vertical rhythm */
+.iv-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: min(78%, 260px);
+  margin: clamp(28px, 3.8vw, 38px) auto;
+  position: relative;
+  z-index: 1;
+}
+.iv-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #e2b84f 50%, #8a5a14 100%);
+  transform-origin: 100% 50%;
+}
+.iv-divider-line--r {
+  background: linear-gradient(90deg, #8a5a14 0%, #e2b84f 50%, transparent 100%);
+  transform-origin: 0% 50%;
+}
+.iv-divider-motif {
+  width: 28px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Couple Names: uppercase, 0.14em tracking, metallic gold gradient & shimmer sweep */
 .iv-names {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: clamp(22px, 3vw, 36px);
+  margin: clamp(16px, 2.5vw, 28px) 0;
   font-weight: 400;
+  position: relative;
 }
 .iv-name {
   display: block;
   max-width: 100%;
   white-space: nowrap;
-  font-family: "Cormorant Garamond", "EB Garamond", serif;
-  font-weight: 500;
-  /* both names the same size: on phones as large as "Meenakshi" can be inside the pillars */
-  font-size: min(clamp(48px, 6.75vw, 104px), 9.4vw);
-  line-height: 1;
-  letter-spacing: 0.08em;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(34px, 6vw, 68px);
+  line-height: 1.1;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  padding: 0.04em 0 0.04em 0.08em;
-  color: #b0822c;
-  background: linear-gradient(180deg, #d4a94f 0%, #b0822c 48%, #8a6118 100%);
+  padding: 0.04em 0 0.04em 0.14em;
+  background: linear-gradient(
+    135deg,
+    #8a5a14 0%,
+    #e2b84f 25%,
+    #a87420 50%,
+    #e2b84f 75%,
+    #8a5a14 100%
+  );
+  background-size: 250% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: name-gold-shimmer 2.2s cubic-bezier(0.2, 0.8, 0.4, 1) 0.8s 1 normal both;
 }
+@keyframes name-gold-shimmer {
+  0% {
+    background-position: 150% center;
+  }
+  100% {
+    background-position: -50% center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iv-name {
+    animation: none;
+    background-position: 50% center;
+  }
+}
+
+/* The "&" in flowing script font, lighter teal/gold, smaller than the names */
 .iv-amp {
   display: block;
-  margin: 0.1em 0;
-  font-family: "Great Vibes", cursive;
-  font-size: clamp(36px, 4.4vw, 58px);
+  margin: -0.05em 0;
+  font-family: "Pinyon Script", "Great Vibes", cursive;
+  font-size: clamp(26px, 3.8vw, 42px);
   line-height: 1;
-  color: #2c6e72;
+  background: linear-gradient(135deg, #e2b84f, #3f8a8c 50%, #e2b84f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(138, 90, 20, 0.15));
 }
-.iv-date {
-  display: flex;
-  align-items: center;
-  gap: 0.7em;
-  font-family: "Cormorant Garamond", "EB Garamond", serif;
-  font-weight: 500;
-  font-size: clamp(17px, 1.9vw, 24px);
-  letter-spacing: 0.16em;
+
+/* Small labels (MONDAY, COUNTING THE DAYS, THE DESTINATION) in uppercase with 0.3em tracking */
+.iv-label-tracked {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(11px, 1.1vw, 13px);
+  font-weight: 600;
   text-transform: uppercase;
-  color: #4f3f33;
+  letter-spacing: 0.3em;
+  color: #8a6428;
+  margin-bottom: 9px;
 }
-.iv-dot {
-  width: 5px;
-  height: 5px;
-  transform: rotate(45deg);
-  background: #b8893e;
+
+/* Date in gold-bordered pill frame with MONDAY above and Muhurtham below */
+.iv-date-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: clamp(16px, 2.5vw, 26px) 0;
 }
-.iv-venue {
-  margin-top: 14px;
-  font-family: "Cormorant Garamond", "EB Garamond", serif;
-  font-weight: 500;
-  font-size: clamp(24px, 2.8vw, 36px);
-  line-height: 1.15;
-  letter-spacing: 0.04em;
-  color: #2c6e72;
+.iv-date-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(7px, 1.1vw, 10px) clamp(18px, 3vw, 30px);
+  border: 1px solid #d4af37;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 242, 230, 0.9));
+  box-shadow: 
+    0 2px 10px rgba(138, 90, 20, 0.08), 
+    inset 0 0 10px rgba(226, 184, 79, 0.12);
+  position: relative;
 }
-.iv-closing {
+.iv-date-pill::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.iv-date-pill-text {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(16px, 2.1vw, 22px);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #4a3219;
+  white-space: nowrap;
+}
+.iv-muhurtham-label {
+  margin-top: 10px;
+  font-family: "Cormorant Garamond", Georgia, serif;
   font-style: italic;
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: #7a5a3a;
+  letter-spacing: 0.04em;
+}
+
+/* Venue */
+.iv-venue {
+  margin-top: 4px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  color: #8a5a14;
+}
+.iv-venue-address {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(14px, 1.3vw, 17px);
+  line-height: 1.6;
+  color: #6b4a2a;
+  margin-top: 4px;
+}
+.iv-directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 7px 18px;
+  border: 1px solid rgba(212, 175, 55, 0.6);
+  border-radius: 9999px;
+  background: rgba(255, 253, 248, 0.85);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(12px, 1.15vw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a5a14;
+  transition: all 0.25s ease;
+}
+.iv-directions:hover {
+  background: #fbf5e6;
+  border-color: #d4af37;
+  box-shadow: 0 2px 8px rgba(184, 137, 62, 0.2);
+}
+
+/* Celebrations & Families Closing */
+.iv-closing {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.3vw, 17px);
+  line-height: 1.7;
+  color: #7a5a3a;
 }
 .iv-families {
   margin-top: 8px;
-  font-family: "Great Vibes", cursive;
-  font-size: clamp(28px, 3.2vw, 40px);
+  font-family: "Pinyon Script", "Great Vibes", cursive;
+  font-size: clamp(28px, 3.4vw, 42px);
   line-height: 1.2;
-  color: #9a6f22;
+  color: #8a5a14;
 }
+
 @media (max-width: 480px) {
-  .iv-letter { width: 84%; }
-  .iv-date { flex-wrap: wrap; justify-content: center; letter-spacing: 0.1em; }
+  .iv-letter { width: 92%; }
+  .iv-card-inner { padding: 24px 10px 32px; }
+  .iv-name { letter-spacing: 0.1em; font-size: clamp(28px, 5.8vw, 36px); padding-left: 0.1em; }
+  .iv-date-pill { padding: 6px 14px; }
+  .iv-date-pill-text { letter-spacing: 0.1em; font-size: 14px; }
 }
 
 /* two chevrons under "Scroll down", pulsing downward */

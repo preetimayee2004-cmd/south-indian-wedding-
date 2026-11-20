@@ -7,7 +7,7 @@ import { LoveNote } from "@/components/sections/LoveNote";
 import { InvitationStage } from "./InvitationStage";
 import { EventsSlider } from "./EventsSlider";
 import { CoupleScene } from "./CoupleScene";
-import { TempleWindowGallery } from "./gallery/TempleWindowGallery";
+import { LoveStoryScene } from "./gallery/LoveStoryBoard";
 import { FamiliesScene } from "./FamiliesScene";
 import { RsvpScene } from "./RsvpScene";
 import { TravelScene } from "./TravelScene";
@@ -46,7 +46,7 @@ export const SCENES: Record<SectionId, SceneEntry> = {
   invitation: { Component: InvitationStage, enter: "flow", z: 10 }, // hero → the arch with the invitation, countdown, destination
   events: { Component: EventsSlider, enter: "flow", z: 12 }, // one event at a time, sliding sideways
   couple: { Component: CoupleScene, enter: "flow", z: 14 }, // bride and groom walk in from both sides and meet
-  gallery: { Component: TempleWindowGallery, enter: "flow", z: 18 }, // moments to cherish: three temple windows with the photos
+  gallery: { Component: LoveStoryScene, enter: "flow", z: 18 }, // our love story: a photo board and a paper plane
   family: { Component: FamiliesScene, enter: "flow", z: 16 }, // follows the couple scene (no overlap); lotus plants grow
   rsvp: { Component: RsvpScene, enter: "flow", z: 40 },
   wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },

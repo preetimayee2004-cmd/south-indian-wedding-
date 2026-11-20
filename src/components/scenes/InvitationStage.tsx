@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { SCRUB } from "@/lib/smooth";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { useGuest } from "@/context/GuestContext";
@@ -53,6 +53,70 @@ const JASMINE = (
     ))}
   </svg>
 );
+
+/** Small ornamental corner motif for the inner luxury card (kolam/lotus). */
+const CORNER_LOTUS = (
+  <svg viewBox="0 0 32 32" aria-hidden className="iv-card-corner-svg">
+    <path d="M2 16 V5 C2 3.3 3.3 2 5 2 H16" fill="none" stroke="#d4af37" strokeWidth="1" strokeLinecap="round" />
+    <path d="M6 14 V7 C6 6.4 6.4 6 7 6 H14" fill="none" stroke="#e2b84f" strokeWidth="0.8" strokeLinecap="round" opacity="0.85" />
+    <path d="M6 6 C9 9, 12 13, 8 16 C6 13, 6 9, 6 6 Z" fill="#e2b84f" />
+    <path d="M6 6 C9 9, 13 12, 16 8 C13 6, 9 6, 6 6 Z" fill="#e2b84f" />
+    <path d="M6 6 C10 10, 14 14, 12 17 C10 18, 9 17, 8 15 C8 13, 6 10, 6 6 Z" fill="#8a5a14" />
+    <circle cx="6" cy="6" r="1.5" fill="#8a5a14" />
+    <polygon points="6,6 8,4 10,6 8,8" fill="#e2b84f" />
+    <circle cx="19" cy="2" r="1.1" fill="#d4af37" />
+    <circle cx="2" cy="19" r="1.1" fill="#d4af37" />
+  </svg>
+);
+
+/** Faint traditional kolam / mandala watermark for the luxury card. */
+const MANDALA_WATERMARK = (
+  <svg viewBox="-120 -120 240 240" aria-hidden className="iv-mandala-svg">
+    <g fill="none" stroke="#8a5a14" strokeWidth="0.8">
+      <circle r="114" strokeWidth="0.6" strokeDasharray="3 4" />
+      <circle r="106" strokeWidth="0.8" />
+      <circle r="98" strokeWidth="0.5" />
+      <circle r="74" strokeWidth="0.8" />
+      <circle r="52" strokeWidth="0.6" strokeDasharray="2 3" />
+      <circle r="36" strokeWidth="0.8" />
+      <circle r="18" strokeWidth="0.7" />
+      <circle r="6" fill="#8a5a14" />
+      {Array.from({ length: 16 }, (_, i) => (
+        <g key={`p1-${i}`} transform={`rotate(${i * 22.5})`}>
+          <path d="M0 -74 C6 -87, 10 -98, 0 -106 C-10 -98, -6 -87, 0 -74 Z" fill="#e2b84f" fillOpacity="0.18" />
+          <circle cx="0" cy="-90" r="1.5" fill="#8a5a14" />
+        </g>
+      ))}
+      {Array.from({ length: 8 }, (_, i) => (
+        <g key={`p2-${i}`} transform={`rotate(${i * 45})`}>
+          <path d="M0 -36 C8 -44, 10 -60, 0 -74 C-10 -60, -8 -44, 0 -36 Z" fill="#8a5a14" fillOpacity="0.14" />
+          <path d="M0 -18 C5 -24, 6 -32, 0 -36 C-6 -32, -5 -24, 0 -18 Z" fill="#e2b84f" fillOpacity="0.22" />
+        </g>
+      ))}
+      {Array.from({ length: 8 }, (_, i) => (
+        <path key={`l-${i}`} d="M0 -52 C12 -58, 20 -44, 26 -36" transform={`rotate(${i * 45})`} strokeWidth="0.6" />
+      ))}
+    </g>
+  </svg>
+);
+
+/** Thin gold line with a centered ornamental diamond/lotus motif. */
+function OrnamentalDivider({ className = "" }: { className?: string }) {
+  return (
+    <div data-line aria-hidden className={`iv-divider ${className}`}>
+      <span className="iv-divider-line iv-divider-line--l" />
+      <svg viewBox="-14 -8 28 16" className="iv-divider-motif">
+        <path d="M0 -6 C2 -3.2, 3 -1, 0 2.2 C-3 -1, -2 -3.2, 0 -6 Z" fill="#e2b84f" />
+        <path d="M-1.2 1.6 C-4.8 1.2, -6.8 -1, -7.5 -3.8 C-4.6 -3, -2.2 -1.2, -1.2 1.6 Z" fill="#a87420" />
+        <path d="M1.2 1.6 C4.8 1.2, 6.8 -1, 7.5 -3.8 C4.6 -3, 2.2 -1.2, 1.2 1.6 Z" fill="#a87420" />
+        <polygon points="0,3.5 2.4,6 0,8.5 -2.4,6" fill="#8a5a14" />
+        <circle cx="-11" cy="0" r="1.3" fill="#e2b84f" />
+        <circle cx="11" cy="0" r="1.3" fill="#e2b84f" />
+      </svg>
+      <span className="iv-divider-line iv-divider-line--r" />
+    </div>
+  );
+}
 
 function dateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -128,12 +192,22 @@ export function ArchScene() {
         { y: () => window.innerHeight * 0.08 },
         { y: 0, ease: "power1.out", scrollTrigger: { trigger: root.current, start: "top bottom", end: "top 45%", scrub: SCRUB, invalidateOnRefresh: true } },
       );
-      gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col).forEach((el) =>
-        gsap.fromTo(el, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } }),
-      );
-      // the hairlines draw out from the centre
-      gsap.utils.toArray<HTMLElement>(".iv-rule", r.current.col).forEach((el) =>
-        gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.inOut", scrollTrigger: { trigger: el, start: "top 88%", once: true } }),
+      // Each section fades up with a slight blur-to-sharp reveal on scroll, staggered by 120ms
+      const lines = gsap.utils.toArray<HTMLElement>("[data-line]", r.current.col);
+      ScrollTrigger.batch(lines, {
+        start: "top 90%",
+        once: true,
+        onEnter: (batch) => {
+          gsap.fromTo(
+            batch,
+            { opacity: 0, y: 18, filter: "blur(5px)" },
+            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, stagger: 0.12, ease: "power2.out" },
+          );
+        },
+      });
+      // the ornamental divider lines draw out from the centre
+      gsap.utils.toArray<HTMLElement>(".iv-divider-line", r.current.col).forEach((el) =>
+        gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.inOut", scrollTrigger: { trigger: el, start: "top 90%", once: true } }),
       );
     }, root);
     return () => ctx.revert();
@@ -217,91 +291,133 @@ export function ArchScene() {
             ))}
           </div>
 
-          {/* the opening between the pillars: the letter, straight on the cream */}
+          {/* the opening between the pillars: the luxury wedding card */}
           <div
             ref={set("open")}
             className="absolute flex items-center justify-center"
             style={{ left: `${(OPEN.left / ARCH_W) * 100}%`, right: `${(1 - OPEN.right / ARCH_W) * 100}%` }}
           >
             <div ref={set("col")} className="iv-letter">
-              <img data-line src="/media/kalash.webp" alt="" className="iv-kalash" draggable={false} />
-              {wedding.invocation && (
-                <p data-line className="iv-invocation">
-                  {wedding.invocation}
-                </p>
-              )}
-              <p data-line className="iv-dear">
-                Dear <span data-fit=".iv-letter">{guestName}</span>,
-              </p>
-              <p data-line className="iv-script" aria-hidden>
-                Invite
-              </p>
-              <p data-line className="iv-lead">Some moments are too precious to celebrate without the people we love.</p>
-              <span aria-hidden className="iv-rule" />
-              <p data-line className="iv-small">
-                With the blessings of the Almighty and our beloved elders
-              </p>
-              <p data-line className="iv-small iv-family">
-                {parents(first.parents)}
-                <br />
-                <em>together with</em>
-                <br />
-                {parents(second.parents)}
-              </p>
-              <p data-line className="iv-small">
-                request the pleasure of your company at the wedding of their children
-              </p>
+              <div className="iv-card-panel">
+                <div className="iv-card-inner">
+                  {/* Small ornamental corner motifs (kolam/lotus, SVG) */}
+                  <span aria-hidden className="iv-corner-motif iv-corner-motif--tl">{CORNER_LOTUS}</span>
+                  <span aria-hidden className="iv-corner-motif iv-corner-motif--tr">{CORNER_LOTUS}</span>
+                  <span aria-hidden className="iv-corner-motif iv-corner-motif--bl">{CORNER_LOTUS}</span>
+                  <span aria-hidden className="iv-corner-motif iv-corner-motif--br">{CORNER_LOTUS}</span>
 
-              <h2 id="invite-heading" className="iv-names">
-                <span data-line className="iv-name" data-fit=".iv-letter">
-                  {first.name}
-                </span>
-                <span data-line className="iv-amp">
-                  <span className="sr-only">and</span>
-                  <span aria-hidden>&amp;</span>
-                </span>
-                <span data-line className="iv-name" data-fit=".iv-letter">
-                  {second.name}
-                </span>
-              </h2>
+                  {/* Faint kolam/mandala watermark at 4-6% opacity */}
+                  <div aria-hidden className="iv-card-watermark">
+                    {MANDALA_WATERMARK}
+                  </div>
 
-              <span aria-hidden className="iv-rule" />
-              <p data-line className="iv-date">
-                {date.weekday}
-                <span aria-hidden className="iv-dot" />
-                {date.day} {date.month} {date.year}
-              </p>
-              <p data-line className="iv-small">Muhurtham · {wedding.muhurthamLabel}</p>
+                  {/* Top Kalash & Invocation */}
+                  <img data-line src="/media/kalash.webp" alt="" className="iv-kalash" draggable={false} />
+                  {wedding.invocation && (
+                    <p data-line className="iv-invocation">
+                      {wedding.invocation}
+                    </p>
+                  )}
+                  <p data-line className="iv-dear">
+                    Dear <span data-fit=".iv-card-inner">{guestName}</span>,
+                  </p>
+                  <p data-line className="iv-script" aria-hidden>
+                    Invite
+                  </p>
+                  <p data-line className="iv-lead">Some moments are too precious to celebrate without the people we love.</p>
+                  
+                  {/* Blessings & Parents */}
+                  <p data-line className="iv-small iv-blessing-text">
+                    With the blessings of the Almighty and our beloved elders
+                  </p>
+                  <p data-line className="iv-family">
+                    {parents(first.parents)}
+                    <span className="iv-together">together with</span>
+                    {parents(second.parents)}
+                  </p>
+                  <p data-line className="iv-small">
+                    request the pleasure of your company at the wedding of their children
+                  </p>
 
-              {/* counting the days, live */}
-              <p data-line className="iv-label">
-                <i aria-hidden />
-                Counting the days
-                <i aria-hidden />
-              </p>
-              <div data-line className="iv-countdown">
-                <Countdown iso={wedding.dateISO} />
+                  {/* Divider between blessings and names */}
+                  <OrnamentalDivider />
+
+                  {/* Couple Names */}
+                  <h2 id="invite-heading" className="iv-names">
+                    <span data-line className="iv-name" data-fit=".iv-card-inner">
+                      {first.name}
+                    </span>
+                    <span data-line className="iv-amp">
+                      <span className="sr-only">and</span>
+                      <span aria-hidden>&amp;</span>
+                    </span>
+                    <span data-line className="iv-name" data-fit=".iv-card-inner">
+                      {second.name}
+                    </span>
+                  </h2>
+
+                  {/* Divider between names and date */}
+                  <OrnamentalDivider />
+
+                  {/* Date: 15 FEBRUARY 2027 in gold-bordered pill with MONDAY above and Muhurtham below */}
+                  <div data-line className="iv-date-section">
+                    <p className="iv-label-tracked">{date.weekday}</p>
+                    <div className="iv-date-pill">
+                      <span className="iv-date-pill-text">
+                        {date.day} {date.month.toUpperCase()} {date.year}
+                      </span>
+                    </div>
+                    {wedding.muhurthamLabel && (
+                      <p className="iv-muhurtham-label">
+                        Muhurtham · {wedding.muhurthamLabel}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Divider between date and countdown */}
+                  <OrnamentalDivider />
+
+                  {/* Countdown */}
+                  <p data-line className="iv-label-tracked">
+                    COUNTING THE DAYS
+                  </p>
+                  <div data-line className="iv-countdown">
+                    <Countdown iso={wedding.dateISO} />
+                  </div>
+
+                  {/* Divider between countdown and venue */}
+                  <OrnamentalDivider />
+
+                  {/* Destination */}
+                  <p data-line className="iv-label-tracked">
+                    THE DESTINATION
+                  </p>
+                  <p data-line className="iv-venue">{venue.name}</p>
+                  <p data-line className="iv-venue-address">{venue.address ?? wedding.city}</p>
+                  <a
+                    data-line
+                    className="iv-directions"
+                    href={mapsUrl(venue.mapsQuery ?? `${venue.name}, ${venue.address ?? wedding.city}`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
+                      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
+                      <circle cx="12" cy="9.5" r="2.5" />
+                    </svg>
+                    Get directions
+                  </a>
+
+                  {/* Divider between venue and closing */}
+                  <OrnamentalDivider />
+
+                  {/* Celebrations & Families */}
+                  <p data-line className="iv-closing">
+                    and the celebrations that follow
+                  </p>
+                  <p data-line className="iv-families">{wedding.families}</p>
+                </div>
               </div>
-
-              <p data-line className="iv-label">
-                <i aria-hidden />
-                The destination
-                <i aria-hidden />
-              </p>
-              <p data-line className="iv-venue">{venue.name}</p>
-              <p data-line className="iv-small">{venue.address ?? wedding.city}</p>
-              <a data-line className="iv-directions" href={mapsUrl(venue.mapsQuery ?? `${venue.name}, ${venue.address ?? wedding.city}`)} target="_blank" rel="noopener noreferrer">
-                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
-                  <circle cx="12" cy="9.5" r="2.5" />
-                </svg>
-                Get directions
-              </a>
-              <span aria-hidden className="iv-rule" />
-              <p data-line className="iv-small iv-closing">
-                and the celebrations that follow
-              </p>
-              <p data-line className="iv-families">{wedding.families}</p>
             </div>
           </div>
         </div>
