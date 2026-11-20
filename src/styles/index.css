@@ -253,10 +253,9 @@
   --r: 1.7917;
   /* the tallest tower's finial (7.2% down the picture) sits 130px below the screen's top:
      under the 70px toran with 60px of sky above it, while the floor ends at the bottom edge */
-  --sky: 130px;
-  --H: max((100cqh - var(--sky)) / 0.928, 100cqw / var(--r));
+  --H: max(100cqh, 100cqw / var(--r));
   --W: calc(var(--H) * var(--r));
-  --top: calc(var(--sky) - var(--H) * 0.072);
+  --top: 0px;
   /* the names fill the sky above their heads (heads at 31.5% of the stage), below the toran */
   --names-top: max(env(safe-area-inset-top), 80px);
   --names-h: calc(var(--top) + var(--H) * 0.315 - var(--names-top) - 12px);
@@ -2958,4 +2957,77 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   width: 1px;
   height: 1px;
   scroll-snap-align: center;
+}
+
+/* no rubber-band past the top or bottom of the page (nothing shows above the hero) */
+html {
+  overscroll-behavior-y: none;
+  background-color: #0061c2;
+}
+body {
+  overscroll-behavior-y: none;
+}
+
+/* the invitation letter's countdown and directions, in its own quiet style */
+.iv-lead {
+  max-width: 30em;
+  margin-top: 4px;
+  font-style: italic;
+  font-size: clamp(16px, 1.6vw, 21px);
+  line-height: 1.5;
+  color: #4f3f33;
+}
+.iv-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(26px, 3.4vw, 40px);
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 500;
+  font-size: clamp(14px, 1.4vw, 18px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a8740f;
+}
+.iv-label i {
+  width: clamp(28px, 4vw, 54px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b8893e);
+}
+.iv-label i:last-child {
+  transform: scaleX(-1);
+}
+.iv-countdown {
+  width: 100%;
+  margin-top: 12px;
+}
+.iv-directions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 9px 20px;
+  border: 1px solid #b8893e;
+  border-radius: 999px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(13px, 1.2vw, 15px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #2c6e72;
+  background: rgb(255 250 238 / 0.6);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.iv-directions:hover,
+.iv-directions:focus-visible {
+  background: #2c6e72;
+  color: #fbf2dc;
+  outline: none;
+}
+/* phones: the four boxes fit inside the letter's column */
+@media (max-width: 480px) {
+  .iv-countdown .cd-row { --cd-gap: 6px; }
+  .iv-countdown .cd-box { width: 50px; border-radius: 8px; }
+  .iv-countdown .cd-num { font-size: 22px; }
+  .iv-countdown .cd-label { font-size: 8px; letter-spacing: 0.02em; }
+  .iv-countdown .cd-box { padding-inline: 2px; }
 }

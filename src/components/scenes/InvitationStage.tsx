@@ -4,6 +4,8 @@ import { SCRUB } from "@/lib/smooth";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { useGuest } from "@/context/GuestContext";
 import { useWedding } from "@/context/WeddingContext";
+import { Countdown } from "@/components/ui/Countdown";
+import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
 
 /** The temple mandapam: tiled roof on two pillars over a carved plinth with steps in the middle
@@ -160,6 +162,7 @@ export function ArchScene() {
               <p data-line className="iv-script" aria-hidden>
                 Invite
               </p>
+              <p data-line className="iv-lead">Some moments are too precious to celebrate without the people we love.</p>
               <span aria-hidden className="iv-rule" />
               <p data-line className="iv-small">
                 With the blessings of the Almighty and our beloved elders
@@ -195,8 +198,31 @@ export function ArchScene() {
                 {date.day} {date.month} {date.year}
               </p>
               <p data-line className="iv-small">Muhurtham · {wedding.muhurthamLabel}</p>
+
+              {/* counting the days, live */}
+              <p data-line className="iv-label">
+                <i aria-hidden />
+                Counting the days
+                <i aria-hidden />
+              </p>
+              <div data-line className="iv-countdown">
+                <Countdown iso={wedding.dateISO} />
+              </div>
+
+              <p data-line className="iv-label">
+                <i aria-hidden />
+                The destination
+                <i aria-hidden />
+              </p>
               <p data-line className="iv-venue">{venue.name}</p>
               <p data-line className="iv-small">{venue.address ?? wedding.city}</p>
+              <a data-line className="iv-directions" href={mapsUrl(venue.mapsQuery ?? `${venue.name}, ${venue.address ?? wedding.city}`)} target="_blank" rel="noopener noreferrer">
+                <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
+                  <circle cx="12" cy="9.5" r="2.5" />
+                </svg>
+                Get directions
+              </a>
               <span aria-hidden className="iv-rule" />
               <p data-line className="iv-small iv-closing">
                 and the celebrations that follow
