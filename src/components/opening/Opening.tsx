@@ -34,6 +34,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
 
   const root = useRef<HTMLDivElement>(null);
   const env = useRef<HTMLDivElement>(null);
+  const flapWrap = useRef<HTMLDivElement>(null);
   const flap = useRef<HTMLDivElement>(null);
   const sealL = useRef<HTMLSpanElement>(null);
   const sealR = useRef<HTMLSpanElement>(null);
@@ -45,7 +46,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   // No page scrolling while the overlay is up.
   useEffect(() => {
     lockScroll(true);
-    return () => lockScroll(false);
+    return () => {
+      lockScroll(false);
+      tl.current?.kill();
+    };
   }, []);
 
   const finish = useCallback(() => {
@@ -119,7 +123,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .to(sealL.current, { x: -26, y: 34, rotate: -28, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
       .to(sealR.current, { x: 26, y: 38, rotate: 30, autoAlpha: 0, duration: 0.55, ease: "power2.in" }, 0.05)
       .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.25)
-      .set(flap.current, { zIndex: 1 })
+      .set([flapWrap.current, flap.current], { zIndex: 1 }, 0.6)
       .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 0.6)
       // the blue card slides slowly up out of the envelope…
       .set(card.current, { autoAlpha: 1 }, 0.7)
@@ -172,7 +176,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
             Dear {guestName}
           </p>
           {/* flap, hinged at the top edge, with the wax seal */}
-          <div className="absolute inset-0 z-[25] [transform-style:preserve-3d]">
+          <div ref={flapWrap} className="absolute inset-0 z-[25] [transform-style:preserve-3d]">
             <div
               ref={flap}
               className="absolute inset-x-0 top-0 h-[58%] origin-top"
