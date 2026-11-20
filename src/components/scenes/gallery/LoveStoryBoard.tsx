@@ -397,7 +397,7 @@ export function LoveStoryScene() {
       className="gb-wall"
       scrub={1.8}
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "#5a0f1c" }} />}
+      edgeTop={<div aria-hidden className="edge edge-scallop-top edge-temple" />}
     >
       <div className="gb-viewport">
         <Board r={r} still={false} onOpen={setOpen} story={story} />

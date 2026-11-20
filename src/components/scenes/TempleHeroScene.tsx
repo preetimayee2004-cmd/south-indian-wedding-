@@ -70,11 +70,10 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
     const travel = () => yStart() - yEnd();
     // the temple rises exactly with the scroll (1:1), then holds while the leaves fall
     const RISE = Math.max(0.4, travel() / vh());
-    const T = Math.max(1.6, RISE + 0.6);
+    const T = RISE; // no hold: when the temple's base reaches the bottom, the page simply carries on
 
     // the text stays where it is; the temple rises over it and covers it (it sits behind the temple)
-    tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0)
-      .to({}, { duration: T - RISE }, RISE);
+    tl.fromTo(temple.current, { y: yStart }, { y: yEnd, duration: RISE, ease: "none" }, 0);
 
     // clouds drift sideways only, each at its own speed — they stay in the top quarter
     clouds.current.forEach((c, i) => tl.to(c, { x: () => (CLOUDS[i][4] / 100) * vw(), duration: T }, 0));
@@ -86,8 +85,8 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
       tl.fromTo(
         l,
         { x: () => x0 * vw(), y: () => -0.08 * vh(), rotate: rand(i, 5) * 360, autoAlpha: 1 },
-        { x: () => (x0 + drift) * vw(), y: () => 1.08 * vh(), rotate: `+=${300 + rand(i, 9) * 300}`, duration: 0.55 + rand(i, 11) * 0.35, ease: "none" },
-        T * 0.6 + (i / LEAVES) * (T * 0.4 - 0.7),
+        { x: () => (x0 + drift) * vw(), y: () => 1.08 * vh(), rotate: `+=${300 + rand(i, 9) * 300}`, duration: T * (0.35 + rand(i, 11) * 0.2), ease: "none" },
+        T * 0.3 + (i / LEAVES) * T * 0.15,
       );
     });
   };

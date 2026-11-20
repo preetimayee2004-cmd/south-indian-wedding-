@@ -21,8 +21,8 @@ const POCKET = "h-[13.5rem] md:h-[15rem]";
  * The first thing a guest sees (as in the reference): "Welcome to <city>" on
  * the hero's cobalt sky and the sealed envelope, addressed to the guest. Tap →
  * the wax seal cracks into two pieces, the flap swings open, the card rises
- * out, zooms to fill the screen and its paper turns into the sky — the hero.
- * Skip is always there. Reduced motion → a simple fade.
+ * slowly out (a blue card with the couple's names), then grows to fill the
+ * screen and becomes the hero's sky. Reduced motion → a simple fade.
  */
 export function Opening({ onReveal, onDone }: OpeningProps) {
   const { couple, wedding, opening, loveStory } = useWedding();
@@ -37,7 +37,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const flap = useRef<HTMLDivElement>(null);
   const sealL = useRef<HTMLSpanElement>(null);
   const sealR = useRef<HTMLSpanElement>(null);
-  const letter = useRef<HTMLDivElement>(null);
+  const card = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLParagraphElement>(null);
   const finished = useRef(false);
   const tl = useRef<gsap.core.Timeline | null>(null);
@@ -86,15 +86,15 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       const el = hero();
       const sec = heroSec();
       if (!el || !sec) return;
-      // it starts as the envelope's open mouth (no card comes out first) and grows from there
-      const r = letter.current!.parentElement!.getBoundingClientRect();
+      // it starts exactly where the blue card stands, half out of the envelope, and grows from there
+      const r = card.current!.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       sec.style.zIndex = "200"; // above this overlay while it grows
-      gsap.set(env.current, { autoAlpha: 0 });
+      gsap.to(env.current, { autoAlpha: 0, duration: 0.5, ease: "power1.out" });
       gsap.fromTo(
         el,
-        { x: r.left, y: r.top, scaleX: r.width / vw, scaleY: r.height / vh, transformOrigin: "0 0", borderRadius: 8, autoAlpha: 0.85 },
+        { x: r.left, y: r.top, scaleX: r.width / vw, scaleY: r.height / vh, transformOrigin: "0 0", borderRadius: 10, autoAlpha: 1 },
         {
           x: 0,
           y: 0,
@@ -102,8 +102,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
           scaleY: 1,
           borderRadius: 0,
           autoAlpha: 1,
-          duration: 1.1,
-          ease: "power3.inOut",
+          duration: 1.6,
+          ease: "power2.inOut",
           onComplete: () => {
             gsap.set(el, { clearProps: "transform,transformOrigin,borderRadius,opacity,visibility" });
             sec.style.zIndex = "";
@@ -121,16 +121,12 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .to(flap.current, { rotateX: 180, duration: 0.7, ease: "power2.inOut" }, 0.25)
       .set(flap.current, { zIndex: 1 })
       .to(".open-fade", { autoAlpha: 0, duration: 0.4 }, 0.6)
-      .add(grow, 0.9);
+      // the blue card slides slowly up out of the envelope…
+      .set(card.current, { autoAlpha: 1 }, 0.7)
+      .to(card.current, { yPercent: -62, duration: 1.5, ease: "power2.out" }, 0.75)
+      // …and grows into the hero
+      .add(grow, 2.35);
   }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
-
-  const skip = useCallback(() => {
-    if (finished.current) return;
-    startMusic();
-    tl.current?.kill();
-    onReveal();
-    gsap.to(root.current, { autoAlpha: 0, duration: 0.45, ease: "power1.out", onComplete: finish });
-  }, [startMusic, onReveal, finish]);
 
   const initials = `${couple.bride.name[0]}&${couple.groom.name[0]}`;
 
@@ -155,9 +151,13 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
         <div ref={env} className={`relative w-full ${POCKET}`}>
           {/* back of the envelope */}
           <div className="absolute inset-0 rounded-md border border-[#cfb383] bg-[#e6d3a7] shadow-[0_18px_40px_rgb(74_40_20/0.28)]" />
-          {/* the envelope's mouth: where the hero grows out from */}
-          <div className="absolute inset-x-3 bottom-3 top-0 z-10 overflow-hidden">
-            <div ref={letter} className="absolute inset-0" />
+          {/* the blue card inside, with the couple's names: it slides up out of the envelope and grows into the hero */}
+          <div ref={card} className="open-card invisible absolute inset-x-4 bottom-3 top-[6%] z-10">
+            <span className="open-card-names">
+              {couple.bride.name}
+              <span className="open-card-amp">&amp;</span>
+              {couple.groom.name}
+            </span>
           </div>
           {/* front pocket */}
           <div
@@ -200,13 +200,6 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
         {opening.tapLabel}
       </p>
 
-      <button
-        type="button"
-        onClick={skip}
-        className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] z-10 rounded-full border border-ink/25 bg-[#fbf2dc] px-4 py-2 text-eyebrow uppercase text-ink transition-colors hover:text-accent"
-      >
-        Skip
-      </button>
     </div>
   );
 }
