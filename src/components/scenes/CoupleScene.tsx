@@ -7,7 +7,7 @@ import { CloudMessage, type CloudRefs } from "./couple/CloudMessage";
 import { Toran } from "./couple/Toran";
 
 /** The couple picture's own sky colour at its top (couple-bg), continued above it. */
-const COUPLE_SKY = "#0058BE";
+const COUPLE_SKY = "#205CA8";
 
 /** Three groups of petals falling at different speeds: [count, duration, spread]. */
 const PETAL_GROUPS: [number, number, number][] = [

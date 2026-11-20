@@ -2710,3 +2710,170 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   font-size: 0.7em;
   color: #f3cf73;
 }
+
+/* ── Moments to Cherish: three temple windows on the temple wall ─────────────────────── */
+/* the same drifting temple as the events, under a warm ivory wash so the windows lead */
+.tw-wall {
+  /* cream wall: room above for the mandapam's finials, a little below its plinth */
+  padding: clamp(56px, 6vw, 84px) 0 clamp(28px, 4vw, 48px);
+  overflow-x: clip;
+}
+.edge-scallop-top.edge-temple--ivory {
+  background:
+    linear-gradient(rgb(247 236 211 / 0.6), rgb(247 236 211 / 0.6)),
+    url("/media/temple-facade.webp") 0 17px / auto var(--ev-tile-h) repeat;
+  background-color: #efe2c4;
+}
+.tw-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+  text-align: center;
+}
+.tw-title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(50px, 6.4vw, 92px);
+  line-height: 1.05;
+  white-space: nowrap;
+  color: #7a1f2b;
+  text-shadow: 0 1px 0 rgb(255 248 230 / 0.8);
+}
+.tw-sub {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(13px, 1.3vw, 17px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6e5135;
+}
+.tw-sub i {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  transform: rotate(45deg);
+  background: #b8893e;
+}
+.tw-orn {
+  width: clamp(120px, 14vw, 170px);
+  margin-top: 10px;
+}
+.tw-row {
+  position: relative;
+  width: min(94vw, 1320px, calc((100svh - 200px) * 2.11));
+  margin: clamp(18px, 2.4vw, 32px) auto 0;
+}
+@media (max-width: 767px) {
+  .tw-row {
+    width: 96vw;
+  }
+}
+.tw-win {
+  position: absolute;
+  filter: drop-shadow(0 12px 16px rgb(70 35 10 / 0.22));
+}
+.tw-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tw-photo {
+  position: absolute;
+  display: block;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: #e9dbb8;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.tw-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.01);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1), filter 0.7s ease;
+}
+/* a soft shade at the top of the opening, so the photograph sits inside the stone */
+.tw-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(40 20 8 / 0.28), transparent 22%, transparent 85%, rgb(40 20 8 / 0.18));
+}
+@media (hover: hover) {
+  .tw-photo:hover img {
+    transform: scale(1.06) translateY(-1.5%);
+    filter: brightness(1.05) saturate(1.05);
+  }
+}
+.tw-photo:focus-visible {
+  outline: none;
+}
+.tw-photo:focus-visible img {
+  transform: scale(1.06);
+  filter: brightness(1.08);
+}
+.tw-strings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.tw-floor {
+  width: min(92vw, 1100px);
+  margin: 4px auto 0;
+  text-align: center;
+}
+.tw-kolam {
+  display: block;
+  width: min(80vw, 420px);
+  margin: 0 auto;
+}
+.tw-ending {
+  margin-top: 4px;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(24px, 2.6vw, 34px);
+  color: #9a6f22;
+}
+@media (prefers-reduced-motion: reduce) {
+}
+@media (max-width: 480px) {
+  .tw-sub { gap: 8px; font-size: 11.5px; letter-spacing: 0.1em; }
+}
+
+/* the gallery on the cream wall between the mandapam's pillars */
+.tw-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(46px, 5vw, 72px) 1% clamp(18px, 2vw, 30px);
+}
+.tw-col .tw-row {
+  width: 100%;
+}
+.tw-col .tw-floor {
+  width: 100%;
+}
+.tw-swags {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(30px, 3.2vw, 46px);
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'120'%20height%3D'46'%20viewBox%3D'0%200%20120%2046'%3E%3Cpath%20d%3D'M0%204Q60%2044%20120%204'%20fill%3D'none'%20stroke%3D'%236c8f3c'%20stroke-width%3D'1'%2F%3E%3Cpath%20d%3D'M0%204Q60%2044%20120%204'%20fill%3D'none'%20stroke%3D'%23fffaf0'%20stroke-width%3D'5'%20stroke-dasharray%3D'0.1%207'%20stroke-linecap%3D'round'%2F%3E%3Cpath%20d%3D'M0%204Q60%2044%20120%204'%20fill%3D'none'%20stroke%3D'%23e9dfc4'%20stroke-width%3D'3.4'%20stroke-dasharray%3D'0.1%207'%20stroke-dashoffset%3D'-3.5'%20stroke-linecap%3D'round'%2F%3E%3Cpath%20d%3D'M0%203c-7-1-11%202-12%207%205%200%2010-2%2012-7Z'%20fill%3D'%234f8a3a'%20transform%3D'translate(4%200)'%2F%3E%3Cpath%20d%3D'M120%203c7-1%2011%202%2012%207-5%200-10-2-12-7Z'%20fill%3D'%233f7a2e'%20transform%3D'translate(-4%200)'%2F%3E%3Cg%20fill%3D'%23fffaf0'%20stroke%3D'%23d9cfb6'%20stroke-width%3D'.6'%3E%3Ccircle%20cx%3D'0'%20cy%3D'4'%20r%3D'3.6'%2F%3E%3Ccircle%20cx%3D'120'%20cy%3D'4'%20r%3D'3.6'%2F%3E%3Ccircle%20cx%3D'60'%20cy%3D'30'%20r%3D'2.6'%2F%3E%3C%2Fg%3E%3Cpath%20d%3D'M60%2026v14'%20stroke%3D'%236c8f3c'%20stroke-width%3D'.8'%2F%3E%3Cg%20fill%3D'%23fffaf0'%20stroke%3D'%23d9cfb6'%20stroke-width%3D'.5'%3E%3Cellipse%20cx%3D'60'%20cy%3D'33'%20rx%3D'2'%20ry%3D'3'%2F%3E%3Cellipse%20cx%3D'60'%20cy%3D'39'%20rx%3D'2'%20ry%3D'3'%2F%3E%3C%2Fg%3E%3Ccircle%20cx%3D'60'%20cy%3D'44'%20r%3D'2.2'%20fill%3D'%23c8323e'%2F%3E%3C%2Fsvg%3E") 0 0 / auto 100% repeat-x;
+  pointer-events: none;
+}

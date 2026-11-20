@@ -157,6 +157,7 @@ const weddingConfig: WeddingConfig = {
   // same names, or change the list).
   gallery: {
     heading: "Moments to Cherish",
+    subtitle: "Little memories, one beautiful story",
     ending: "and so it begins...",
     photos: [
       { src: "/media/gallery/photo-1.webp", caption: "When our families said yes", alt: "The couple in cream and gold silk in a carved temple corridor, the gopuram behind them" },

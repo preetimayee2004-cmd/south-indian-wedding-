@@ -74,6 +74,8 @@ export interface GalleryImage {
   src: string;
   alt: string;
   caption?: string;
+  /** Where the photo is centred when a frame crops it (CSS object-position), e.g. "50% 30%". */
+  focus?: string;
   category?: "couple" | "pre-wedding" | "family" | "traditional";
 }
 
@@ -171,7 +173,7 @@ export interface WeddingConfig {
   events: WeddingEvent[];
   family?: { bride?: FamilySide; groom?: FamilySide };
   /** Our Love Story: the photo board (up to 6 photos, in order). */
-  gallery?: { heading?: string; ending?: string; photos: GalleryImage[] };
+  gallery?: { heading?: string; subtitle?: string; ending?: string; photos: GalleryImage[] };
   rsvp: {
     deadlineISO?: string;
     maxAttendees: number;
