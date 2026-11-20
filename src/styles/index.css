@@ -2298,3 +2298,118 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 .ic-sheet .ic-garland-clip {
   display: none;
 }
+
+/* ── The invitation, refined: less decoration, a clear hierarchy, the names as the focus ── */
+/* the crescent (paisley) buttas stay, barely there behind the words */
+.parchment-ground {
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'76'%20height%3D'76'%3E%3Cg%20fill%3D'%23C8961E'%20fill-opacity%3D'.045'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Cpath%20d%3D'M60%2046c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-8%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+.ic-sheet {
+  --zari: clamp(16px, 1.9vw, 28px); /* slimmer side borders, same pattern */
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'76'%20height%3D'76'%3E%3Cg%20fill%3D'%23C8961E'%20fill-opacity%3D'.045'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Cpath%20d%3D'M60%2046c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-8%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
+    repeating-linear-gradient(45deg, rgb(122 31 43 / 0.018) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgb(184 137 62 / 0.018) 0 1px, transparent 1px 4px);
+}
+/* the toran: one light swag across the top, no long strings down the sides */
+.ic-toran {
+  left: 14%;
+  width: 72%;
+  opacity: 0.88;
+  /* keep only the central swag and its leaf line: the hanging side strings are cut away */
+  clip-path: inset(0 11% 58% 11%);
+}
+.ic-strand {
+  display: none;
+}
+/* the words: a calmer column that starts below the swag and keeps clear of the borders */
+.ic-sheet > .invite-card,
+.invite-card {
+  width: min(74%, 620px);
+  padding-top: calc(var(--sheet-w, 600px) * 0.13);
+}
+/* the kalash: a small auspicious mark, not the hero */
+.ic-kalash-wrap {
+  width: clamp(60px, 8vw, 96px);
+}
+.ic-kalash-glow {
+  opacity: 0.5;
+}
+.invite-card .ic-invocation {
+  margin-top: 10px;
+  font-size: clamp(15px, 1.5vw, 19px);
+  letter-spacing: 0.14em;
+}
+/* a tiny "DEAR", then the guest's name in a delicate script */
+.ic-dear {
+  margin-top: 22px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(11px, 1vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  margin-right: -0.42em;
+  text-transform: uppercase;
+  color: #a8740f;
+}
+.invite-card .ic-guest {
+  margin-top: 0;
+  font-size: clamp(40px, 4.6vw, 64px);
+  line-height: 1.15;
+  color: #7a1f2b;
+}
+/* the invitation lines: compact, a controlled measure */
+.invite-card .ic-lead,
+.invite-card .ic-body {
+  max-width: 32ch;
+  font-size: clamp(16px, 1.55vw, 20px);
+  line-height: 1.5;
+  text-wrap: balance;
+}
+.invite-card .ic-lead {
+  margin-top: 16px;
+  font-weight: 500;
+}
+.invite-card .ic-body {
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-weight: 400;
+  color: rgb(58 31 22 / 0.86);
+}
+/* the couple's names: the focal point — one refined display serif, equal weight, room to breathe */
+.ic-names-wrap {
+  margin: 30px 0 4px;
+}
+.ic-names {
+  gap: 6px;
+}
+.invite-card .ic-name {
+  font-family: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  font-weight: 500;
+  font-size: clamp(48px, 7.4vw, 104px);
+  line-height: 1.04;
+  letter-spacing: 0.02em;
+  padding: 0;
+  color: #7a1f2b;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke: 0;
+  filter: none;
+  text-shadow: none;
+}
+.ic-join {
+  display: block;
+  width: clamp(110px, 11vw, 150px);
+  margin: 2px 0;
+}
+.ic-join svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.invite-card .ic-blessing {
+  margin-top: 22px;
+  font-size: clamp(16px, 1.6vw, 21px);
+  letter-spacing: 0.18em;
+}

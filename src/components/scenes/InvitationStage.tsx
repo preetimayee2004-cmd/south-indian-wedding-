@@ -7,7 +7,7 @@ import { useWedding } from "@/context/WeddingContext";
 import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
-import { Flourish, GoldLabel, JasmineDivider, LotusMedallion, Pin } from "./invite/Ornaments";
+import { GoldLabel, JasmineDivider, Pin } from "./invite/Ornaments";
 import { petalBurst } from "./invite/petalBurst";
 
 function dateParts(iso: string, timeZone: string) {
@@ -204,37 +204,33 @@ export function ArchScene() {
                   <span aria-hidden className="ic-kalash-glow" />
                   <img src="/media/kalash.webp" alt="A copper kalash with mango leaves and a coconut" className="ic-kalash" draggable={false} />
                 </span>
-                <p data-line className="ic-invocation">
-                  <span aria-hidden className="ic-side-line" />
-                  <span>{wedding.invocation}</span>
-                  <span aria-hidden className="ic-side-line" />
-                </p>
+                <p data-line className="ic-invocation">{wedding.invocation}</p>
               </div>
             )}
-            <GoldLabel className="mt-5">Dear</GoldLabel>
+            <p data-line className="ic-dear">Dear</p>
             <p data-line className="ic-guest mt-2.5" data-fit=".invite-card">{guestName}</p>
             <p data-line className="ic-lead mt-4">Some moments are too precious to celebrate without the people we love.</p>
             <p data-line className="ic-body mt-3">{wedding.invitationLine}</p>
             <div className="ic-names-wrap">
               <h2 data-line id="invite-heading" className="ic-names">
-                <span className="ic-name-row">
-                  <span className="ic-name" data-fit=".invite-card" data-text={first.name} onClick={(e) => petalBurst(e)}>
-                    {first.name}
-                  </span>
-                  <Flourish />
+                <span className="ic-name" data-fit=".invite-card" data-text={first.name} onClick={(e) => petalBurst(e)}>
+                  {first.name}
                 </span>
-                <LotusMedallion>&amp;</LotusMedallion>
-                <span className="ic-name-row">
-                  <span className="ic-name" data-fit=".invite-card" data-text={second.name} onClick={(e) => petalBurst(e)}>
-                    {second.name}
-                  </span>
-                  <Flourish />
+                {/* one delicate connecting ornament: hairline, a small lotus, hairline */}
+                <span className="ic-join">
+                  <span className="sr-only">and</span>
+                  <svg aria-hidden viewBox="0 0 132 18">
+                    <path d="M4 10H50M82 10H128" stroke="#b8893e" strokeWidth="1" strokeLinecap="round" />
+                    <path d="M66 2c3 3 3.2 6 0 9-3.2-3-3-6 0-9ZM64.6 11C60.4 10.6 58.2 8 57.8 5c3 .6 5.6 2.4 6.8 6ZM67.4 11c4.2-.4 6.4-3 6.8-6-3 .6-5.6 2.4-6.8 6ZM56.5 12.5c3.6 2.2 15.4 2.2 19 0" fill="#b8893e" stroke="#b8893e" strokeWidth="0.4" />
+                  </svg>
+                </span>
+                <span className="ic-name" data-fit=".invite-card" data-text={second.name} onClick={(e) => petalBurst(e)}>
+                  {second.name}
                 </span>
               </h2>
             </div>
             {wedding.blessing && <p data-line className="ic-blessing">{wedding.blessing}</p>}
 
-            <JasmineDivider className="ic-divider" />
             <div className="ic-cd-band">
               <GoldLabel>Counting the days</GoldLabel>
               <Countdown iso={wedding.dateISO} />
