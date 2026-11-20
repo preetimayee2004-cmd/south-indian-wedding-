@@ -26,6 +26,33 @@ const OPEN = { top: 300, bottom: 512, left: 168, right: 1024 };
 /** The cream between the pillars (under the lintel, down to the plinth, tucked under the shafts):
  *  everything else behind the mandapam is filled with the carved, painted gopuram. */
 const CREAM = { top: 288, bottom: 596, left: 140, right: 1052 };
+/** The visible opening between the pillar shafts, where the frame's decorations hang. */
+const DECO = { top: 292, bottom: 596, left: 158, right: 1034 };
+/** A gold filigree corner (top-left; mirrored for the others). */
+const CORNER = (
+  <svg viewBox="0 0 64 64" aria-hidden>
+    <path d="M3 61V17C3 9 9 3 17 3H61" fill="none" stroke="#c9a24e" strokeWidth="2.2" />
+    <path d="M11 55V20c0-5 4-9 9-9h35" fill="none" stroke="#c9a24e" strokeWidth="1" />
+    <path d="M17 17c9 0 14 5 14 13-5 0-9-2-11.5-6.5C17 28 13 30 8 30c0-8 4-13 9-13Z" fill="#d9b25f" stroke="#8a6420" strokeWidth=".6" />
+    <circle cx="17" cy="17" r="3.4" fill="#7a1f2b" stroke="#c9a24e" strokeWidth="1.2" />
+    <path d="M36 11c4 0 6 2 6 5M11 36c0 4 2 6 5 6" fill="none" stroke="#c9a24e" strokeWidth="1.2" strokeLinecap="round" />
+  </svg>
+);
+/** A cluster of jasmine with two mango leaves. */
+const JASMINE = (
+  <svg viewBox="-24 -20 48 40" aria-hidden>
+    <path d="M0 2c-12-4-20 1-22 9 9 2 17-1 22-9Z" fill="#4f8a3a" />
+    <path d="M0 2c12-4 20 1 22 9-9 2-17-1-22-9Z" fill="#3f7a2e" />
+    {[[0, -8], [-8, -2], [8, -2], [-4, 6], [5, 6]].map(([x, y], i) => (
+      <g key={i} transform={`translate(${x} ${y})`}>
+        {[0, 72, 144, 216, 288].map((r) => (
+          <ellipse key={r} rx="2.2" ry="4.4" cy="-3.6" transform={`rotate(${r})`} fill="#fffaf0" stroke="#ddd2b6" strokeWidth=".5" />
+        ))}
+        <circle r="1.5" fill="#e9b949" />
+      </g>
+    ))}
+  </svg>
+);
 
 function dateParts(iso: string, timeZone: string) {
   const d = new Date(iso);
@@ -82,6 +109,7 @@ export function ArchScene() {
       });
       $.bot!.style.height = `${(ARCH_H - SLICE_END) * k}px`;
       Object.assign($.open!.style, { top: `${OPEN.top * k}px`, height: `${room + extra}px` });
+      Object.assign($.deco!.style, { top: `${DECO.top * k}px`, height: `${(DECO.bottom - DECO.top) * k + extra}px` });
       Object.assign($.cream!.style, { top: `${CREAM.top * k}px`, height: `${(CREAM.bottom - CREAM.top) * k + extra}px` });
     };
     fit();
@@ -142,6 +170,52 @@ export function ArchScene() {
             style={{ left: `${FRONT.left * 100}%`, width: `${FRONT.width * 100}%`, aspectRatio: FRONT.ratio }}
             draggable={false}
           />
+
+          {/* the frame's decorations, like the gallery's: a gold double frame with filigree corners and a
+              lotus crest, jasmine swags under the lintel, jasmine strings down the sides and clusters at
+              the corners, and two brass deepams hanging on chains */}
+          <div
+            aria-hidden
+            ref={set("deco")}
+            className="iv-deco pointer-events-none absolute"
+            style={{ left: `${(DECO.left / ARCH_W) * 100}%`, right: `${(1 - DECO.right / ARCH_W) * 100}%` }}
+          >
+            <div className="iv-frame">
+              {(["tl", "tr", "bl", "br"] as const).map((c) => (
+                <span key={c} className={`iv-corner iv-corner--${c}`}>
+                  {CORNER}
+                </span>
+              ))}
+              <svg className="iv-crest" viewBox="0 0 120 40">
+                <path d="M2 34c14 0 22-4 30-12 6-6 12-8 18-6-6 2-9 6-9 10 4-3 9-4 14-1-7 1-10 4-11 9H2Z" fill="#d9b25f" stroke="#8a6420" strokeWidth=".7" />
+                <path d="M118 34c-14 0-22-4-30-12-6-6-12-8-18-6 6 2 9 6 9 10-4-3-9-4-14-1 7 1 10 4 11 9h42Z" fill="#d9b25f" stroke="#8a6420" strokeWidth=".7" />
+                <path d="M60 4c6 6 6.6 12 0 18-6.6-6-6-12 0-18ZM57.2 23c-8.4-.8-12.8-6-13.6-12 6 1.2 11.2 4.8 13.6 12ZM62.8 23c8.4-.8 12.8-6 13.6-12-6 1.2-11.2 4.8-13.6 12ZM43 26c7.2 4.4 26.8 4.4 34 0" fill="#d9b25f" stroke="#8a6420" strokeWidth=".8" />
+                <circle cx="60" cy="31" r="3.2" fill="#7a1f2b" stroke="#c9a24e" strokeWidth="1" />
+              </svg>
+            </div>
+            <div className="tw-swags iv-swags" />
+            <span className="iv-strand iv-strand--l" />
+            <span className="iv-strand iv-strand--r" />
+            {(["tl", "tr", "bl", "br"] as const).map((c) => (
+              <span key={c} className={`iv-jasmine iv-jasmine--${c}`}>
+                {JASMINE}
+              </span>
+            ))}
+            {(["l", "r"] as const).map((side) => (
+              <span key={side} className={`iv-deepam iv-deepam--${side}`}>
+                <span className="iv-deepam-chain" />
+                <svg viewBox="-22 -48 44 64">
+                  <path className="ic-oil-flame" d="M0-44C4-37 4-31 0-27-4-31-4-37 0-44Z" />
+                  <path d="M-12-26 0-46 12-26" fill="none" stroke="#b8893e" strokeWidth=".9" />
+                  <path d="M-17-26C-17-17-9-12 0-12S17-17 17-26Z" fill="#c8961e" stroke="#7a5418" strokeWidth=".9" />
+                  <ellipse cy="-26" rx="17" ry="3.8" fill="#e9c46a" stroke="#7a5418" strokeWidth=".8" />
+                  <path d="M-7-12H7L4-4H-4Z" fill="#b8862e" stroke="#7a5418" strokeWidth=".7" />
+                  <path d="M0-4 0 6" stroke="#b8893e" strokeWidth="1.2" />
+                  <circle cy="9" r="3" fill="#c8961e" stroke="#7a5418" strokeWidth=".7" />
+                </svg>
+              </span>
+            ))}
+          </div>
 
           {/* the opening between the pillars: the letter, straight on the cream */}
           <div

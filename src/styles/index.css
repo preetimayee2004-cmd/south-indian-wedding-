@@ -3031,3 +3031,111 @@ body {
   .iv-countdown .cd-label { font-size: 8px; letter-spacing: 0.02em; }
   .iv-countdown .cd-box { padding-inline: 2px; }
 }
+
+/* the tapestry's entrance threads and border, over the picture */
+.tg-threads {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.tg-section {
+  background: #f7ecd3; /* the invitation's parchment */
+}
+
+/* ── The invitation frame's decorations (like the gallery's frames) ── */
+.iv-deco {
+  z-index: 1;
+}
+.iv-frame {
+  position: absolute;
+  inset: clamp(14px, 2.4vw, 34px) clamp(8px, 1.6vw, 24px) clamp(10px, 1.6vw, 22px);
+  border: 3px solid #c9a24e;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px #8a6420, inset 0 0 0 1px #8a6420, inset 0 0 0 clamp(4px, 0.55vw, 7px) rgb(247 236 211 / 0.95), inset 0 0 0 calc(clamp(4px, 0.55vw, 7px) + 1.5px) #c9a24e, inset 0 0 30px rgb(184 137 62 / 0.18);
+}
+.iv-corner {
+  position: absolute;
+  width: clamp(36px, 5.4vw, 80px);
+  aspect-ratio: 1;
+}
+.iv-corner svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.iv-corner--tl { top: -5px; left: -5px; }
+.iv-corner--tr { top: -5px; right: -5px; transform: scaleX(-1); }
+.iv-corner--bl { bottom: -5px; left: -5px; transform: scaleY(-1); }
+.iv-corner--br { bottom: -5px; right: -5px; transform: scale(-1, -1); }
+.iv-crest {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: clamp(90px, 12vw, 170px);
+  transform: translate(-50%, -62%);
+}
+.iv-swags {
+  z-index: 1;
+  height: clamp(24px, 3.2vw, 46px);
+}
+.iv-strand {
+  position: absolute;
+  top: clamp(20px, 3vw, 44px);
+  width: clamp(9px, 1.1vw, 15px);
+  height: 58%;
+  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'40'%20viewBox%3D'0%200%2016%2040'%3E%3Cpath%20d%3D'M8%200V40'%20stroke%3D'%236c8f3c'%20stroke-width%3D'.8'%2F%3E%3Cg%20fill%3D'%23fffaf0'%20stroke%3D'%23d9cfb6'%20stroke-width%3D'.6'%3E%3Cellipse%20cx%3D'8'%20cy%3D'6'%20rx%3D'3.4'%20ry%3D'4.6'%2F%3E%3Cellipse%20cx%3D'8'%20cy%3D'16'%20rx%3D'3'%20ry%3D'4.2'%2F%3E%3Cellipse%20cx%3D'8'%20cy%3D'26'%20rx%3D'3.4'%20ry%3D'4.6'%2F%3E%3C%2Fg%3E%3Cpath%20d%3D'M8%2032c-5-1-7%201-7%204%203%200%206-1%207-4Z'%20fill%3D'%234f8a3a'%2F%3E%3Cpath%20d%3D'M8%2033c5-1%207%201%207%204-3%200-6-1-7-4Z'%20fill%3D'%233f7a2e'%2F%3E%3C%2Fsvg%3E") center top / 100% auto repeat-y;
+  transform-origin: 50% 0;
+  animation: ic-sway 5.5s ease-in-out infinite;
+  -webkit-mask-image: linear-gradient(180deg, #000 85%, transparent);
+  mask-image: linear-gradient(180deg, #000 85%, transparent);
+}
+.iv-strand--l { left: clamp(2px, 0.5vw, 8px); }
+.iv-strand--r { right: clamp(2px, 0.5vw, 8px); animation-delay: -2.7s; }
+.iv-jasmine {
+  position: absolute;
+  width: clamp(30px, 4.4vw, 64px);
+}
+.iv-jasmine svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.iv-jasmine--tl { top: clamp(4px, 1vw, 16px); left: clamp(0px, 0.6vw, 10px); transform: rotate(-30deg); }
+.iv-jasmine--tr { top: clamp(4px, 1vw, 16px); right: clamp(0px, 0.6vw, 10px); transform: rotate(30deg); }
+.iv-jasmine--bl { bottom: clamp(2px, 0.6vw, 10px); left: clamp(0px, 0.6vw, 10px); transform: rotate(-150deg); }
+.iv-jasmine--br { bottom: clamp(2px, 0.6vw, 10px); right: clamp(0px, 0.6vw, 10px); transform: rotate(150deg); }
+.iv-deepam {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(26px, 3.6vw, 52px);
+  transform-origin: 50% 0;
+  animation: ic-sway 4.5s ease-in-out infinite;
+}
+.iv-deepam--l { left: 9%; }
+.iv-deepam--r { right: 9%; animation-delay: -2.2s; }
+.iv-deepam-chain {
+  display: block;
+  width: 2px;
+  height: clamp(36px, 7vw, 110px);
+  background: repeating-linear-gradient(#b8893e 0 4px, transparent 4px 6px);
+}
+.iv-deepam svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: -2px;
+  overflow: visible;
+}
+@media (max-width: 480px) {
+  .iv-deepam { width: 22px; }
+  .iv-deepam--l { left: 5%; }
+  .iv-deepam--r { right: 5%; }
+  .iv-deepam-chain { height: 26px; }
+}
