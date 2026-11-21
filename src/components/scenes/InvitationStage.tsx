@@ -58,17 +58,14 @@ const JASMINE = (
 /** Thin gold line with a centered ornamental diamond/lotus motif. */
 function OrnamentalDivider({ className = "" }: { className?: string }) {
   return (
-    <div data-line aria-hidden className={`iv-divider ${className}`}>
-      <span className="iv-divider-line iv-divider-line--l" />
-      <svg viewBox="-14 -8 28 16" className="iv-divider-motif">
-        <path d="M0 -6 C2 -3.2, 3 -1, 0 2.2 C-3 -1, -2 -3.2, 0 -6 Z" fill="#e2b84f" />
-        <path d="M-1.2 1.6 C-4.8 1.2, -6.8 -1, -7.5 -3.8 C-4.6 -3, -2.2 -1.2, -1.2 1.6 Z" fill="#a87420" />
-        <path d="M1.2 1.6 C4.8 1.2, 6.8 -1, 7.5 -3.8 C4.6 -3, 2.2 -1.2, 1.2 1.6 Z" fill="#a87420" />
-        <polygon points="0,3.5 2.4,6 0,8.5 -2.4,6" fill="#8a5a14" />
-        <circle cx="-11" cy="0" r="1.3" fill="#e2b84f" />
-        <circle cx="11" cy="0" r="1.3" fill="#e2b84f" />
+    <div data-line aria-hidden className={`gn-orn ${className}`}>
+      <i className="iv-divider-line" />
+      <svg viewBox="-20 -14 40 24" aria-hidden="true">
+        <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
+        <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
+        <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
       </svg>
-      <span className="iv-divider-line iv-divider-line--r" />
+      <i className="iv-divider-line" />
     </div>
   );
 }
@@ -255,113 +252,108 @@ export function ArchScene() {
             <div ref={set("col")} className="iv-letter">
               <div className="iv-card-panel">
                 <div className="iv-card-inner">
-
-
-                  {/* Top Kalash & Invocation */}
-                  <img data-line src="/media/kalash.webp" alt="" className="iv-kalash" draggable={false} />
-                  {wedding.invocation && (
-                    <p data-line className="iv-invocation">
-                      {wedding.invocation}
+                  {/* Block 1: Kalash, Invocation, Dear Guest, Quote */}
+                  <div className="gn-blk">
+                    <img data-line src="/media/kalash.webp" alt="Shri Ganesh" className="gn-ganesh" draggable={false} />
+                    {wedding.invocation && (
+                      <p data-line className="gn-shri" lang="hi">
+                        {wedding.invocation}
+                      </p>
+                    )}
+                    <p data-line className="gn-dear">Dear</p>
+                    <p data-line className="gn-name">
+                      <span className="q">“</span><span data-fit=".iv-card-inner">{guestName}</span><span className="q">”</span>
                     </p>
-                  )}
-                  <p data-line className="iv-dear">
-                    Dear <span data-fit=".iv-card-inner">{guestName}</span>,
-                  </p>
-                  <p data-line className="iv-script" aria-hidden>
-                    Invite
-                  </p>
-                  <p data-line className="iv-lead">Some moments are too precious to celebrate without the people we love.</p>
-                  
-                  {/* Blessings & Parents */}
-                  <p data-line className="iv-small iv-blessing-text">
-                    With the blessings of the Almighty and our beloved elders
-                  </p>
-                  <p data-line className="iv-family">
-                    {parents(first.parents)}
-                    <span className="iv-together">together with</span>
-                    {parents(second.parents)}
-                  </p>
-                  <p data-line className="iv-small">
-                    request the pleasure of your company at the wedding of their children
-                  </p>
+                    <p data-line className="gn-quote">Some moments are too precious to celebrate without the people we love.</p>
+                  </div>
 
-                  {/* Divider between blessings and names */}
                   <OrnamentalDivider />
 
-                  {/* Couple Names */}
-                  <h2 id="invite-heading" className="iv-names">
-                    <span data-line className="iv-name" data-fit=".iv-card-inner">
-                      {first.name}
-                    </span>
-                    <span data-line className="iv-amp">
-                      <span className="sr-only">and</span>
-                      <span aria-hidden>&amp;</span>
-                    </span>
-                    <span data-line className="iv-name" data-fit=".iv-card-inner">
-                      {second.name}
-                    </span>
-                  </h2>
+                  {/* Block 2: Welcome, Parents, Couple Names, Shubh Vivah */}
+                  <div className="gn-blk">
+                    <p data-line className="gn-welcome">
+                      With the blessings of our elders, we warmly invite you to the wedding celebrations of
+                    </p>
+                    {parents(first.parents) && (
+                      <p data-line className="gn-family">
+                        {parents(first.parents)}
+                        <span className="gn-together">together with</span>
+                        {parents(second.parents)}
+                      </p>
+                    )}
+                    <h2 id="invite-heading" className="gn-names">
+                      <span data-line className="gn-n" data-fit=".iv-card-inner">
+                        {first.name}
+                      </span>
+                      <span data-line className="gn-amp">
+                        <span className="sr-only">and</span>
+                        <span aria-hidden>&amp;</span>
+                      </span>
+                      <span data-line className="gn-n" data-fit=".iv-card-inner">
+                        {second.name}
+                      </span>
+                    </h2>
+                    <p data-line className="gn-hi" lang="hi">शुभ विवाह</p>
+                  </div>
 
-                  {/* Divider between names and date */}
                   <OrnamentalDivider />
 
-                  {/* Date: 15 FEBRUARY 2027 in gold-bordered pill with MONDAY above and Muhurtham below */}
-                  <div data-line className="iv-date-section">
-                    <p className="iv-label-tracked">{date.weekday}</p>
-                    <div className="iv-date-pill">
+                  {/* Block 3: Date & Muhurtham */}
+                  <div className="gn-blk">
+                    <p data-line className="gn-cdh">{date.weekday}</p>
+                    <div data-line className="iv-date-pill">
                       <span className="iv-date-pill-text">
                         {date.day} {date.month.toUpperCase()} {date.year}
                       </span>
                     </div>
                     {wedding.muhurthamLabel && (
-                      <p className="iv-muhurtham-label">
-                        Muhurtham · {wedding.muhurthamLabel}
+                      <p data-line className="gn-cdn">
+                        Auspicious Muhurtham · {wedding.muhurthamLabel}
                       </p>
                     )}
                   </div>
 
-                  {/* Divider between date and countdown */}
                   <OrnamentalDivider />
 
-                  {/* Countdown */}
-                  <p data-line className="iv-label-tracked">
-                    COUNTING THE DAYS
-                  </p>
-                  <div data-line className="iv-countdown">
-                    <Countdown iso={wedding.dateISO} />
+                  {/* Block 4: Countdown */}
+                  <div className="gn-blk" role="timer" aria-label="Countdown to the wedding">
+                    <p data-line className="gn-cdh">Counting the Days</p>
+                    <div data-line className="w-full flex justify-center">
+                      <Countdown iso={wedding.dateISO} />
+                    </div>
+                    <p data-line className="gn-cdn">until our sacred vows · {date.day} {date.month} {date.year}</p>
                   </div>
 
-                  {/* Divider between countdown and venue */}
                   <OrnamentalDivider />
 
-                  {/* Destination */}
-                  <p data-line className="iv-label-tracked">
-                    THE DESTINATION
-                  </p>
-                  <p data-line className="iv-venue">{venue.name}</p>
-                  <p data-line className="iv-venue-address">{venue.address ?? wedding.city}</p>
-                  <a
-                    data-line
-                    className="iv-directions"
-                    href={mapsUrl(venue.mapsQuery ?? `${venue.name}, ${venue.address ?? wedding.city}`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <svg aria-hidden viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8">
-                      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
-                      <circle cx="12" cy="9.5" r="2.5" />
-                    </svg>
-                    Get directions
-                  </a>
+                  {/* Block 5: The Destination */}
+                  <div className="gn-blk">
+                    <p data-line className="gn-vh">The Destination</p>
+                    <p data-line className="gn-vn">{venue.name}</p>
+                    <p data-line className="gn-va">{venue.address ?? wedding.city}</p>
+                    <div data-line className="gn-btns">
+                      <a
+                        className="gn-btn"
+                        href={mapsUrl(venue.mapsQuery ?? `${venue.name}, ${venue.address ?? wedding.city}`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/>
+                          <circle cx="12" cy="10" r="2.3"/>
+                        </svg>
+                        <span>Get Directions</span>
+                      </a>
+                    </div>
+                  </div>
 
-                  {/* Divider between venue and closing */}
                   <OrnamentalDivider />
 
-                  {/* Celebrations & Families */}
-                  <p data-line className="iv-closing">
-                    and the celebrations that follow
-                  </p>
-                  <p data-line className="iv-families">{wedding.families}</p>
+                  {/* Block 6: Closing Presence & Families */}
+                  <div className="gn-blk">
+                    <p data-line className="gn-end">We await your gracious presence</p>
+                    <p data-line className="gn-sign">— {wedding.families}</p>
+                  </div>
                 </div>
               </div>
             </div>
