@@ -54,51 +54,6 @@ const JASMINE = (
   </svg>
 );
 
-/** Small ornamental corner motif for the inner luxury card (kolam/lotus). */
-const CORNER_LOTUS = (
-  <svg viewBox="0 0 32 32" aria-hidden className="iv-card-corner-svg">
-    <path d="M2 16 V5 C2 3.3 3.3 2 5 2 H16" fill="none" stroke="#d4af37" strokeWidth="1" strokeLinecap="round" />
-    <path d="M6 14 V7 C6 6.4 6.4 6 7 6 H14" fill="none" stroke="#e2b84f" strokeWidth="0.8" strokeLinecap="round" opacity="0.85" />
-    <path d="M6 6 C9 9, 12 13, 8 16 C6 13, 6 9, 6 6 Z" fill="#e2b84f" />
-    <path d="M6 6 C9 9, 13 12, 16 8 C13 6, 9 6, 6 6 Z" fill="#e2b84f" />
-    <path d="M6 6 C10 10, 14 14, 12 17 C10 18, 9 17, 8 15 C8 13, 6 10, 6 6 Z" fill="#8a5a14" />
-    <circle cx="6" cy="6" r="1.5" fill="#8a5a14" />
-    <polygon points="6,6 8,4 10,6 8,8" fill="#e2b84f" />
-    <circle cx="19" cy="2" r="1.1" fill="#d4af37" />
-    <circle cx="2" cy="19" r="1.1" fill="#d4af37" />
-  </svg>
-);
-
-/** Faint traditional kolam / mandala watermark for the luxury card. */
-const MANDALA_WATERMARK = (
-  <svg viewBox="-120 -120 240 240" aria-hidden className="iv-mandala-svg">
-    <g fill="none" stroke="#8a5a14" strokeWidth="0.8">
-      <circle r="114" strokeWidth="0.6" strokeDasharray="3 4" />
-      <circle r="106" strokeWidth="0.8" />
-      <circle r="98" strokeWidth="0.5" />
-      <circle r="74" strokeWidth="0.8" />
-      <circle r="52" strokeWidth="0.6" strokeDasharray="2 3" />
-      <circle r="36" strokeWidth="0.8" />
-      <circle r="18" strokeWidth="0.7" />
-      <circle r="6" fill="#8a5a14" />
-      {Array.from({ length: 16 }, (_, i) => (
-        <g key={`p1-${i}`} transform={`rotate(${i * 22.5})`}>
-          <path d="M0 -74 C6 -87, 10 -98, 0 -106 C-10 -98, -6 -87, 0 -74 Z" fill="#e2b84f" fillOpacity="0.18" />
-          <circle cx="0" cy="-90" r="1.5" fill="#8a5a14" />
-        </g>
-      ))}
-      {Array.from({ length: 8 }, (_, i) => (
-        <g key={`p2-${i}`} transform={`rotate(${i * 45})`}>
-          <path d="M0 -36 C8 -44, 10 -60, 0 -74 C-10 -60, -8 -44, 0 -36 Z" fill="#8a5a14" fillOpacity="0.14" />
-          <path d="M0 -18 C5 -24, 6 -32, 0 -36 C-6 -32, -5 -24, 0 -18 Z" fill="#e2b84f" fillOpacity="0.22" />
-        </g>
-      ))}
-      {Array.from({ length: 8 }, (_, i) => (
-        <path key={`l-${i}`} d="M0 -52 C12 -58, 20 -44, 26 -36" transform={`rotate(${i * 45})`} strokeWidth="0.6" />
-      ))}
-    </g>
-  </svg>
-);
 
 /** Thin gold line with a centered ornamental diamond/lotus motif. */
 function OrnamentalDivider({ className = "" }: { className?: string }) {
@@ -300,16 +255,7 @@ export function ArchScene() {
             <div ref={set("col")} className="iv-letter">
               <div className="iv-card-panel">
                 <div className="iv-card-inner">
-                  {/* Small ornamental corner motifs (kolam/lotus, SVG) */}
-                  <span aria-hidden className="iv-corner-motif iv-corner-motif--tl">{CORNER_LOTUS}</span>
-                  <span aria-hidden className="iv-corner-motif iv-corner-motif--tr">{CORNER_LOTUS}</span>
-                  <span aria-hidden className="iv-corner-motif iv-corner-motif--bl">{CORNER_LOTUS}</span>
-                  <span aria-hidden className="iv-corner-motif iv-corner-motif--br">{CORNER_LOTUS}</span>
 
-                  {/* Faint kolam/mandala watermark at 4-6% opacity */}
-                  <div aria-hidden className="iv-card-watermark">
-                    {MANDALA_WATERMARK}
-                  </div>
 
                   {/* Top Kalash & Invocation */}
                   <img data-line src="/media/kalash.webp" alt="" className="iv-kalash" draggable={false} />

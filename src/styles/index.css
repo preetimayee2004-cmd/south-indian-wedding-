@@ -1296,281 +1296,312 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   }
 }
 
-/* ── Our Love Story: the photo board ──────────────────────────────── */
-.gb-viewport {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-/* the board: a warm wooden frame with a carved temple border, a recessed cream silk surface */
-.gb-board {
-  container-type: inline-size;
+/* ── Moments to Cherish: Floating Memories Gallery ─────────────────── */
+.gm-plaque-wrapper {
   position: relative;
-  width: 94vw;
-  padding: 14px;
-  border-radius: 10px;
-  /* dark teak, a faint grain */
-  background:
-    repeating-linear-gradient(92deg, rgb(255 255 255 / 0.04) 0 2px, transparent 2px 9px),
-    linear-gradient(180deg, #55311a, #4a2a14 45%, #3f230f);
-  box-shadow: 0 18px 40px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 220 160 / 0.18);
+  z-index: 10;
 }
-/* small gold ornaments in the frame's corners */
-.gb-board::after {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  pointer-events: none;
-  background:
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(1%201)%20translate(0%200)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") top left / 22px 22px no-repeat,
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(-1%201)%20translate(-28%200)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") top right / 22px 22px no-repeat,
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(1%20-1)%20translate(0%20-28)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") bottom left / 22px 22px no-repeat,
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'28'%20height%3D'28'%3E%3Cg%20transform%3D'scale(-1%20-1)%20translate(-28%20-28)'%20fill%3D'%23d9b25f'%20stroke%3D'%238a6420'%20stroke-width%3D'.6'%3E%3Cpath%20d%3D'M2%202h14c-2%202-6%203-9%203%200%203-1%207-3%209V2Z'%2F%3E%3Ccircle%20cx%3D'9'%20cy%3D'9'%20r%3D'2.4'%2F%3E%3Cpath%20d%3D'M2%202l9%209'%20stroke-width%3D'1'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E") bottom right / 22px 22px no-repeat;
-}
-/* phones: the board is taller than the screen and the view follows the plane */
-.gb-viewport > .gb-board {
-  align-self: flex-start;
-  margin-top: 16px;
-}
-.gb-board::before {
-  /* a thin gold inlay line inside the frame */
-  content: "";
-  position: absolute;
-  inset: 6px;
-  border: 1.5px solid #c9954f;
-  border-radius: 7px;
-  pointer-events: none;
-}
-.gb-surface {
+
+.gm-plaque {
   position: relative;
-  /* phones: a row per photo, plus room for the tags at the foot */
-  height: calc(16cqw + var(--count, 6) * 100cqw + 52cqw);
-  border-radius: 4px;
-  /* deep peacock teal velvet with gold paisley buttas, recessed into the frame */
-  background-color: #0f5c5a;
-  background-image:
-    url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'72'%20height%3D'72'%3E%3Cg%20fill%3D'%23E8C56B'%20fill-opacity%3D'.14'%3E%3Cpath%20d%3D'M22%208c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16C7%2017%2013%209%2022%208Z'%2F%3E%3Ccircle%20cx%3D'25'%20cy%3D'14'%20r%3D'1.6'%20fill-opacity%3D'.2'%2F%3E%3Cpath%20d%3D'M58%2044c8-1%2013%205%2011%2011-1%204-6%206-9%203-2-2%200-5%202-4-3-2-8%201-8%207%200%208%206%2014%2013%2017-12%202-22-5-23-16-1-10%205-17%2014-18Z'%20transform%3D'translate(-6%20-6)'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"),
-    radial-gradient(ellipse 80% 60% at 40% 30%, rgb(255 255 255 / 0.07), transparent 70%),
-    radial-gradient(ellipse 90% 80% at 60% 80%, rgb(0 0 0 / 0.18), transparent 70%);
-  box-shadow: inset 0 4px 14px rgb(0 0 0 / 0.5), inset 0 0 30px rgb(0 0 0 / 0.3);
-}
-@media (min-width: 768px) {
-  /* desktop: the whole board fits the screen */
-  .gb-board {
-    width: min(94vw, calc((100svh - 48px) * 1.7));
-  }
-  .gb-viewport > .gb-board {
-    align-self: center;
-    margin-top: 0;
-  }
-  .gb-surface {
-    height: auto;
-    aspect-ratio: 1.7;
-  }
-}
-/* the title plaque on the top of the frame */
-.gb-plaque {
-  position: absolute;
-  top: -26px;
-  left: 50%;
-  z-index: 4;
-  translate: -50% 0;
-  padding: 2px 22px 4px;
-  border: 1px solid #b8893e;
+  display: inline-block;
+  padding: 5px 36px 7px;
   border-radius: 999px;
-  background: #f7ecd3;
-  box-shadow: 0 4px 10px rgb(58 31 22 / 0.3);
-  white-space: nowrap;
+  background: linear-gradient(180deg, #fffcf6 0%, #f7eedb 100%);
+  border: 1.5px solid #c9954f;
+  box-shadow:
+    0 8px 24px rgba(20, 2, 6, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
-.gb-plaque h2 {
+
+.gm-plaque::before,
+.gm-plaque::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: #c9954f;
+}
+
+.gm-plaque::before {
+  left: 14px;
+}
+
+.gm-plaque::after {
+  right: 14px;
+}
+
+.gm-plaque h2 {
   font-family: "Great Vibes", cursive;
   font-weight: 400;
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
-  line-height: 1.2;
-  color: #5e1220;
-}
-/* the polaroids: phones in a vertical zigzag (about 62vw wide), desktop in a loose zigzag */
-.gb-photo {
-  position: absolute;
-  z-index: 2;
-  width: 71%; /* about 62vw */
-  left: var(--mx);
-  top: calc(16cqw + var(--i) * 100cqw);
-  cursor: zoom-in;
-  text-align: center;
-}
-@media (min-width: 768px) {
-  .gb-photo {
-    width: 14.5%;
-    left: var(--dx);
-    top: var(--dy);
-  }
-}
-.gb-polaroid {
-  display: block;
-  padding: 6% 6% 3%;
-  background: #fff;
-  box-shadow: 0 8px 18px rgb(0 0 0 / 0.35);
-}
-.gb-pic {
-  position: relative;
-  display: block;
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: #efe5d2;
-}
-/* "slightly desaturated" until the plane lands: a grey layer in saturation blend, faded out */
-.gb-desat {
-  position: absolute;
-  inset: 0;
-  background: hsl(0 0% 55%);
-  mix-blend-mode: saturation;
-  opacity: 0.5;
-}
-.gb-caption {
-  display: block;
-  margin-top: 4%;
-  font-family: "Great Vibes", cursive;
-  font-size: clamp(1.25rem, 5.4cqw, 1.6rem);
+  font-size: clamp(2.1rem, 4.4vw, 3.2rem);
   line-height: 1.15;
   color: #5e1220;
+  margin: 0;
 }
+
+.gm-subtitle {
+  color: #d4a94a;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Floating Stage */
+.gm-stage {
+  position: relative;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+}
+
+/* Desktop & Tablet: loose cinematic composition (3 upper, 3 lower) */
 @media (min-width: 768px) {
-  .gb-caption {
-    font-size: clamp(0.95rem, 1.35cqw, 1.35rem);
+  .gm-stage {
+    min-height: 740px;
+    height: clamp(740px, 78vh, 880px);
+  }
+
+  .gm-photo {
+    position: absolute;
+    width: clamp(210px, 21.5vw, 255px);
+  }
+
+  /* Upper area (3 photos) */
+  .gm-spot-0 {
+    left: 4.5%;
+    top: 3%;
+  }
+
+  .gm-spot-1 {
+    left: 38%;
+    top: 9.5%;
+  }
+
+  .gm-spot-2 {
+    left: 71.5%;
+    top: 2.5%;
+  }
+
+  /* Lower area (3 photos) */
+  .gm-spot-3 {
+    left: 7.5%;
+    top: 52%;
+  }
+
+  .gm-spot-4 {
+    left: 40.5%;
+    top: 58%;
+  }
+
+  .gm-spot-5 {
+    left: 72.5%;
+    top: 49.5%;
   }
 }
-/* holders: a brass pin, or a strip of maroon and gold washi tape */
-.gb-pin {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 14px;
-  height: 14px;
-  translate: -50% 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff4c8, #d4a94a 45%, #8a6420);
-  box-shadow: 0 2px 3px rgb(0 0 0 / 0.35);
+
+/* Mobile: organic staggered vertical cascade */
+@media (max-width: 767px) {
+  .gm-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 0 12px;
+  }
+
+  .gm-photo {
+    position: relative;
+    width: 82%;
+    max-width: 275px;
+  }
+
+  .gm-spot-0 {
+    align-self: flex-start;
+    margin-left: 3%;
+  }
+
+  .gm-spot-1 {
+    align-self: flex-end;
+    margin-right: 3%;
+    margin-top: -12px;
+  }
+
+  .gm-spot-2 {
+    align-self: flex-start;
+    margin-left: 7%;
+    margin-top: -12px;
+  }
+
+  .gm-spot-3 {
+    align-self: flex-end;
+    margin-right: 5%;
+    margin-top: -12px;
+  }
+
+  .gm-spot-4 {
+    align-self: flex-start;
+    margin-left: 4%;
+    margin-top: -12px;
+  }
+
+  .gm-spot-5 {
+    align-self: flex-end;
+    margin-right: 6%;
+    margin-top: -12px;
+  }
 }
-.gb-tape {
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  width: 34%;
-  height: 18px;
-  translate: -50% 0;
-  rotate: -3deg;
-  opacity: 0.88;
-  background: repeating-linear-gradient(45deg, #7a1f2b 0 6px, #c9954f 6px 10px);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+
+/* Polaroid Photograph Component */
+.gm-photo {
+  display: block;
+  text-align: center;
+  cursor: zoom-in;
+  border: none;
+  background: transparent;
+  padding: 0;
+  transform: rotate(var(--rot, 0deg));
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
 }
-.gb-marigold {
-  position: absolute;
-  top: -10px;
-  right: -8px;
-  width: 26px;
-  height: 26px;
+
+.gm-photo:hover {
+  animation-play-state: paused !important;
+  z-index: 30 !important;
+  transform: translateY(-9px) scale(1.038) rotate(0deg) !important;
 }
-.gb-burst {
-  position: absolute;
-  top: 2px;
-  left: 50%;
-  width: 7px;
-  height: 9px;
-  border-radius: 50% 0 50% 50%;
+
+.gm-polaroid {
+  display: block;
+  background: #faf7f2;
+  padding: 9px 9px 16px;
+  border-radius: 2px;
+  border: 1px solid rgba(226, 184, 79, 0.25);
+  box-shadow:
+    0 12px 28px -4px rgba(0, 0, 0, 0.45),
+    0 4px 10px -2px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 245, 225, 0.12);
+  transition:
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
-/* the extras between the photos (phones / desktop) */
-.gb-extra {
-  position: absolute;
-  z-index: 1;
+
+.gm-photo:hover .gm-polaroid {
+  border-color: rgba(226, 184, 79, 0.55);
+  box-shadow:
+    0 24px 44px -6px rgba(0, 0, 0, 0.6),
+    0 0 28px rgba(226, 184, 79, 0.4),
+    0 0 0 1px rgba(226, 184, 79, 0.5);
 }
-.gb-jasmine { left: 74%; top: 222cqw; width: 23%; rotate: -12deg; }
-.gb-kolam { left: 5%; top: 138cqw; width: 17%; }
-.gb-heart { left: 80%; top: 44cqw; width: 11%; rotate: 10deg; }
-.gb-datetag { left: 56%; top: calc(16cqw + var(--count, 6) * 100cqw + 26cqw); }
-@media (min-width: 768px) {
-  .gb-jasmine { left: 2%; top: 86%; width: 15%; rotate: -4deg; }
-  .gb-kolam { left: 40%; top: 83%; width: 6%; }
-  .gb-heart { left: 26%; top: 24%; width: 3.2%; }
-  .gb-datetag { left: 84%; top: 4%; }
+
+.gm-pic {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #2b0c13;
+  border-radius: 1px;
 }
-.gb-datetag,
-.gb-endtag {
-  padding: 4px 12px 4px 18px;
-  border: 1px solid #b8893e;
-  border-radius: 4px 12px 12px 4px;
-  background: #fffaf0;
-  box-shadow: 0 3px 6px rgb(58 31 22 / 0.2);
-  font-family: "EB Garamond", Georgia, serif;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: #7a1f2b;
-  white-space: nowrap;
-  rotate: -6deg;
-}
-.gb-datetag::before,
-.gb-endtag::before {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 50%;
-  width: 5px;
-  height: 5px;
-  translate: 0 -50%;
-  border-radius: 50%;
-  border: 1px solid #b8893e;
-}
-.gb-endtag {
-  position: absolute;
-  z-index: 2;
-  left: 6%;
-  top: calc(16cqw + var(--count, 6) * 100cqw + 8cqw);
-  font-family: "Great Vibes", cursive;
-  font-size: 1.5rem;
-  font-weight: 400;
-  letter-spacing: 0;
-  padding: 2px 14px 4px 20px;
-  rotate: 3deg;
-}
-@media (min-width: 768px) {
-  .gb-endtag { left: 72%; top: 85%; font-size: clamp(1.1rem, 1.6cqw, 1.5rem); }
-}
-/* the flight: the trail under the plane */
-.gb-flight {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
+
+.gm-pic img {
+  display: block;
   width: 100%;
   height: 100%;
-  overflow: visible;
-  pointer-events: none;
+  object-fit: cover;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.gb-plane {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 5;
-  width: 44px;
-  height: 29px;
-  pointer-events: none;
-  filter: drop-shadow(0 6px 6px rgb(0 0 0 / 0.4));
+
+.gm-photo:hover .gm-pic img {
+  transform: scale(1.045);
 }
-@media (min-width: 768px) {
-  .gb-plane {
-    width: 56px;
-    height: 37px;
+
+.gm-caption {
+  display: block;
+  margin-top: 9px;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.15rem, 1.4vw, 1.45rem);
+  line-height: 1.25;
+  color: #5e1220;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+  padding: 0 4px;
+}
+
+/* Subtle continuous floating animations */
+@keyframes gm-float-0 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-6px) rotate(calc(var(--rot, 0deg) + 0.5deg));
   }
 }
-/* a gentle bob that never stops, so it never looks frozen */
-.gb-plane-bob {
-  animation: gb-plane-bob 1.6s ease-in-out infinite;
+
+@keyframes gm-float-1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-8px) rotate(calc(var(--rot, 0deg) - 0.6deg));
+  }
 }
-@keyframes gb-plane-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+
+@keyframes gm-float-2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-5px) rotate(calc(var(--rot, 0deg) + 0.4deg));
+  }
+}
+
+@keyframes gm-float-3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-7px) rotate(calc(var(--rot, 0deg) - 0.4deg));
+  }
+}
+
+@keyframes gm-float-4 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-6px) rotate(calc(var(--rot, 0deg) + 0.5deg));
+  }
+}
+
+@keyframes gm-float-5 {
+  0%, 100% {
+    transform: translateY(0px) rotate(var(--rot, 0deg));
+  }
+  50% {
+    transform: translateY(-8px) rotate(calc(var(--rot, 0deg) - 0.5deg));
+  }
+}
+
+.gm-floating-0 { animation: gm-float-0 7.2s ease-in-out infinite; }
+.gm-floating-1 { animation: gm-float-1 8.5s ease-in-out infinite 0.6s; }
+.gm-floating-2 { animation: gm-float-2 7.8s ease-in-out infinite 1.2s; }
+.gm-floating-3 { animation: gm-float-3 8.1s ease-in-out infinite 0.4s; }
+.gm-floating-4 { animation: gm-float-4 7.6s ease-in-out infinite 1.0s; }
+.gm-floating-5 { animation: gm-float-5 8.8s ease-in-out infinite 1.6s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gm-floating-0,
+  .gm-floating-1,
+  .gm-floating-2,
+  .gm-floating-3,
+  .gm-floating-4,
+  .gm-floating-5 {
+    animation: none !important;
+  }
+  .gm-photo {
+    transition: none !important;
+  }
 }
 
 /* each elephant's own size (the second one is 8% smaller), from its feet */
@@ -2428,85 +2459,44 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   letter-spacing: 0.18em;
 }
 
-/* ── The luxury invitation letter card between the mandapam's pillars ── */
+/* ── The refined South Indian temple wedding invitation letter ── */
 .iv-letter {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(92%, 620px);
+  width: min(96%, 680px);
   padding: clamp(24px, 3.5vw, 48px) 0 clamp(36px, 5vw, 64px);
   text-align: center;
   box-sizing: border-box;
 }
 
-/* Card & Texture: double border (1px gold outer, 4px gap, thin inner gold line) + soft glow */
+/* Soft ivory parchment surface that blends naturally into the temple mandapam */
 .iv-card-panel {
   position: relative;
   width: 100%;
-  max-width: 560px;
+  max-width: 660px;
   margin: 0 auto;
-  padding: 4px; /* 4px gap between outer and inner line */
-  border: 1px solid rgba(212, 175, 55, 0.7); /* 1px gold outer line */
-  border-radius: 6px;
-  background: #faf6ee;
-  box-shadow: 
-    0 16px 40px -10px rgba(70, 45, 15, 0.12),
-    0 4px 16px rgba(184, 137, 62, 0.08);
+  border-radius: 12px;
   box-sizing: border-box;
 }
 
 .iv-card-inner {
   position: relative;
   width: 100%;
-  padding: clamp(28px, 4.5vw, 48px) clamp(12px, 3.2vw, 32px);
-  border: 1px solid rgba(212, 175, 55, 0.45); /* Thin inner gold line */
-  border-radius: 4px;
-  background: 
-    radial-gradient(ellipse at 50% 25%, #fffdfa 0%, #faf5ea 60%, #f4ede0 100%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.025'/%3E%3C/svg%3E");
-  box-shadow: inset 0 0 40px rgba(180, 130, 40, 0.15); /* Soft inner glow */
+  padding: clamp(32px, 5vw, 56px) clamp(16px, 3.8vw, 40px);
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse 95% 75% at 50% 25%, rgba(255, 252, 245, 0.98) 0%, rgba(251, 244, 230, 0.95) 55%, rgba(243, 233, 212, 0.92) 85%, rgba(235, 222, 196, 0.78) 100%);
+  box-shadow: 
+    0 14px 38px -8px rgba(70, 45, 15, 0.12),
+    0 0 0 1px rgba(212, 175, 55, 0.24),
+    inset 0 0 45px rgba(184, 137, 62, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   overflow: hidden;
   box-sizing: border-box;
-}
-
-/* Small ornamental corner motifs (kolam/lotus, SVG) */
-.iv-corner-motif {
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  pointer-events: none;
-  z-index: 2;
-}
-.iv-corner-motif--tl { top: 4px; left: 4px; }
-.iv-corner-motif--tr { top: 4px; right: 4px; transform: scaleX(-1); }
-.iv-corner-motif--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
-.iv-corner-motif--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
-.iv-card-corner-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* Faint kolam/mandala watermark at 4-6% opacity */
-.iv-card-watermark {
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(85%, 440px);
-  aspect-ratio: 1;
-  pointer-events: none;
-  opacity: 0.05;
-  z-index: 0;
-}
-.iv-mandala-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
 }
 
 /* Content items */
@@ -2522,100 +2512,118 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   opacity: 0.95;
   margin-bottom: 2px;
 }
+
+/* “॥ श्री गणेशाय नमः ॥” — 16px, refined gold #8A5A20 / #C09336 */
 .iv-invocation {
   margin-top: 6px;
   font-family: "Tiro Devanagari Hindi", "Cormorant Garamond", serif;
-  font-size: clamp(13px, 1.25vw, 16px);
-  letter-spacing: 0.06em;
-  color: #8a6428;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: #8A5A20;
 }
+
+/* “Dear Preeti,” — 22px, elegant italic bronze #713D27 */
 .iv-dear {
-  margin-top: clamp(12px, 1.8vw, 20px);
+  margin-top: clamp(14px, 2vw, 22px);
+  margin-bottom: 2px;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-style: italic;
-  font-size: clamp(18px, 1.7vw, 22px);
-  color: #6b4a2a;
+  font-size: clamp(19px, 2vw, 22px);
+  color: #713D27;
+  line-height: 1.3;
 }
 .iv-dear span {
   font-style: normal;
   font-weight: 600;
-  color: #8a5a14;
+  color: #8A5A20;
 }
 
-/* The flowing script accent: Pinyon Script / Great Vibes */
+/* “Invite” — ~100px approximately, prominent gold calligraphy */
 .iv-script {
-  margin-top: 2px;
+  margin-top: -2px;
+  margin-bottom: 2px;
   font-family: "Pinyon Script", "Great Vibes", cursive;
-  font-size: clamp(68px, 9vw, 116px);
+  font-size: clamp(74px, 8.5vw, 102px);
   line-height: 1;
-  color: #8a5a14;
-  background: linear-gradient(135deg, #8a5a14 0%, #e2b84f 50%, #8a5a14 100%);
+  color: #8A5A20;
+  background: linear-gradient(135deg, #8A5A20 0%, #C09336 40%, #e2b84f 60%, #8A5A20 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 2px rgba(138, 90, 20, 0.12));
+  filter: drop-shadow(0 2px 4px rgba(138, 90, 32, 0.16));
 }
 
+/* Invitation quote — 19px, italic deep brown #713D27, comfortable line-height */
 .iv-lead {
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(15px, 1.4vw, 18px);
+  font-style: italic;
+  font-size: clamp(16px, 1.6vw, 19px);
   font-weight: 400;
-  line-height: 1.7;
-  color: #6b4a2a;
-  max-width: 32em;
-  margin-top: 8px;
+  line-height: 1.75;
+  color: #713D27;
+  max-width: 34em;
+  margin: 10px auto 14px;
 }
-.iv-small {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(14px, 1.3vw, 17px);
-  font-weight: 400;
-  line-height: 1.7;
-  color: #6b4a2a;
-  max-width: 32em;
-}
+
+/* Blessings text — 17px, muted antique gold #A77B43 */
 .iv-blessing-text {
   margin-top: 10px;
-  font-size: clamp(13px, 1.2vw, 16px);
-  color: #7a5a3a;
-  opacity: 0.9;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(15px, 1.4vw, 17px);
+  line-height: 1.6;
+  color: #A77B43;
 }
+
+/* Parents’ names — 20px, elegant serif, bronze #713D27 */
 .iv-family {
   margin-top: 10px;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-style: italic;
-  font-size: clamp(15px, 1.4vw, 18px);
-  line-height: 1.6;
-  color: #5a412b;
+  font-size: clamp(17px, 1.7vw, 20px);
+  font-weight: 500;
+  line-height: 1.65;
+  color: #713D27;
 }
+
+/* “together with” — 15px, muted gold italic #A77B43 */
 .iv-together {
   display: block;
   font-style: italic;
-  font-size: 0.82em;
-  color: #8c735b;
-  opacity: 0.72;
-  letter-spacing: 0.06em;
-  margin: 3px 0;
+  font-size: clamp(13px, 1.25vw, 15px);
+  color: #A77B43;
+  letter-spacing: 0.05em;
+  margin: 4px 0;
 }
 
-/* Ornamental divider: thin gold line with centered diamond/lotus motif & 32-40px vertical rhythm */
+/* Wedding invitation sentence — 18px, deep bronze #713D27, improved line spacing */
+.iv-small {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(15px, 1.5vw, 18px);
+  font-weight: 400;
+  line-height: 1.75;
+  color: #713D27;
+  max-width: 34em;
+  margin: 10px auto 0;
+}
+
+/* Ornamental divider: thin gold line with centered diamond/lotus motif */
 .iv-divider {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   width: min(78%, 260px);
-  margin: clamp(28px, 3.8vw, 38px) auto;
+  margin: clamp(26px, 3.5vw, 36px) auto;
   position: relative;
   z-index: 1;
 }
 .iv-divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, #e2b84f 50%, #8a5a14 100%);
+  background: linear-gradient(90deg, transparent 0%, #C09336 50%, #8A5A20 100%);
   transform-origin: 100% 50%;
 }
 .iv-divider-line--r {
-  background: linear-gradient(90deg, #8a5a14 0%, #e2b84f 50%, transparent 100%);
+  background: linear-gradient(90deg, #8A5A20 0%, #C09336 50%, transparent 100%);
   transform-origin: 0% 50%;
 }
 .iv-divider-motif {
@@ -2625,12 +2633,12 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   display: block;
 }
 
-/* Couple Names: uppercase, 0.14em tracking, metallic gold gradient & shimmer sweep */
+/* Couple Names: uppercase, 0.14em tracking, antique temple gold gradient */
 .iv-names {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: clamp(16px, 2.5vw, 28px) 0;
+  margin: clamp(14px, 2.2vw, 24px) 0;
   font-weight: 400;
   position: relative;
 }
@@ -2640,18 +2648,18 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   white-space: nowrap;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 600;
-  font-size: clamp(34px, 6vw, 68px);
+  font-size: clamp(32px, 5.5vw, 56px);
   line-height: 1.1;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 0.04em 0 0.04em 0.14em;
   background: linear-gradient(
     135deg,
-    #8a5a14 0%,
-    #e2b84f 25%,
-    #a87420 50%,
-    #e2b84f 75%,
-    #8a5a14 100%
+    #8A5A20 0%,
+    #C09336 30%,
+    #e2b84f 50%,
+    #C09336 70%,
+    #8A5A20 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text;
@@ -2660,12 +2668,8 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   animation: name-gold-shimmer 2.2s cubic-bezier(0.2, 0.8, 0.4, 1) 0.8s 1 normal both;
 }
 @keyframes name-gold-shimmer {
-  0% {
-    background-position: 150% center;
-  }
-  100% {
-    background-position: -50% center;
-  }
+  0% { background-position: 150% center; }
+  100% { background-position: -50% center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .iv-name {
@@ -2674,28 +2678,28 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   }
 }
 
-/* The "&" in flowing script font, lighter teal/gold, smaller than the names */
+/* The "&" with subtle temple teal #3B7771 accent */
 .iv-amp {
   display: block;
-  margin: -0.05em 0;
+  margin: -0.06em 0;
   font-family: "Pinyon Script", "Great Vibes", cursive;
-  font-size: clamp(26px, 3.8vw, 42px);
+  font-size: clamp(26px, 3.6vw, 40px);
   line-height: 1;
-  background: linear-gradient(135deg, #e2b84f, #3f8a8c 50%, #e2b84f 100%);
+  background: linear-gradient(135deg, #3B7771 0%, #C09336 50%, #3B7771 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 2px rgba(138, 90, 20, 0.15));
+  filter: drop-shadow(0 1px 2px rgba(59, 119, 113, 0.2));
 }
 
-/* Small labels (MONDAY, COUNTING THE DAYS, THE DESTINATION) in uppercase with 0.3em tracking */
+/* Small labels in uppercase with 0.28em tracking, muted gold-brown #A77B43 */
 .iv-label-tracked {
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: clamp(11px, 1.1vw, 13px);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.3em;
-  color: #8a6428;
+  letter-spacing: 0.28em;
+  color: #A77B43;
   margin-bottom: 9px;
 }
 
@@ -2704,36 +2708,36 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: clamp(16px, 2.5vw, 26px) 0;
+  margin: clamp(14px, 2.2vw, 24px) 0;
 }
 .iv-date-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: clamp(7px, 1.1vw, 10px) clamp(18px, 3vw, 30px);
-  border: 1px solid #d4af37;
+  border: 1px solid rgba(192, 147, 54, 0.65);
   border-radius: 9999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 242, 230, 0.9));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(248, 242, 230, 0.92));
   box-shadow: 
-    0 2px 10px rgba(138, 90, 20, 0.08), 
-    inset 0 0 10px rgba(226, 184, 79, 0.12);
+    0 2px 10px rgba(113, 61, 39, 0.08), 
+    inset 0 0 10px rgba(192, 147, 54, 0.12);
   position: relative;
 }
 .iv-date-pill::before {
   content: "";
   position: absolute;
   inset: -3px;
-  border: 1px solid rgba(212, 175, 55, 0.3);
+  border: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 9999px;
   pointer-events: none;
 }
 .iv-date-pill-text {
   font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 600;
-  font-size: clamp(16px, 2.1vw, 22px);
+  font-size: clamp(16px, 1.8vw, 20px);
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #4a3219;
+  color: #713D27;
   white-space: nowrap;
 }
 .iv-muhurtham-label {
@@ -2741,25 +2745,25 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   font-family: "Cormorant Garamond", Georgia, serif;
   font-style: italic;
   font-size: clamp(13px, 1.2vw, 15px);
-  color: #7a5a3a;
+  color: #A77B43;
   letter-spacing: 0.04em;
 }
 
-/* Venue */
+/* Destination / Venue */
 .iv-venue {
   margin-top: 4px;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-weight: 600;
-  font-size: clamp(22px, 2.6vw, 32px);
+  font-size: clamp(22px, 2.5vw, 28px);
   line-height: 1.25;
   letter-spacing: 0.04em;
-  color: #8a5a14;
+  color: #8A5A20;
 }
 .iv-venue-address {
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(14px, 1.3vw, 17px);
+  font-size: clamp(14px, 1.3vw, 16px);
   line-height: 1.6;
-  color: #6b4a2a;
+  color: #713D27;
   margin-top: 4px;
 }
 .iv-directions {
@@ -2768,43 +2772,44 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   gap: 8px;
   margin-top: 14px;
   padding: 7px 18px;
-  border: 1px solid rgba(212, 175, 55, 0.6);
+  border: 1px solid rgba(59, 119, 113, 0.55);
   border-radius: 9999px;
-  background: rgba(255, 253, 248, 0.85);
+  background: rgba(255, 253, 248, 0.9);
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: clamp(12px, 1.15vw, 14px);
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8a5a14;
+  color: #3B7771;
   transition: all 0.25s ease;
 }
 .iv-directions:hover {
   background: #fbf5e6;
-  border-color: #d4af37;
-  box-shadow: 0 2px 8px rgba(184, 137, 62, 0.2);
+  border-color: #C09336;
+  color: #8A5A20;
+  box-shadow: 0 2px 10px rgba(138, 90, 32, 0.18);
 }
 
 /* Celebrations & Families Closing */
 .iv-closing {
   font-family: "Cormorant Garamond", Georgia, serif;
   font-style: italic;
-  font-size: clamp(14px, 1.3vw, 17px);
+  font-size: clamp(14px, 1.3vw, 16px);
   line-height: 1.7;
-  color: #7a5a3a;
+  color: #A77B43;
 }
 .iv-families {
   margin-top: 8px;
   font-family: "Pinyon Script", "Great Vibes", cursive;
   font-size: clamp(28px, 3.4vw, 42px);
   line-height: 1.2;
-  color: #8a5a14;
+  color: #8A5A20;
 }
 
 @media (max-width: 480px) {
-  .iv-letter { width: 92%; }
-  .iv-card-inner { padding: 24px 10px 32px; }
-  .iv-name { letter-spacing: 0.1em; font-size: clamp(28px, 5.8vw, 36px); padding-left: 0.1em; }
+  .iv-letter { width: 95%; }
+  .iv-card-inner { padding: 26px 12px 34px; }
+  .iv-name { letter-spacing: 0.08em; font-size: clamp(26px, 5.6vw, 34px); padding-left: 0.08em; }
   .iv-date-pill { padding: 6px 14px; }
   .iv-date-pill-text { letter-spacing: 0.1em; font-size: 14px; }
 }
@@ -2913,25 +2918,7 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   background: radial-gradient(circle at 50% 100%, transparent 13px, #c9954f 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
 }
 
-/* the photo board: all one warm teak — the frame and the planked surface */
-.gb-board {
-  background:
-    repeating-linear-gradient(92deg, rgb(255 235 200 / 0.05) 0 2px, transparent 2px 9px),
-    linear-gradient(180deg, #7a4a22, #6b3f1c 45%, #5c3416);
-}
-.gb-board::before {
-  border-color: rgb(232 190 120 / 0.55);
-}
-.gb-surface {
-  background-color: #8a5a2e;
-  background-image:
-    repeating-linear-gradient(180deg, transparent 0 clamp(70px, 9cqw, 130px), rgb(50 22 6 / 0.35) clamp(70px, 9cqw, 130px) calc(clamp(70px, 9cqw, 130px) + 1px)),
-    repeating-linear-gradient(178deg, rgb(255 230 190 / 0.06) 0 2px, transparent 2px 7px),
-    repeating-linear-gradient(181deg, rgb(70 35 10 / 0.09) 0 1px, transparent 1px 13px),
-    radial-gradient(ellipse 80% 60% at 40% 30%, rgb(255 225 170 / 0.12), transparent 70%),
-    linear-gradient(180deg, #96633a, #84552c 50%, #774b25);
-  box-shadow: inset 0 4px 14px rgb(0 0 0 / 0.45), inset 0 0 30px rgb(0 0 0 / 0.25);
-}
+
 
 /* under the hero's temple: its stone floor carries on, so no sky can ever show beneath it
    (not even for a frame while the scroll catches up) */
@@ -3340,13 +3327,15 @@ body {
 }
 .iv-swags {
   z-index: 1;
-  height: clamp(24px, 3.2vw, 46px);
+  height: clamp(16px, 1.8vw, 26px);
+  opacity: 0.6;
 }
 .iv-strand {
   position: absolute;
   top: clamp(20px, 3vw, 44px);
-  width: clamp(9px, 1.1vw, 15px);
-  height: 58%;
+  width: clamp(7px, 0.9vw, 12px);
+  height: 48%;
+  opacity: 0.45;
   background: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'40'%20viewBox%3D'0%200%2016%2040'%3E%3Cpath%20d%3D'M8%200V40'%20stroke%3D'%236c8f3c'%20stroke-width%3D'.8'%2F%3E%3Cg%20fill%3D'%23fffaf0'%20stroke%3D'%23d9cfb6'%20stroke-width%3D'.6'%3E%3Cellipse%20cx%3D'8'%20cy%3D'6'%20rx%3D'3.4'%20ry%3D'4.6'%2F%3E%3Cellipse%20cx%3D'8'%20cy%3D'16'%20rx%3D'3'%20ry%3D'4.2'%2F%3E%3Cellipse%20cx%3D'8'%20cy%3D'26'%20rx%3D'3.4'%20ry%3D'4.6'%2F%3E%3C%2Fg%3E%3Cpath%20d%3D'M8%2032c-5-1-7%201-7%204%203%200%206-1%207-4Z'%20fill%3D'%234f8a3a'%2F%3E%3Cpath%20d%3D'M8%2033c5-1%207%201%207%204-3%200-6-1-7-4Z'%20fill%3D'%233f7a2e'%2F%3E%3C%2Fsvg%3E") center top / 100% auto repeat-y;
   transform-origin: 50% 0;
   animation: ic-sway 5.5s ease-in-out infinite;
