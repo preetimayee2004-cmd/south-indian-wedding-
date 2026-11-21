@@ -59,13 +59,13 @@ const JASMINE = (
 function OrnamentalDivider({ className = "" }: { className?: string }) {
   return (
     <div data-line aria-hidden className={`gn-orn ${className}`}>
-      <i className="iv-divider-line" />
-      <svg viewBox="-20 -14 40 24" aria-hidden="true">
+      <span className="iv-divider-line iv-divider-line--l" />
+      <svg viewBox="-20 -14 40 24" aria-hidden="true" className="gn-orn-motif">
         <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
         <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
         <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
       </svg>
-      <i className="iv-divider-line" />
+      <span className="iv-divider-line iv-divider-line--r" />
     </div>
   );
 }
@@ -157,8 +157,11 @@ export function ArchScene() {
           );
         },
       });
-      // the ornamental divider lines draw out from the centre
-      gsap.utils.toArray<HTMLElement>(".iv-divider-line", r.current.col).forEach((el) =>
+      // the ornamental divider lines draw out from the centre flower
+      gsap.utils.toArray<HTMLElement>(".iv-divider-line--l", r.current.col).forEach((el) =>
+        gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.inOut", scrollTrigger: { trigger: el, start: "top 90%", once: true } }),
+      );
+      gsap.utils.toArray<HTMLElement>(".iv-divider-line--r", r.current.col).forEach((el) =>
         gsap.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "power2.inOut", scrollTrigger: { trigger: el, start: "top 90%", once: true } }),
       );
     }, root);

@@ -1,74 +1,142 @@
 import { useLayoutEffect, useRef } from "react";
 import type { FamilySide } from "@/config/types";
 import { gsap } from "@/lib/gsap";
-import { SCRUB } from "@/lib/smooth";
 import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 
 type Key = "bride" | "groom";
 
-/** A golden lotus plant (inline SVG) that grows out of the card's border. */
-function Lotus({ flip }: { flip?: boolean }) {
+/** Traditional South Indian temple crest (Gopuram / Vimana) */
+function GopuramCrest() {
   return (
-    <svg viewBox="0 0 120 220" className={`h-full w-full ${flip ? "-scale-x-100" : ""}`} aria-hidden>
-      <defs>
-        <linearGradient id="lotus-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffe6a3" />
-          <stop offset="0.55" stopColor="#e2b453" />
-          <stop offset="1" stopColor="#a7752b" />
-        </linearGradient>
-      </defs>
-      <g fill="none" stroke="url(#lotus-gold)" strokeWidth="3" strokeLinecap="round">
-        <path d="M60 220 C58 170 66 130 60 92" />
-        <path d="M60 180 C40 168 26 150 22 128" />
-        <path d="M61 150 C80 140 92 124 96 104" />
-      </g>
-      <g fill="url(#lotus-gold)">
-        <path d="M22 128c-14-6-20-20-16-34 12 4 20 16 16 34Z" />
-        <path d="M96 104c14-4 22-16 20-30-12 2-22 14-20 30Z" />
-        {/* the flower */}
-        <path d="M60 92c-10-12-12-30 0-50 12 20 10 38 0 50Z" />
-        <path d="M58 92c-16-4-28-18-30-36 18 2 30 16 30 36Z" />
-        <path d="M62 92c16-4 28-18 30-36-18 2-30 16-30 36Z" />
-        <path d="M57 94c-18 2-34-6-42-20 18-4 34 4 42 20Z" opacity=".85" />
-        <path d="M63 94c18 2 34-6 42-20-18-4-34 4-42 20Z" opacity=".85" />
-      </g>
+    <svg viewBox="0 0 160 52" className="fam-gopuram-crest" aria-hidden>
+      <path d="M12 50 L148 50 L140 37 L20 37 Z" fill="#d4a753" stroke="#7a5418" strokeWidth="1" />
+      <path d="M28 37 L132 37 L122 23 L38 23 Z" fill="#b8893e" stroke="#7a5418" strokeWidth="1" />
+      <path d="M46 23 L114 23 L104 11 L56 11 Z" fill="#d4a753" stroke="#7a5418" strokeWidth="1" />
+      <path d="M64 11 L96 11 L88 3 L72 3 Z" fill="#ffd98a" stroke="#7a5418" strokeWidth="1" />
+      <circle cx="80" cy="3" r="3.2" fill="#ffd98a" stroke="#7a5418" strokeWidth="0.8" />
+      <circle cx="68" cy="5" r="2.4" fill="#ffd98a" stroke="#7a5418" strokeWidth="0.8" />
+      <circle cx="92" cy="5" r="2.4" fill="#ffd98a" stroke="#7a5418" strokeWidth="0.8" />
     </svg>
   );
 }
 
-const ROLE: Record<Key, string> = { bride: "the Bride", groom: "the Groom" };
-
-/** One family: its title and each member with their relation to the bride or groom. */
-function Side({ side, k }: { side: FamilySide; k: Key }) {
+/** Hanging brass temple bell */
+function TempleBell() {
   return (
-    <div data-reveal className="text-center">
-      <h3 className="text-[0.74rem] font-bold uppercase tracking-[0.32em] text-maroon">{side.title}</h3>
-      <ul className="mt-4 space-y-3">
-        {side.members.map((m, i) => (
-          <li key={m.name}>
-            {i > 0 && (
-              <span aria-hidden className="mb-2 block font-script text-[1.4rem] leading-none text-gold">
-                &amp;
-              </span>
-            )}
-            <p className="font-script text-[clamp(1.7rem,7vw,2.3rem)] leading-tight text-accent">{m.name}</p>
-            <p className="text-[0.62rem] uppercase tracking-[0.24em] text-ink-soft">
-              {m.relation} of {ROLE[k]}
-            </p>
-          </li>
-        ))}
-      </ul>
+    <div className="fam-bell-wrap" aria-hidden>
+      <span className="fam-bell-chain" />
+      <svg viewBox="0 0 24 36" className="fam-bell">
+        <path d="M7 16 C7 10 17 10 17 16 L19 24 L5 24 Z" fill="#d4a753" stroke="#7a5418" strokeWidth="1" />
+        <ellipse cx="12" cy="24" rx="7" ry="2.2" fill="#b8893e" stroke="#7a5418" strokeWidth="0.8" />
+        <circle cx="12" cy="27" r="2.2" fill="#ffd98a" stroke="#7a5418" strokeWidth="0.8" />
+      </svg>
     </div>
   );
 }
 
-/**
- * Meet the Bride & Groom Family (as in the reference): the page scrolls
- * normally. The title, the "two families, one bond" line and each family
- * fade up as they come into view, and golden lotus plants grow out of the
- * card's borders with the scroll, then sway gently.
- */
+/** Traditional Kolam / Rangoli between arches */
+function CenterKolam() {
+  return (
+    <div className="fam-kolam-container" aria-hidden>
+      <svg viewBox="0 0 100 130" className="fam-kolam-svg">
+        <g fill="none" stroke="#f6dfa9" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" opacity="0.85">
+          <path d="M50 10 L68 28 L50 46 L32 28 Z" />
+          <path d="M50 46 L68 64 L50 82 L32 64 Z" />
+          <path d="M50 82 L68 100 L50 118 L32 100 Z" />
+          <path d="M32 28 L14 46 L32 64 L50 46 Z" />
+          <path d="M68 28 L86 46 L68 64 L50 46 Z" />
+          <path d="M32 64 L14 82 L32 100 L50 82 Z" />
+          <path d="M68 64 L86 82 L68 100 L50 82 Z" />
+          <circle cx="50" cy="28" r="2.2" fill="#f6dfa9" />
+          <circle cx="50" cy="64" r="2.2" fill="#f6dfa9" />
+          <circle cx="50" cy="100" r="2.2" fill="#f6dfa9" />
+          <circle cx="32" cy="46" r="2.2" fill="#f6dfa9" />
+          <circle cx="68" cy="46" r="2.2" fill="#f6dfa9" />
+          <circle cx="32" cy="82" r="2.2" fill="#f6dfa9" />
+          <circle cx="68" cy="82" r="2.2" fill="#f6dfa9" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+/** Standing Brass Deepam (Kuthuvilakku) */
+function StandingDeepam({ side }: { side: "left" | "right" }) {
+  return (
+    <div className={`fam-standing-deepam fam-standing-deepam--${side}`} aria-hidden>
+      <svg viewBox="0 0 60 220" className="fam-deepam-svg">
+        <ellipse cx="30" cy="208" rx="26" ry="7" fill="#b8893e" stroke="#7a5418" strokeWidth="1" />
+        <path d="M12 207 C12 198 22 194 30 194 C38 194 48 198 48 207 Z" fill="#d4a753" stroke="#7a5418" strokeWidth="0.8" />
+        <rect x="27" y="65" width="6" height="130" rx="1.5" fill="#e5b85a" stroke="#7a5418" strokeWidth="0.8" />
+        <circle cx="30" cy="140" r="7.5" fill="#b8893e" stroke="#7a5418" strokeWidth="0.8" />
+        <circle cx="30" cy="95" r="8.5" fill="#b8893e" stroke="#7a5418" strokeWidth="0.8" />
+        <ellipse cx="30" cy="58" rx="22" ry="6" fill="#d4a753" stroke="#7a5418" strokeWidth="1" />
+        <ellipse cx="30" cy="56" rx="19" ry="4.5" fill="#ffd98a" />
+        <path d="M30 42 C32 48 32 52 30 55 C28 52 28 48 30 42 Z" fill="#ff7a18" className="fam-oil-flame" />
+        <path d="M30 45 C31 49 31 52 30 54 C29 52 29 49 30 45 Z" fill="#ffea78" />
+        <path d="M13 46 C15 50 15 53 13 56 C11 53 11 50 13 46 Z" fill="#ff7a18" className="fam-oil-flame" />
+        <path d="M47 46 C49 50 49 53 47 56 C45 53 45 50 47 46 Z" fill="#ff7a18" className="fam-oil-flame" />
+        <path d="M30 56 L30 36 C30 28 37 22 30 15 C23 22 30 28 30 36 Z" fill="#d4a753" stroke="#7a5418" strokeWidth="0.8" />
+      </svg>
+    </div>
+  );
+}
+
+/** One Family Arch Pavilion */
+function FamilyArch({
+  sideKey,
+  data,
+  photoSrc,
+}: {
+  sideKey: Key;
+  data: FamilySide;
+  photoSrc: string;
+}) {
+  const isBride = sideKey === "bride";
+  const badgeText = isBride ? "BRIDE'S SIDE" : "GROOM'S SIDE";
+
+  return (
+    <div data-reveal className="fam-arch-card">
+      {/* Arch Crown */}
+      <div className="fam-arch-head">
+        <GopuramCrest />
+        <TempleBell />
+      </div>
+
+      {/* Arched Photo Window */}
+      <div className="fam-arch-frame">
+        <div className="fam-photo-wrapper">
+          <img
+            src={photoSrc}
+            alt={data.title}
+            className="fam-photo-img"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="fam-photo-glow" />
+        </div>
+      </div>
+
+      {/* Under Arch Details ("arch ke niche details") */}
+      <div className="fam-under-arch">
+        <div className="fam-side-badge">{badgeText}</div>
+        <h3 className="fam-side-heading">{data.title}</h3>
+        {data.message && <p className="fam-side-quote">“{data.message}”</p>}
+
+        <div className="fam-members-box">
+          {data.members.map((m) => (
+            <div key={m.name} className="fam-member-card">
+              <span className="fam-m-name">{m.name}</span>
+              <span className="fam-m-rel">{m.relation}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function FamiliesScene() {
   const { family, couple } = useWedding();
   const reduced = usePrefersReducedMotion();
@@ -80,15 +148,13 @@ export function FamiliesScene() {
     if (reduced || !root.current) return;
     const ctx = gsap.context(() => {
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) =>
-        gsap.from(el, { opacity: 0, y: 26, duration: 0.9, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 88%", once: true } }),
-      );
-      // lotus plants: grow from the border as their foot rises from the screen bottom to a quarter from the top
-      gsap.utils.toArray<HTMLElement>("[data-lotus]").forEach((el) =>
-        gsap.fromTo(
-          el.firstElementChild,
-          { yPercent: 94, scale: 0.92 },
-          { yPercent: 0, scale: 1, ease: "none", scrollTrigger: { trigger: el, start: "bottom bottom", end: "bottom 25%", scrub: SCRUB } },
-        ),
+        gsap.from(el, {
+          opacity: 0,
+          y: 28,
+          duration: 0.95,
+          ease: "power2.out",
+          scrollTrigger: { trigger: el, start: "top 88%", once: true },
+        }),
       );
     }, root);
     return () => ctx.revert();
@@ -96,51 +162,66 @@ export function FamiliesScene() {
 
   if (!sides.length) return null;
 
+  const brideData = family?.bride;
+  const groomData = family?.groom;
+
   return (
-    <section ref={root} id="family" aria-labelledby="family-heading" className="cobalt relative px-[14px] py-16">
-      <div className="parchment frieze-border relative mx-auto max-w-[30rem] rounded-[6px] px-5 pb-12 pt-10">
-        {/* lotus plants growing out of the lower corners */}
-        {[false, true].map((flip) => (
-          <div
-            key={String(flip)}
-            data-lotus
-            aria-hidden
-            className={`pointer-events-none absolute bottom-0 h-40 w-20 overflow-hidden ${flip ? "-right-1" : "-left-1"}`}
-          >
-            <div className="h-full w-full origin-bottom">
-              <div className="h-full w-full origin-bottom motion-safe:animate-[sway_6s_ease-in-out_infinite]">
-                <Lotus flip={flip} />
-              </div>
-            </div>
-          </div>
-        ))}
+    <section
+      ref={root}
+      id="family"
+      aria-labelledby="family-heading"
+      className="fam-section relative overflow-hidden"
+    >
+      {/* Top Toran / Marigold Garland */}
+      <div aria-hidden className="fam-top-toran">
+        <div className="fam-toran-garland" />
+      </div>
 
-        <div className="relative text-center">
-          <p data-reveal className="text-[0.82rem] tracking-[0.3em] text-maroon">
-            ॥ परिवार से मिलिए ॥
-          </p>
-          <h2 id="family-heading" data-reveal className="mt-3 leading-none">
-            <span className="block font-script text-[clamp(1.8rem,8vw,2.5rem)] text-accent">Meet the</span>
-            <span className="mt-1 block text-[clamp(1.4rem,6.5vw,2rem)] font-bold uppercase tracking-[0.14em] text-maroon">
-              Bride &amp; Groom
-            </span>
-            <span className="mt-1 block text-[0.8rem] font-bold uppercase tracking-[0.5em] text-ink">Family</span>
+      {/* Flanking Standing Lamps (on wide screens) */}
+      <StandingDeepam side="left" />
+      <StandingDeepam side="right" />
+
+      <div className="fam-container relative mx-auto px-4 py-16 sm:py-24">
+        {/* Upper space under the arch canopy: Heading */}
+        <div className="fam-header text-center" data-reveal>
+          <p className="fam-invocation">॥ परिवार से मिलिए ॥</p>
+          <h2 id="family-heading" className="fam-main-title">
+            Meet the <span className="fam-highlight">Bride &amp; Groom&apos;s</span> Family
           </h2>
-          <div data-reveal className="mt-5">
-            <p className="text-[0.95rem] tracking-[0.12em] text-maroon">दो परिवार · एक बंधन</p>
-            <p className="mt-1 font-script text-[1.6rem] leading-none text-accent">Two families, one bond</p>
-            <p className="mt-2 text-[0.9rem] italic text-ink">Blessed by our elders, united by love</p>
+          <p className="fam-subtitle">
+            Two families, one bond · Blessed by our elders, united by love
+          </p>
+          <div className="fam-header-divider" aria-hidden>
+            <span className="iv-divider-line iv-divider-line--l" />
+            <svg viewBox="-20 -14 40 24" className="fam-lotus-icon">
+              <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
+              <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
+              <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
+            </svg>
+            <span className="iv-divider-line iv-divider-line--r" />
           </div>
-          <span aria-hidden className="mx-auto mt-7 block h-px w-24 bg-gold/70" />
+        </div>
 
-          <div className="relative mt-7 space-y-9">
-            {sides.map((k, i) => (
-              <div key={k}>
-                {i > 0 && <span aria-hidden className="mx-auto mb-9 block h-px w-24 bg-gold/70" />}
-                <Side side={family![k] as FamilySide} k={k} />
-              </div>
-            ))}
-          </div>
+        {/* The Two Arches Pavilion: Left Arch (Bride) & Right Arch (Groom) */}
+        <div className="fam-arches-grid">
+          {brideData && (
+            <FamilyArch
+              sideKey="bride"
+              data={brideData}
+              photoSrc="/media/bride-family.jpg"
+            />
+          )}
+
+          {/* Kolam / Rangoli between the two arches */}
+          <CenterKolam />
+
+          {groomData && (
+            <FamilyArch
+              sideKey="groom"
+              data={groomData}
+              photoSrc="/media/groom-family.jpg"
+            />
+          )}
         </div>
       </div>
     </section>
