@@ -22,7 +22,7 @@ const SLICE_TOP = 416;
 const SLICE_END = 506;
 /** Where the letter sits, in rows/columns of the art: under the lintel, between the pillars,
  *  ending above the lamps' flames. */
-const OPEN = { top: 300, bottom: 512, left: 168, right: 1024 };
+const OPEN = { top: 292, bottom: 596, left: 158, right: 1034 };
 /** The cream between the pillars (under the lintel, down to the plinth, tucked under the shafts):
  *  everything else behind the mandapam is filled with the carved, painted gopuram. */
 const CREAM = { top: 288, bottom: 596, left: 140, right: 1052 };
@@ -249,7 +249,7 @@ export function ArchScene() {
           {/* the opening between the pillars: the luxury wedding card */}
           <div
             ref={set("open")}
-            className="absolute flex items-center justify-center"
+            className="absolute flex items-start justify-center"
             style={{ left: `${(OPEN.left / ARCH_W) * 100}%`, right: `${(1 - OPEN.right / ARCH_W) * 100}%` }}
           >
             <div ref={set("col")} className="iv-letter">
