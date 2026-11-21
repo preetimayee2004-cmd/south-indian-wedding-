@@ -4081,70 +4081,44 @@ body {
   width: 100%;
   height: 100%;
 }
-.temple-birds-arena {
-  position: relative;
-  width: 100%;
-  height: 110px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.temple-wedding-bird {
-  position: absolute;
-  width: 80px;
-  height: 64px;
-  top: 22px;
-}
-.bird-fly-l {
-  left: 0;
-  animation: rsvp-bird-fly-in-l 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.bird-fly-r {
-  right: 0;
-  animation: rsvp-bird-fly-in-r 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-.bird-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
-}
-.bird-svg.flipped {
-  transform: scaleX(-1);
-}
-.bird-wing {
-  transform-origin: 36px 36px;
-  animation: rsvp-wing-flap 0.22s ease-in-out infinite alternate;
-}
-.temple-kiss-sparkle {
-  position: absolute;
-  left: 50%;
-  top: 32%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  animation: rsvp-kiss-burst 1s ease-out 1.15s forwards;
-  pointer-events: none;
-}
-.temple-burst-heart {
-  font-size: 2.5rem;
-  display: block;
-}
-.sparkle-dot {
-  position: absolute;
-  font-size: 1.25rem;
-}
-.sparkle-dot.s1 { top: -16px; left: -26px; }
-.sparkle-dot.s2 { top: -20px; right: -26px; }
-.sparkle-dot.s3 { bottom: -16px; left: 0; }
 .temple-blooming-lotus {
   width: 95px;
   height: 48px;
-  animation: rsvp-lotus-bloom-in 1.4s ease-out 1s forwards;
+  animation: rsvp-lotus-bloom-in 1.2s ease-out 0.2s forwards;
   opacity: 0;
 }
 .lotus-bloom-svg {
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 4px 10px rgba(233, 30, 99, 0.5));
+}
+.temple-hearts-explosion {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.bursting-heart {
+  position: absolute;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  opacity: 0;
+  animation: bursting-heart-float 1.5s ease-out forwards;
+}
+.bursting-heart.bh1 { left: 45%; top: 38%; animation-delay: 0.05s; --tx: -55px; --ty: -75px; }
+.bursting-heart.bh2 { left: 55%; top: 35%; animation-delay: 0.12s; --tx: 60px; --ty: -70px; }
+.bursting-heart.bh3 { left: 48%; top: 44%; animation-delay: 0.18s; --tx: -40px; --ty: 45px; }
+.bursting-heart.bh4 { left: 52%; top: 40%; animation-delay: 0.22s; --tx: 45px; --ty: -50px; }
+.bursting-heart.bh5 { left: 42%; top: 32%; animation-delay: 0.28s; --tx: -75px; --ty: -55px; }
+.bursting-heart.bh6 { left: 58%; top: 32%; animation-delay: 0.35s; --tx: 80px; --ty: -60px; }
+.bursting-heart.bh7 { left: 50%; top: 25%; animation-delay: 0.4s; --tx: 0px; --ty: -85px; }
+.bursting-heart.bh8 { left: 40%; top: 45%; animation-delay: 0.45s; --tx: -65px; --ty: 35px; }
+.bursting-heart.bh9 { left: 60%; top: 42%; animation-delay: 0.5s; --tx: 70px; --ty: 40px; }
+.bursting-heart.bh10 { left: 50%; top: 50%; animation-delay: 0.55s; --tx: 10px; --ty: 65px; }
+
+@keyframes bursting-heart-float {
+  0% { transform: translate(0, 0) scale(0.2); opacity: 0; }
+  35% { opacity: 1; transform: translate(var(--tx), var(--ty)) scale(1.3); filter: drop-shadow(0 0 10px #ffd700); }
+  75% { opacity: 0.9; transform: translate(calc(var(--tx) * 1.3), calc(var(--ty) * 1.3 - 25px)) scale(1.1); }
+  100% { opacity: 0; transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5 - 45px)) scale(0.8); }
 }
 .temple-anim-status {
   font-family: var(--font-body), Georgia, serif;
@@ -4282,52 +4256,12 @@ body {
 .temple-link.wa {
   color: #8bf0b2;
 }
-.temple-edit-link {
-  background: transparent;
-  border: none;
-  color: #c09d70;
-  font-size: 0.8rem;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-top: 4px;
-}
 
 /* Keyframes */
 @keyframes rsvp-seal-unfold {
   0% { transform: scale(0.2) rotate(-90deg); opacity: 0; }
   50% { transform: scale(1.15) rotate(10deg); opacity: 1; filter: drop-shadow(0 0 20px #ffd700); }
   100% { transform: scale(1) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 10px #d4af37); }
-}
-@keyframes rsvp-bird-fly-in-l {
-  0% { transform: translateX(-140px) scale(0.6); opacity: 0; }
-  70% { transform: translateX(calc(50vw - 110px)) scale(1.05); opacity: 1; }
-  100% { transform: translateX(calc(50vw - 125px)) scale(1); opacity: 1; }
-}
-@keyframes rsvp-bird-fly-in-r {
-  0% { transform: translateX(140px) scale(0.6); opacity: 0; }
-  70% { transform: translateX(calc(-50vw + 110px)) scale(1.05); opacity: 1; }
-  100% { transform: translateX(calc(-50vw + 125px)) scale(1); opacity: 1; }
-}
-@media (min-width: 600px) {
-  @keyframes rsvp-bird-fly-in-l {
-    0% { transform: translateX(-140px) scale(0.6); opacity: 0; }
-    70% { transform: translateX(140px) scale(1.05); opacity: 1; }
-    100% { transform: translateX(125px) scale(1); opacity: 1; }
-  }
-  @keyframes rsvp-bird-fly-in-r {
-    0% { transform: translateX(140px) scale(0.6); opacity: 0; }
-    70% { transform: translateX(-140px) scale(1.05); opacity: 1; }
-    100% { transform: translateX(-125px) scale(1); opacity: 1; }
-  }
-}
-@keyframes rsvp-wing-flap {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-20deg); }
-}
-@keyframes rsvp-kiss-burst {
-  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
-  40% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; filter: drop-shadow(0 0 16px #ff4081); }
-  100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 @keyframes rsvp-lotus-bloom-in {
   0% { transform: scale(0.2); opacity: 0; }

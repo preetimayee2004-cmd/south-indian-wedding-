@@ -64,18 +64,8 @@ export function InteractiveRsvp() {
   const reduced = usePrefersReducedMotion();
 
   const storageKey = `rsvp_${wedding.invitationLine.slice(0, 10)}`;
-  const [stage, setStage] = useState<"stage1" | "animating" | "stage2">(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.accepted) return "stage2";
-      }
-    } catch {
-      // ignore
-    }
-    return "stage1";
-  });
+  // Always start at stage1 so every page refresh shows the Accept RSVP screen
+  const [stage, setStage] = useState<"stage1" | "animating" | "stage2">("stage1");
 
   const [specialization, setSpecialization] = useState<Specialization>(() => {
     try {
@@ -105,41 +95,32 @@ export function InteractiveRsvp() {
     setIsEditingName(false);
   };
 
-  const handleAccept = () => {
+  const handleAccept = (e?: React.MouseEvent) => {
+    // Multi-wave explosion of celebratory hearts
+    burstHearts(e?.currentTarget as HTMLElement, { count: 85 });
+    setTimeout(() => {
+      burstHearts(null, { count: 65 });
+    }, 280);
+    setTimeout(() => {
+      burstHearts(null, { count: 50 });
+    }, 600);
+
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ specialization, guestName: nameInput.trim() }));
+    } catch {
+      // ignore
+    }
+
     if (reduced) {
       setStage("stage2");
-      try {
-        localStorage.setItem(storageKey, JSON.stringify({ accepted: true, specialization, guestName: nameInput.trim() }));
-      } catch {
-        // ignore
-      }
       return;
     }
 
     setStage("animating");
 
-    setTimeout(() => {
-      burstHearts(null);
-    }, 1200);
-
-    try {
-      localStorage.setItem(storageKey, JSON.stringify({ accepted: true, specialization, guestName: nameInput.trim() }));
-    } catch {
-      // ignore
-    }
-
     animTimerRef.current = window.setTimeout(() => {
       setStage("stage2");
-    }, 2800);
-  };
-
-  const handleReset = () => {
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      // ignore
-    }
-    setStage("stage1");
+    }, 1600);
   };
 
   const handleAddToCalendar = () => {
@@ -344,7 +325,7 @@ export function InteractiveRsvp() {
           </div>
         )}
 
-        {/* ── INTERACTIVE ACCEPTANCE ANIMATION (BEAK-KISSING BIRDS & BLOOM) ── */}
+        {/* ── INTERACTIVE ACCEPTANCE ANIMATION (HEARTS EXPLOSION & BLOOM) ── */}
         {stage === "animating" && (
           <div className="temple-anim-stage" aria-live="polite">
             {/* The Golden Royal Wedding Seal Unfolds */}
@@ -366,71 +347,6 @@ export function InteractiveRsvp() {
               </svg>
             </div>
 
-            {/* Two Cute Illustrated South Indian Wedding Birds Flying In */}
-            <div className="temple-birds-arena">
-              {/* Left Bird Flying Towards Center */}
-              <div className="temple-wedding-bird bird-fly-l">
-                <svg viewBox="0 0 100 80" className="bird-svg">
-                  <defs>
-                    <linearGradient id="birdGreenL" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#3ac89e" />
-                      <stop offset="100%" stopColor="#1a735b" />
-                    </linearGradient>
-                    <linearGradient id="birdGoldL" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffe488" />
-                      <stop offset="100%" stopColor="#c89228" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M20 50 C10 65 6 78 8 80 C18 78 26 68 30 55 Z" fill="url(#birdGreenL)" />
-                  <path d="M22 53 C14 68 12 80 15 80 C22 76 29 66 32 58 Z" fill="#e5aa37" />
-                  <path d="M30 40 C25 28 38 16 55 16 C72 16 80 26 80 38 C80 52 65 65 44 63 C34 62 30 50 30 40 Z" fill="url(#birdGreenL)" />
-                  <path d="M46 28 C60 28 72 36 68 52 C61 60 48 60 42 54 C38 48 40 36 46 28 Z" fill="url(#birdGoldL)" />
-                  <path d="M36 36 C42 28 58 30 60 42 C60 52 45 54 36 46 Z" fill="#ffd56b" stroke="#9e6c13" strokeWidth="0.8" className="bird-wing" />
-                  <circle cx="68" cy="24" r="11" fill="url(#birdGreenL)" />
-                  <path d="M64 14 C62 6 68 5 70 8 C72 6 76 8 74 15 Z" fill="#e53935" />
-                  <path d="M78 22 C90 24 92 30 82 34 C79 31 78 26 78 22 Z" fill="#e53935" />
-                  <circle cx="71" cy="22" r="3" fill="#ffffff" />
-                  <circle cx="72" cy="22" r="1.6" fill="#1e0a0a" />
-                  <path d="M60 30 C62 35 68 37 72 34" fill="none" stroke="#ffd875" strokeWidth="2" strokeDasharray="2 1" />
-                </svg>
-              </div>
-
-              {/* Heart Burst & Sparkles at the Center */}
-              <div className="temple-kiss-sparkle">
-                <span className="temple-burst-heart">💖</span>
-                <span className="sparkle-dot s1">✨</span>
-                <span className="sparkle-dot s2">⭐</span>
-                <span className="sparkle-dot s3">✨</span>
-              </div>
-
-              {/* Right Bird Flying Towards Center */}
-              <div className="temple-wedding-bird bird-fly-r">
-                <svg viewBox="0 0 100 80" className="bird-svg flipped">
-                  <defs>
-                    <linearGradient id="birdGreenR" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#3ac89e" />
-                      <stop offset="100%" stopColor="#1a735b" />
-                    </linearGradient>
-                    <linearGradient id="birdGoldR" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffe488" />
-                      <stop offset="100%" stopColor="#c89228" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M20 50 C10 65 6 78 8 80 C18 78 26 68 30 55 Z" fill="url(#birdGreenR)" />
-                  <path d="M22 53 C14 68 12 80 15 80 C22 76 29 66 32 58 Z" fill="#e5aa37" />
-                  <path d="M30 40 C25 28 38 16 55 16 C72 16 80 26 80 38 C80 52 65 65 44 63 C34 62 30 50 30 40 Z" fill="url(#birdGreenR)" />
-                  <path d="M46 28 C60 28 72 36 68 52 C61 60 48 60 42 54 C38 48 40 36 46 28 Z" fill="url(#birdGoldR)" />
-                  <path d="M36 36 C42 28 58 30 60 42 C60 52 45 54 36 46 Z" fill="#ffd56b" stroke="#9e6c13" strokeWidth="0.8" className="bird-wing" />
-                  <circle cx="68" cy="24" r="11" fill="url(#birdGreenR)" />
-                  <path d="M64 14 C62 6 68 5 70 8 C72 6 76 8 74 15 Z" fill="#e53935" />
-                  <path d="M78 22 C90 24 92 30 82 34 C79 31 78 26 78 22 Z" fill="#e53935" />
-                  <circle cx="71" cy="22" r="3" fill="#ffffff" />
-                  <circle cx="72" cy="22" r="1.6" fill="#1e0a0a" />
-                  <path d="M60 30 C62 35 68 37 72 34" fill="none" stroke="#ffd875" strokeWidth="2" strokeDasharray="2 1" />
-                </svg>
-              </div>
-            </div>
-
             {/* Sacred Lotus Motif Blooming Underneath */}
             <div className="temple-blooming-lotus">
               <svg viewBox="0 0 120 60" className="lotus-bloom-svg">
@@ -441,7 +357,21 @@ export function InteractiveRsvp() {
               </svg>
             </div>
 
-            <p className="temple-anim-status">Accepting with love &amp; blessings...</p>
+            {/* Floating Burst of Hearts Around the Seal */}
+            <div className="temple-hearts-explosion" aria-hidden="true">
+              <span className="bursting-heart bh1">💖</span>
+              <span className="bursting-heart bh2">💛</span>
+              <span className="bursting-heart bh3">💕</span>
+              <span className="bursting-heart bh4">✨</span>
+              <span className="bursting-heart bh5">❤️</span>
+              <span className="bursting-heart bh6">💖</span>
+              <span className="bursting-heart bh7">✨</span>
+              <span className="bursting-heart bh8">💛</span>
+              <span className="bursting-heart bh9">🌸</span>
+              <span className="bursting-heart bh10">💕</span>
+            </div>
+
+            <p className="temple-anim-status">Joyfully Accepted! With love &amp; blessings... ❤️</p>
           </div>
         )}
 
@@ -528,15 +458,6 @@ export function InteractiveRsvp() {
                 )}
               </div>
             </div>
-
-            {/* Option to change/edit response */}
-            <button
-              type="button"
-              onClick={handleReset}
-              className="temple-edit-link"
-            >
-              Modify Response
-            </button>
           </div>
         )}
       </div>
