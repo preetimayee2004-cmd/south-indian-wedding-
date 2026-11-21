@@ -197,6 +197,9 @@ export function FamiliesScene() {
           </article>
         )}
       </div>
+
+      {/* Sleek metallic double gold stripe separator at the bottom */}
+      <div className="gold-stripe-separator" aria-hidden="true" />
     </section>
   );
 }

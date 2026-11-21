@@ -191,8 +191,10 @@ const weddingConfig: WeddingConfig = {
   ],
 
   contacts: [
-    { name: "Ravi", role: "Bride's brother", phone: "+910000000000", whatsapp: true },
-    { name: "Anand", role: "Groom's cousin", phone: "+910000000001", whatsapp: true },
+    { name: "Ravi Sundaram", role: "Bride's Brother", phone: "+919876543210", whatsapp: true },
+    { name: "Suresh Sundaram", role: "Bride's Uncle", phone: "+919876543211", whatsapp: true },
+    { name: "Anand Raghavan", role: "Groom's Cousin", phone: "+919876543212", whatsapp: true },
+    { name: "Rajesh Raghavan", role: "Groom's Uncle", phone: "+919876543213", whatsapp: true },
   ],
 
   thankYou: {
@@ -236,7 +238,7 @@ const weddingConfig: WeddingConfig = {
     rsvp: "/media/stone-arch.webp",
     rsvpArch: { top: 36, left: 13, width: 74, height: 42 },
     rsvpLamps: [[13, 75.5], [87, 75.5], [5.5, 82.5], [94.5, 82.5]],
-    thankYou: "/media/couple-scene.webp",
+    thankYou: "/media/thank-you-temple.webp",
   },
 
   audio: {

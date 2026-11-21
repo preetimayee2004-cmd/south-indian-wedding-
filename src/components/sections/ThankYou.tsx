@@ -4,7 +4,6 @@ import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { Container } from "@/components/layout/Container";
 import { Ornament } from "@/components/ui/Ornament";
-import { artProps } from "@/lib/art";
 
 const IMG_RATIO = 1116 / 2000; // couple-scene.webp (portrait)
 const PETALS = 9;
@@ -16,7 +15,7 @@ const PETALS = 9;
  * Below, "Thank you" and the couple's names write themselves in, left to right.
  */
 export function ThankYou() {
-  const { thankYou, couple, wedding, media } = useWedding();
+  const { thankYou, couple, wedding } = useWedding();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
   const band = useRef<HTMLDivElement>(null);
@@ -84,15 +83,14 @@ export function ThankYou() {
   return (
     <section ref={root} id="thankYou" aria-labelledby="thanks-heading" className="relative isolate pb-section">
       {/* ── Panning scene ── */}
-      <div ref={band} className="relative overflow-hidden bg-[#C5E4EA]" style={{ height: "min(72svh, 640px)" }}>
+      <div ref={band} className="relative overflow-hidden bg-[#faf5eb]" style={{ height: "min(72svh, 640px)" }}>
         <img
           ref={img}
-          {...artProps(media.thankYou)}
-          alt={`${first.name} and ${second.name} exchanging garlands in a temple courtyard`}
+          src="/media/thank-you-temple.webp"
+          alt={`${first.name} and ${second.name} facing the sacred temple`}
           loading="lazy"
           decoding="async"
-          className="absolute left-0 top-0 h-full w-auto max-w-none"
-          style={{ aspectRatio: String(IMG_RATIO), minWidth: "100%", objectFit: "cover", objectPosition: "50% 58%" }}
+          className="absolute inset-0 h-full w-full object-contain object-bottom"
           draggable={false}
         />
         <div ref={petals} aria-hidden className="pointer-events-none absolute inset-0">

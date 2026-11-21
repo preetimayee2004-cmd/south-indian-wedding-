@@ -1,119 +1,172 @@
 import { useRef } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
-import { formatTimeRange } from "@/lib/format";
-import { MapWindow } from "@/components/sections/travel/MapWindow";
-import { RouteNotes } from "@/components/sections/travel/RouteNotes";
-import { StayTags } from "@/components/sections/travel/StayTags";
+import { waLink } from "@/lib/format";
 
-/**
- * Scene 10 — Travel & Stay, in the same parchment-and-frieze style as the
- * families. Venue details on the left, the map card on the right; then how
- * to reach and where to stay drift up through the frame while it is pinned.
- */
 export function TravelScene() {
-  const { venue, wedding, stay = [], travelNotes = [], couple } = useWedding();
-  const tz = wedding.timeZone;
-  const d = new Date(wedding.dateISO);
-  const dateLabel = new Intl.DateTimeFormat("en-GB", { timeZone: tz, day: "numeric", month: "short" }).format(d);
-  const timeLabel = formatTimeRange(wedding.dateISO, tz);
-  const shortDate = new Intl.DateTimeFormat("en-GB", { timeZone: tz, day: "2-digit", month: "2-digit", year: "2-digit" }).format(d).replace(/\//g, "·");
-  const city = wedding.city.split(",")[0];
-  const initials = `${couple.bride.name[0]} & ${couple.groom.name[0]}`;
-  const longDate = new Intl.DateTimeFormat("en-GB", { timeZone: tz, weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(d).replace(",", ",");
-  const startTime = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true }).format(d).toUpperCase();
+  const { venue, contacts = [] } = useWedding();
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.mapsQuery || venue.address || venue.name)}`;
 
-  const win = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
-  const head = useRef<HTMLDivElement>(null);
-  const left = useRef<HTMLDivElement>(null);
-  const right = useRef<HTMLDivElement>(null);
-  const more = useRef<HTMLDivElement>(null);
+  const win = useRef<HTMLDivElement>(null);
 
   const build: Build = (tl) => {
-    tl.from(head.current!.children, { autoAlpha: 0, y: 16, duration: 0.3, stagger: 0.1, ease: "power2.out" }, 0)
-      .fromTo(left.current, { xPercent: -110 }, { xPercent: 0, duration: 0.5, ease: "power2.out" }, 0.2)
-      .fromTo(right.current, { xPercent: 110 }, { xPercent: 0, duration: 0.5, ease: "power2.out" }, 0.35)
-      .from(".venue-seal", { autoAlpha: 0, scale: 2.2, rotate: -40, duration: 0.25, ease: "power3.in" }, 0.7);
-    if (more.current) tl.from(more.current.children, { autoAlpha: 0, y: 24, duration: 0.3, stagger: 0.15 }, 0.9);
-    // the rest of the page drifts up through the frame
-    const over = () => Math.max(0, track.current!.offsetHeight - win.current!.clientHeight);
-    const screens = over() / window.innerHeight;
-    tl.to(track.current, { y: () => -over(), duration: Math.max(0.6, screens * 1.1) }, 0.9).to({}, { duration: 0.25 });
+    const over = () => Math.max(0, (track.current?.offsetHeight ?? 0) - (win.current?.clientHeight ?? 0));
+    tl.to(track.current, {
+      y: () => -over(),
+      duration: 2.2,
+      ease: "power1.inOut",
+    });
   };
 
   return (
     <Scene
       id="travelStay"
       labelledBy="travel-heading"
-      className="cobalt"
+      className="travel-scene-wrapper relative overflow-hidden"
       build={build}
-      edgeTop={<div aria-hidden className="edge edge-frieze-top" />}
     >
-      <div className="cobalt absolute inset-0" />
-      <div className="relative flex h-full px-[14px] py-[max(1.25rem,3svh)]">
-        <div ref={win} className="parchment frieze-border relative w-full overflow-hidden rounded-[6px]">
-          <div ref={track} data-layer className="px-3.5 pb-8 pt-5">
-            <div ref={head} className="text-center">
-              <p className="text-[0.95rem] tracking-[0.2em] text-maroon">विवाह स्थल</p>
-              <h2 id="travel-heading" className="mt-1 text-[0.85rem] font-bold uppercase tracking-[0.34em] text-ink">
-                The Venue
-              </h2>
-              <p className="mt-2 font-script text-[clamp(2.2rem,9vw,3.2rem)] leading-none text-accent">{venue.name}</p>
-              <p className="mt-1 text-[0.95rem] text-ink">{wedding.city}</p>
-              <p className="mt-1 text-[0.85rem] italic text-ink">
-                Muhurtham · {longDate} · {startTime}
+      {/* Sky Blue Background */}
+      <div className="travel-sky-bg absolute inset-0 pointer-events-none" />
+
+      {/* Traditional Mandap Illustration at the bottom */}
+      <div className="travel-mandap-wrap absolute bottom-0 left-0 right-0 pointer-events-none flex justify-center z-0">
+        <img
+          src="/media/mandap-stage.webp"
+          alt="Wedding Mandap"
+          className="travel-mandap-img w-full max-w-[850px] max-h-[55vh] object-contain object-bottom opacity-95"
+          draggable={false}
+        />
+      </div>
+
+      {/* Scrollable / Gliding Content Container */}
+      <div ref={win} className="relative z-10 h-full w-full overflow-hidden">
+        <div ref={track} className="mx-auto max-w-[880px] px-4 pt-10 pb-28 text-center flex flex-col items-center">
+          
+          {/* Header */}
+          <div className="travel-header-box mb-6">
+            <p className="travel-invocation font-serif text-[clamp(14px,1.8vw,18px)] tracking-[0.2em] text-[#ffd67a] drop-shadow-sm">
+              ॥ विवाह स्थल एवं यात्रा व्यवस्था ॥
+            </p>
+            <h2 id="travel-heading" className="travel-main-title mt-1 font-serif font-bold uppercase tracking-[0.14em] text-white text-[clamp(24px,4vw,38px)] drop-shadow-[0_2px_8px_rgba(0,30,80,0.6)]">
+              Venue &amp; Travel Accommodation
+            </h2>
+            <div className="mx-auto mt-2 flex items-center justify-center gap-3 w-48">
+              <span className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent to-[#ffd67a]" />
+              <span className="text-[#ffd67a] text-xs">✦</span>
+              <span className="h-[1.5px] flex-1 bg-gradient-to-l from-transparent to-[#ffd67a]" />
+            </div>
+          </div>
+
+          {/* Venue Card */}
+          <div className="venue-card-glass w-full max-w-[620px] rounded-2xl p-6 backdrop-blur-md bg-white/20 border border-white/40 shadow-[0_12px_36px_rgba(0,30,80,0.25)] text-center mb-6">
+            <h3 className="font-script text-[clamp(32px,5vw,46px)] text-white drop-shadow-md leading-tight">
+              {venue.name}
+            </h3>
+            <p className="mt-2 font-serif text-[clamp(14px,1.4vw,17px)] text-[#fff8ea] max-w-[500px] mx-auto leading-relaxed drop-shadow-sm">
+              {venue.address}
+            </p>
+            <div className="mt-4">
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full px-6 py-2.5 font-serif font-bold text-xs uppercase tracking-[0.18em] text-[#5c1c08] bg-gradient-to-r from-[#ffe7a8] via-[#ffd26a] to-[#f4b83d] shadow-[0_4px_14px_rgba(0,0,0,0.25)] hover:scale-105 transition-transform"
+              >
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+                <span>Get Directions</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Travel Options: By Air, By Train, By Road */}
+          <div className="travel-grid w-full grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {/* By Air */}
+            <div className="travel-mode-card rounded-xl p-4 bg-white/25 backdrop-blur-sm border border-white/40 text-center shadow-lg">
+              <div className="mx-auto w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-xl mb-2 text-white">
+                ✈️
+              </div>
+              <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-white">By Air</h4>
+              <p className="mt-1 font-serif text-xs leading-relaxed text-[#fffcee]">
+                Madurai Airport (IXM)<br />
+                <span className="text-[#ffd67a] font-semibold">12 km</span> · ~30 mins by taxi
               </p>
             </div>
 
-            <div className="mt-5 grid grid-cols-2 items-start gap-3">
-              {/* venue details */}
-              <div ref={left} data-layer className="venue-pass relative rounded-xl border border-gold/60 bg-[#fbf2dc] p-3 shadow-[0_8px_20px_rgb(74_40_20/0.12)]">
-                <p className="text-[0.58rem] uppercase tracking-[0.24em] text-ink">Venue</p>
-                <h3 className="mt-1 text-[0.98rem] font-bold uppercase leading-snug tracking-[0.08em] text-ink">{venue.name}</h3>
-                <address className="mt-1.5 text-[0.86rem] not-italic leading-snug text-ink">{venue.address}</address>
-                <div aria-hidden className="my-3 border-t border-dashed border-gold/70" />
-                <dl className="space-y-2">
-                  {[
-                    ["Date", dateLabel],
-                    ["Muhurtham", timeLabel],
-                    ["City", city],
-                  ].map(([k, v]) => (
-                    <div key={k}>
-                      <dt className="text-[0.56rem] uppercase tracking-[0.22em] text-ink-soft">{k}</dt>
-                      <dd className="text-[0.95rem] leading-tight text-ink">{v}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <div aria-hidden className="venue-seal absolute -right-1 -top-3 grid h-14 w-14 -rotate-12 place-items-center rounded-full border-2 border-accent/80 bg-[#fbf2dc] text-accent">
-                  <div className="absolute inset-[3px] rounded-full border border-dashed border-accent/60" />
-                  <div className="text-center leading-none">
-                    <span className="block font-script text-[1rem]">{initials}</span>
-                    <span className="mt-0.5 block text-[0.4rem] tracking-[0.16em]">{shortDate}</span>
-                  </div>
-                </div>
+            {/* By Train */}
+            <div className="travel-mode-card rounded-xl p-4 bg-white/25 backdrop-blur-sm border border-white/40 text-center shadow-lg">
+              <div className="mx-auto w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-xl mb-2 text-white">
+                🚆
               </div>
-              {/* map card */}
-              <div ref={right} data-layer>
-                <MapWindow query={venue.mapsQuery} address={venue.address} venueName={venue.name} compact />
-              </div>
+              <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-white">By Train</h4>
+              <p className="mt-1 font-serif text-xs leading-relaxed text-[#fffcee]">
+                Madurai Junction (MDU)<br />
+                <span className="text-[#ffd67a] font-semibold">2 km</span> · ~10 mins away
+              </p>
             </div>
 
-            <div ref={more}>
-              {travelNotes.length > 0 && (
-                <div className="mt-7">
-                  <h3 className="mb-4 text-[0.68rem] uppercase tracking-[0.26em] text-ink">How to reach</h3>
-                  <RouteNotes notes={travelNotes} />
-                </div>
-              )}
-              {stay.length > 0 && (
-                <div className="mt-7">
-                  <h3 className="mb-3 text-center text-[0.68rem] uppercase tracking-[0.26em] text-ink">Where to stay</h3>
-                  <StayTags stays={stay} />
-                </div>
-              )}
+            {/* By Road */}
+            <div className="travel-mode-card rounded-xl p-4 bg-white/25 backdrop-blur-sm border border-white/40 text-center shadow-lg">
+              <div className="mx-auto w-10 h-10 rounded-full bg-white/40 flex items-center justify-center text-xl mb-2 text-white">
+                🚗
+              </div>
+              <h4 className="font-serif font-bold text-sm uppercase tracking-wider text-white">By Road</h4>
+              <p className="mt-1 font-serif text-xs leading-relaxed text-[#fffcee]">
+                Well connected via NH 44<br />
+                <span className="text-[#ffd67a] font-semibold">Valet Parking</span> available from 8 AM
+              </p>
             </div>
           </div>
+
+          {/* Contact Section: 4 Contacts */}
+          <div className="contacts-section w-full max-w-[800px] mt-2 mb-6">
+            <div className="text-center mb-4">
+              <h4 className="font-serif font-bold uppercase tracking-[0.2em] text-white text-base drop-shadow-md">
+                For Any Help &amp; Assistance · Contact
+              </h4>
+              <div className="mx-auto mt-1 h-[1px] w-28 bg-[#ffd67a]/60" />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {contacts.slice(0, 4).map((c, i) => (
+                <div key={i} className="contact-box rounded-xl p-3 bg-white/25 backdrop-blur-md border border-white/40 shadow-md text-center flex flex-col justify-between">
+                  <div>
+                    <h5 className="font-serif font-bold text-sm text-white leading-tight drop-shadow-sm">{c.name}</h5>
+                    <p className="font-serif text-[11px] italic text-[#ffd67a] mt-0.5">{c.role}</p>
+                  </div>
+                  <div className="mt-3 flex items-center justify-center gap-2">
+                    {c.phone && (
+                      <a
+                        href={`tel:${c.phone.replace(/[^\d+]/g, "")}`}
+                        className="rounded-full bg-white/80 hover:bg-white text-[#5c1c08] p-1.5 shadow transition-transform hover:scale-110"
+                        title="Call"
+                      >
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                          <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.72 11.72 0 003.68.59 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.72 11.72 0 00.59 3.68 1 1 0 01-.24 1.02l-2.23 2.09z"/>
+                        </svg>
+                      </a>
+                    )}
+                    {c.phone && c.whatsapp && (
+                      <a
+                        href={waLink(c.phone, `Namaste ${c.name}! Regarding the wedding...`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white p-1.5 shadow transition-transform hover:scale-110"
+                        title="WhatsApp"
+                      >
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                          <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2z"/>
+                        </svg>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </div>
     </Scene>

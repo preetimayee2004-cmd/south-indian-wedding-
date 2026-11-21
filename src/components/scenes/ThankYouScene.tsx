@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
-import { art2x } from "@/lib/art";
 import { Petals, addPetals } from "./CoupleScene";
 
 /**
@@ -12,7 +11,7 @@ import { Petals, addPetals } from "./CoupleScene";
  * come after.
  */
 export function ThankYouScene() {
-  const { thankYou, couple, wedding, media, events, venue } = useWedding();
+  const { thankYou, couple, wedding, events, venue } = useWedding();
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
   const tz = wedding.timeZone;
@@ -57,16 +56,15 @@ export function ThankYouScene() {
           <p className="mt-1 text-[1rem] italic text-[#fbf2dc]">{thankYou.message}</p>
         </div>
 
-        {/* the couple, cropped; the layer is a little larger than its window so easing back to 0.9 never shows an edge */}
-        <div className="relative mt-3 w-full min-h-0 flex-1 overflow-hidden rounded-t-[999px] border-2 border-[#f3cf73]/70">
-          <div ref={pic} data-layer className="absolute -inset-[6%]">
+        {/* the couple facing the temple */}
+        <div className="relative mt-3 w-full min-h-0 flex-1 overflow-hidden rounded-t-[999px] border-2 border-[#f3cf73]/80 shadow-2xl bg-[#fffdfa]">
+          <div ref={pic} data-layer className="absolute inset-0">
             <img
-              {...art2x(media.thankYou)}
-              alt={`${first.name} and ${second.name} exchanging garlands`}
+              src="/media/thank-you-temple.webp"
+              alt={`${first.name} and ${second.name} facing the sacred temple`}
               loading="lazy"
               decoding="async"
-              className="h-full w-full object-cover"
-              style={{ objectPosition: "50% 58%" }}
+              className="h-full w-full object-contain object-bottom"
               draggable={false}
             />
           </div>

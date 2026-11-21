@@ -25,14 +25,15 @@ function useStory() {
 /** 
  * Where each polaroid sits across the maroon temple canvas:
  * 3 in the upper tier, 3 in the lower tier in a loose cinematic composition.
+ * Sized large, with ample clearance below the center plaque to prevent any overlap!
  */
 const SPOTS = [
-  { dx: 5, dy: 14, rot: -4.5, hold: "pin" },
-  { dx: 21, dy: 50, rot: 3.5, hold: "tape" },
-  { dx: 37, dy: 12, rot: -2.0, hold: "pin" },
-  { dx: 53, dy: 48, rot: 5.0, hold: "tape" },
-  { dx: 69, dy: 14, rot: -5.5, hold: "pin" },
-  { dx: 81, dy: 47, rot: 2.5, hold: "tape" },
+  { dx: 4, dy: 16, rot: -4.5, hold: "pin" },
+  { dx: 73, dy: 16, rot: 4.5, hold: "pin" },
+  { dx: 38.5, dy: 23, rot: -2.0, hold: "tape" },
+  { dx: 12, dy: 58, rot: 4.0, hold: "tape" },
+  { dx: 49, dy: 56, rot: -4.0, hold: "pin" },
+  { dx: 78, dy: 58, rot: 3.0, hold: "tape" },
 ] as const;
 
 interface BoardRefs {
@@ -429,8 +430,8 @@ export function LoveStoryScene() {
       scrub={1.8}
       build={build}
     >
-      {/* Separator between family and gallery sections */}
-      <div aria-hidden="true" className="edge edge-scallop-top edge-temple" />
+      {/* Sleek metallic double gold stripe separator */}
+      <div aria-hidden="true" className="gold-stripe-separator" />
       <div className="gb-viewport">
         <Board r={r} still={false} onOpen={setOpen} story={story} />
       </div>
@@ -468,7 +469,7 @@ export function LoveStoryStill() {
 
   return (
     <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
-      <div aria-hidden="true" className="edge edge-scallop-top edge-temple" />
+      <div aria-hidden="true" className="gold-stripe-separator" />
       <Board r={r} still onOpen={setOpen} story={story} />
       {open !== null && (
         <Lightbox

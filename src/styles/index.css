@@ -1296,6 +1296,18 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   }
 }
 
+/* Sleek metallic double gold stripe separator from user upload */
+.gold-stripe-separator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: clamp(12px, 1.8vw, 18px);
+  background: url("/media/gold-double-line.webp") center / auto 100% repeat-x;
+  z-index: 15;
+  pointer-events: none;
+}
+
 /* ── Moments to Cherish: Scattered Floating Memories Gallery with Paper Plane ── */
 .gb-viewport {
   position: absolute;
@@ -1379,13 +1391,14 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   margin: 0;
 }
 
-/* The polaroids: 6 floating memories */
+/* The polaroids: 6 floating memories (enlarged & clear of heading) */
 .gb-photo {
   position: absolute;
   z-index: 2;
-  width: 71%;
+  width: 82%;
+  max-width: 320px;
   left: var(--mx);
-  top: calc(16cqw + var(--i) * 100cqw);
+  top: calc(85px + var(--i) * 115cqw);
   cursor: zoom-in;
   text-align: center;
   transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.4s ease;
@@ -1393,7 +1406,8 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
 }
 @media (min-width: 768px) {
   .gb-photo {
-    width: 15.5%;
+    width: 21%;
+    max-width: 260px;
     left: var(--dx);
     top: var(--dy);
   }
@@ -3665,4 +3679,33 @@ body {
     min-height: 0;
     background: linear-gradient(90deg, transparent, #c9a24d 50%, transparent);
   }
+}
+
+/* ── Travel & Venue Section: Azure Sky + Grounded Mandap ── */
+.travel-scene-wrapper {
+  background: linear-gradient(180deg, #226ba8 0%, #3880bf 35%, #5ea3dc 70%, #90cdf1 100%);
+  min-height: 100vh;
+}
+.travel-sky-bg {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% 10%, rgba(255, 255, 255, 0.25) 0%, transparent 70%),
+    linear-gradient(180deg, #1f64a0 0%, #357cb9 45%, #599fd8 75%, #8bc7ec 100%);
+}
+.venue-card-glass {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+}
+.travel-mode-card {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+.contact-box {
+  background: rgba(255, 255, 255, 0.24);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
 }
