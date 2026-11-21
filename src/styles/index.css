@@ -3759,7 +3759,7 @@ body {
   box-sizing: border-box;
   overflow: hidden;
   background-color: #2b0b0e;
-  background-image: url("/media/rsvp-temple-bg.webp");
+  background-image: url("/media/rsvp-temple-bg.webp?v=3");
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -3809,12 +3809,14 @@ body {
 
 /* Plaque Header: ❖ RSVP ❖ */
 .temple-rsvp-plaque-wrap {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
 }
-.temple-rsvp-plaque {
-  width: clamp(145px, 26vw, 185px);
+.temple-rsvp-plaque-svg {
+  width: clamp(155px, 28vw, 195px);
   height: auto;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.55));
 }
 
 /* ── STAGE 1: WELCOME SCREEN ── */
