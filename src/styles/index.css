@@ -3743,130 +3743,159 @@ body {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   SOUTH INDIAN WEDDING INTERACTIVE TWO-STAGE RSVP (EXACT TEMPLE SHRINE)
+   SOUTH INDIAN WEDDING INTERACTIVE TWO-STAGE RSVP
+   ON THE AUTHENTIC TEMPLE SHRINE BACKGROUND
    ───────────────────────────────────────────────────────────── */
-.exact-rsvp-section {
+.temple-rsvp-scene {
   position: relative;
   width: 100%;
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(30px, 5vh, 60px) 16px;
+  padding: clamp(65px, 9vh, 95px) 16px clamp(60px, 9vh, 90px);
   box-sizing: border-box;
-  background-color: #2b0b0e;
-  background-image:
-    radial-gradient(ellipse at 50% 50%, rgba(65, 15, 20, 0.95), rgba(20, 4, 7, 0.98) 95%),
-    url("/media/temple-events-bg.webp");
-  background-size: cover, cover;
-  background-position: center center;
   overflow: hidden;
+  background-color: #2b0b0e;
+  background-image: url("/media/rsvp-temple-bg.webp");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  color: #f6ebd8;
 }
 
-.exact-rsvp-bg {
+/* Ambient Floating Petals */
+.temple-petals-layer {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 215, 100, 0.08) 0%, transparent 60%);
-}
-
-/* ── DESKTOP VIEW: FULL SIDE-BY-SIDE TEMPLE SHRINE (MATCHES IMAGE EXACTLY) ── */
-.exact-rsvp-desktop-view {
-  display: none;
-  width: 100%;
-}
-@media (min-width: 820px) {
-  .exact-rsvp-desktop-view {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-}
-.exact-shrine-container {
-  position: relative;
-  width: 100%;
-  max-width: 1024px;
-  aspect-ratio: 1024 / 576;
-  border-radius: 12px;
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(212, 175, 83, 0.15);
   overflow: hidden;
-  background: #2b0b0e;
+  z-index: 2;
 }
-.exact-shrine-full-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
+.ambient-petal {
+  position: absolute;
+  font-size: clamp(14px, 1.8vw, 20px);
+  opacity: 0.75;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  animation: ambient-petal-float 10s linear infinite;
+}
+.ambient-petal.p1 { left: 12%; top: -20px; animation-delay: 0s; }
+.ambient-petal.p2 { left: 82%; top: -20px; animation-delay: 2.5s; }
+.ambient-petal.p3 { left: 28%; top: -20px; animation-delay: 5s; }
+.ambient-petal.p4 { left: 70%; top: -20px; animation-delay: 7.2s; }
+.ambient-petal.p5 { left: 48%; top: -20px; animation-delay: 3.8s; }
+
+@keyframes ambient-petal-float {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.8; }
+  85% { opacity: 0.8; }
+  100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
 }
 
-/* Left Shrine Interactive Overlays (Stage 1) */
-.shrine-interactive-left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 49.2%;
-  height: 100%;
-  pointer-events: none;
-}
-.shrine-greeting-box {
-  position: absolute;
-  top: 22.8%;
-  left: 14%;
-  width: 72%;
+/* Central RSVP Console */
+.temple-rsvp-console {
+  position: relative;
+  z-index: 6;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  pointer-events: auto;
+  margin: 0 auto;
 }
-.shrine-greeting-title {
+
+/* Plaque Header: ❖ RSVP ❖ */
+.temple-rsvp-plaque-wrap {
+  margin-bottom: 6px;
+}
+.temple-rsvp-plaque {
+  width: clamp(145px, 26vw, 185px);
+  height: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+/* ── STAGE 1: WELCOME SCREEN ── */
+.temple-stage1-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: rsvp-fade-in 0.6s ease-out;
+}
+.temple-greeting-name {
   font-family: var(--font-script), 'Great Vibes', cursive;
-  font-size: clamp(1.25rem, 2vw, 1.85rem);
+  font-size: clamp(2rem, 5.8vw, 2.65rem);
   color: #fae7ba;
-  line-height: 1.1;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  margin: 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+}
+.temple-greeting-sub {
+  font-family: var(--font-body), Georgia, serif;
+  font-size: clamp(0.92rem, 2.5vw, 1.05rem);
+  color: #e6ceb0;
+  margin: 0;
+  max-width: 330px;
+  line-height: 1.35;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.temple-lotus-divider {
+  display: flex;
+  justify-content: center;
+  width: 32px;
+  height: 16px;
+  margin: 2px auto;
+}
+.temple-lotus-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
 /* Guest Name Capsule */
-.shrine-name-capsule {
-  position: absolute;
-  top: 38.2%;
-  left: 21.8%;
-  width: 60.5%;
-  height: 9.5%;
+.temple-name-capsule {
+  width: 100%;
+  max-width: 370px;
   background: rgba(248, 235, 204, 0.94);
   border: 1.5px solid #d4af37;
   border-radius: 9999px;
+  padding: 5px 16px;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15), 0 4px 14px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 2px 14px;
+  align-items: flex-start;
+  gap: 2px;
   box-sizing: border-box;
-  pointer-events: auto;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.25);
+  margin: 2px 0;
   transition: all 0.2s ease;
 }
-.shrine-name-capsule:hover {
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15), 0 0 12px rgba(255, 216, 117, 0.5);
+.temple-name-capsule:hover {
   border-color: #ffd875;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.15), 0 0 14px rgba(255, 216, 117, 0.6);
 }
-.shrine-capsule-label {
-  font-size: clamp(0.55rem, 0.75vw, 0.68rem);
+.temple-capsule-label {
+  font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: #7a4a25;
   font-weight: 600;
   line-height: 1;
 }
-.shrine-capsule-row {
+.temple-capsule-row {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 100%;
 }
-.shrine-user-icon {
-  font-size: clamp(0.7rem, 0.95vw, 0.9rem);
+.temple-user-icon {
+  font-size: 0.9rem;
   color: #7a4a25;
 }
-.shrine-name-btn {
+.temple-name-btn {
   flex: 1;
   display: flex;
   align-items: center;
@@ -3876,77 +3905,88 @@ body {
   padding: 0;
   color: #3d1c11;
   font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.82rem, 1.2vw, 1.15rem);
+  font-size: 1.08rem;
   font-style: italic;
   font-weight: 600;
   cursor: pointer;
   text-align: left;
 }
-.shrine-arrow-icon {
+.temple-arrow-down {
   font-size: 0.75rem;
   color: #7a4a25;
-  transition: transform 0.2s ease;
 }
-.shrine-edit-row {
+.temple-edit-wrap {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.shrine-name-input {
+.temple-name-input {
   flex: 1;
   background: #ffffff;
   border: 1px solid #c89538;
-  border-radius: 3px;
-  padding: 1px 6px;
-  font-size: 0.88rem;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.95rem;
   color: #2b0b0e;
   outline: none;
 }
-.shrine-done-btn {
+.temple-done-btn {
   background: #c89538;
   color: #ffffff;
   border: none;
-  border-radius: 3px;
-  padding: 1px 6px;
+  border-radius: 4px;
+  padding: 2px 8px;
   font-size: 0.75rem;
   font-weight: bold;
   cursor: pointer;
 }
 
-/* Specialization 4-Pills Row */
-.shrine-spec-row {
-  position: absolute;
-  top: 52%;
-  left: 20.8%;
-  width: 62.5%;
-  height: 8.8%;
+/* Specialization Selector */
+.temple-spec-section {
+  width: 100%;
+  max-width: 370px;
   display: flex;
-  justify-content: space-between;
-  gap: 4px;
-  pointer-events: auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin: 2px 0;
 }
-.shrine-spec-btn {
+.temple-spec-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #ffd875;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.temple-spec-pills {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+}
+.temple-spec-pill {
   flex: 1;
-  background: rgba(30, 8, 12, 0.7);
+  background: rgba(35, 10, 15, 0.75);
   border: 1px solid rgba(212, 175, 83, 0.4);
   border-radius: 9999px;
+  padding: 6px 6px;
   color: #f5eedc;
   font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.6rem, 0.85vw, 0.82rem);
+  font-size: clamp(0.72rem, 1.8vw, 0.85rem);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 0 4px;
 }
-.shrine-spec-btn:hover {
+.temple-spec-pill:hover {
   background: rgba(70, 20, 26, 0.85);
   border-color: rgba(255, 216, 117, 0.75);
 }
-.shrine-spec-btn.active {
+.temple-spec-pill.selected {
   background: rgba(229, 179, 66, 0.28);
   border: 1.5px solid #ffd875;
   color: #fff2cc;
@@ -3954,284 +3994,75 @@ body {
   font-weight: 700;
   transform: scale(1.03);
 }
-.spec-icon {
-  font-size: clamp(0.65rem, 0.85vw, 0.82rem);
+
+/* Framed Quote Plaque */
+.temple-quote-plaque {
+  position: relative;
+  width: 100%;
+  max-width: 370px;
+  background: linear-gradient(135deg, rgba(250, 240, 218, 0.94), rgba(243, 226, 194, 0.92));
+  border: 1.5px solid #c89538;
+  border-radius: 12px;
+  padding: 12px 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+  margin: 3px 0;
 }
-.spec-label {
-  white-space: nowrap;
+.temple-quote-lotus {
+  width: 22px;
+  height: 11px;
+  margin: 0 auto;
+  display: block;
+}
+.temple-quote-text {
+  font-family: var(--font-body), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.94rem, 2.5vw, 1.08rem);
+  color: #431f13;
+  margin: 4px 0;
+  line-height: 1.35;
 }
 
-/* Accept Button (Matches Image Exact Shape & Glow) */
-.shrine-accept-btn {
-  position: absolute;
-  top: 80.2%;
-  left: 29.8%;
-  width: 44.4%;
-  height: 9.4%;
+/* Accept Button */
+.temple-accept-btn {
+  width: 100%;
+  max-width: 320px;
   background: linear-gradient(135deg, #f7d988 0%, #d49f37 50%, #ebbe5b 100%);
   border: 2px solid #fff5b8;
   border-radius: 9999px;
+  padding: 12px 24px;
   color: #35130b;
   font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.85rem, 1.25vw, 1.15rem);
+  font-size: 1.12rem;
   font-weight: 700;
+  letter-spacing: 0.03em;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 4px 16px rgba(212, 159, 55, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
-  pointer-events: auto;
+  box-shadow: 0 6px 20px rgba(212, 159, 55, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  margin-top: 5px;
   transition: all 0.25s cubic-bezier(0.2, 0, 0.2, 1);
 }
-.shrine-accept-btn:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 24px rgba(255, 216, 117, 0.85), inset 0 2px 4px rgba(255, 255, 255, 0.7);
+.temple-accept-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(255, 216, 117, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.7);
 }
-.shrine-accept-btn:active {
+.temple-accept-btn:active {
   transform: scale(0.96);
   box-shadow: 0 2px 10px rgba(212, 159, 55, 0.5);
 }
-.shrine-accept-btn.accepted {
-  background: linear-gradient(135deg, #78ab46 0%, #4a8022 100%);
-  border-color: #d6f5ad;
-  color: #ffffff;
-}
-.btn-arrow {
-  font-size: 1.3em;
+.temple-btn-arrow {
+  font-size: 1.4rem;
   line-height: 1;
 }
 
-/* Right Shrine Interactive Overlays (Stage 2) */
-.shrine-interactive-right {
-  position: absolute;
-  top: 0;
-  left: 50.8%;
-  width: 49.2%;
-  height: 100%;
-  pointer-events: none;
-}
-.shrine-calendar-group {
-  position: absolute;
-  top: 80.2%;
-  left: 25.8%;
-  width: 48.4%;
-  height: 9.4%;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.shrine-cal-btn {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, #fffbf2 0%, #faecd2 100%);
-  border: 2px solid #c9963e;
-  border-radius: 9999px;
-  color: #3d1b11;
-  font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.82rem, 1.2vw, 1.1rem);
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  transition: all 0.25s ease;
-}
-.shrine-cal-btn:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 20px rgba(201, 150, 62, 0.6);
-  background: #ffffff;
-}
-.cal-icon {
-  font-size: 1.1em;
-}
-.shrine-extra-links {
-  margin-top: 6px;
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-.shrine-sub-link {
-  font-size: clamp(0.68rem, 0.88vw, 0.82rem);
-  color: #ffd680;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  opacity: 0.95;
-  transition: opacity 0.2s ease;
-}
-.shrine-sub-link:hover {
-  color: #ffffff;
-  opacity: 1;
-}
-.shrine-sub-link.wa {
-  color: #8bf0b2;
-}
-
-/* ── MOBILE / TABLET VIEW ── */
-.exact-rsvp-mobile-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-@media (min-width: 820px) {
-  .exact-rsvp-mobile-view {
-    display: none;
-  }
-}
-.exact-mobile-card {
-  position: relative;
+/* ── ANIMATION STAGE (SEAL & BIRDS KISS) ── */
+.temple-anim-stage {
   width: 100%;
   max-width: 440px;
-  aspect-ratio: 504 / 576;
-  border-radius: 10px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7);
-  overflow: hidden;
-  background: #2b0b0e;
-}
-.exact-mobile-shrine-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-.mobile-overlay-wrapper {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.mobile-greeting-overlay {
-  position: absolute;
-  top: 22.8%;
-  left: 14%;
-  width: 72%;
-  text-align: center;
-  pointer-events: auto;
-}
-.mobile-greeting-name {
-  font-family: var(--font-script), 'Great Vibes', cursive;
-  font-size: clamp(1.4rem, 5.5vw, 1.85rem);
-  color: #fae7ba;
-  line-height: 1.1;
-  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-}
-.mobile-name-capsule {
-  position: absolute;
-  top: 38.2%;
-  left: 21.8%;
-  width: 60.5%;
-  height: 9.5%;
-  background: rgba(248, 235, 204, 0.94);
-  border: 1.5px solid #d4af37;
-  border-radius: 9999px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 2px 12px;
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-.mobile-spec-row {
-  position: absolute;
-  top: 52%;
-  left: 20.8%;
-  width: 62.5%;
-  height: 8.8%;
-  display: flex;
-  justify-content: space-between;
-  gap: 3px;
-  pointer-events: auto;
-}
-.mobile-accept-btn {
-  position: absolute;
-  top: 80.2%;
-  left: 29.8%;
-  width: 44.4%;
-  height: 9.4%;
-  background: linear-gradient(135deg, #f7d988 0%, #d49f37 50%, #ebbe5b 100%);
-  border: 2px solid #fff5b8;
-  border-radius: 9999px;
-  color: #35130b;
-  font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.85rem, 3.2vw, 1.05rem);
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: 0 4px 16px rgba(212, 159, 55, 0.5);
-  pointer-events: auto;
-  transition: all 0.2s ease;
-}
-.mobile-accept-btn:active {
-  transform: scale(0.96);
-}
-
-/* Stage 2 Mobile Overlay */
-.mobile-stage2-overlay {
-  position: absolute;
-  top: 79.5%;
-  left: 20%;
-  width: 60%;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.mobile-cal-btn {
-  width: 100%;
-  height: clamp(38px, 6vh, 46px);
-  background: linear-gradient(180deg, #fffbf2 0%, #faecd2 100%);
-  border: 2px solid #c9963e;
-  border-radius: 9999px;
-  color: #3d1b11;
-  font-family: var(--font-body), Georgia, serif;
-  font-size: clamp(0.85rem, 3.2vw, 1.05rem);
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-}
-.mobile-actions-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-.mobile-modify-link {
-  background: transparent;
-  border: none;
-  color: #ffd680;
-  font-size: 0.72rem;
-  text-decoration: underline;
-  cursor: pointer;
-  margin-top: 1px;
-}
-
-/* ── CINEMATIC ANIMATION MODAL (ROYAL SEAL & BEAK-KISSING BIRDS) ── */
-.exact-anim-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: rgba(18, 3, 6, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: rsvp-fade-in 0.4s ease-out;
-}
-.exact-anim-modal {
-  width: 100%;
-  max-width: 440px;
+  min-height: 330px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4239,12 +4070,16 @@ body {
   position: relative;
   gap: 12px;
 }
-.exact-seal-unfold {
-  width: 76px;
-  height: 76px;
+.temple-unfolding-seal {
+  width: 74px;
+  height: 74px;
   animation: rsvp-seal-unfold 1.1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-.exact-birds-arena {
+.rsvp-seal-svg {
+  width: 100%;
+  height: 100%;
+}
+.temple-birds-arena {
   position: relative;
   width: 100%;
   height: 110px;
@@ -4252,17 +4087,17 @@ body {
   align-items: center;
   justify-content: center;
 }
-.wedding-bird-anim {
+.temple-wedding-bird {
   position: absolute;
   width: 80px;
   height: 64px;
   top: 22px;
 }
-.bird-left {
+.bird-fly-l {
   left: 0;
   animation: rsvp-bird-fly-in-l 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
-.bird-right {
+.bird-fly-r {
   right: 0;
   animation: rsvp-bird-fly-in-r 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
@@ -4278,7 +4113,7 @@ body {
   transform-origin: 36px 36px;
   animation: rsvp-wing-flap 0.22s ease-in-out infinite alternate;
 }
-.exact-kiss-burst {
+.temple-kiss-sparkle {
   position: absolute;
   left: 50%;
   top: 32%;
@@ -4287,39 +4122,172 @@ body {
   animation: rsvp-kiss-burst 1s ease-out 1.15s forwards;
   pointer-events: none;
 }
-.burst-heart {
+.temple-burst-heart {
   font-size: 2.5rem;
   display: block;
 }
-.sparkle {
+.sparkle-dot {
   position: absolute;
   font-size: 1.25rem;
 }
-.sparkle.s1 {
-  top: -16px;
-  left: -26px;
-}
-.sparkle.s2 {
-  top: -20px;
-  right: -26px;
-}
-.sparkle.s3 {
-  bottom: -16px;
-  left: 0;
-}
-.exact-bloom-lotus {
+.sparkle-dot.s1 { top: -16px; left: -26px; }
+.sparkle-dot.s2 { top: -20px; right: -26px; }
+.sparkle-dot.s3 { bottom: -16px; left: 0; }
+.temple-blooming-lotus {
   width: 95px;
   height: 48px;
   animation: rsvp-lotus-bloom-in 1.4s ease-out 1s forwards;
   opacity: 0;
 }
-.exact-anim-blessing {
+.lotus-bloom-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 10px rgba(233, 30, 99, 0.5));
+}
+.temple-anim-status {
   font-family: var(--font-body), Georgia, serif;
   font-style: italic;
   color: #ffd875;
   font-size: 1.05rem;
   margin-top: 8px;
   animation: rsvp-pulse 1.2s ease-in-out infinite alternate;
+}
+
+/* ── STAGE 2: ACCEPTANCE CONFIRMATION ── */
+.temple-stage2-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: rsvp-fade-in 0.8s ease-out;
+}
+.temple-ganesha-wrap {
+  position: relative;
+  width: 175px;
+  height: 165px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+.temple-halo-pulse {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 220, 120, 0.75) 0%, rgba(220, 150, 40, 0.35) 50%, transparent 75%);
+  filter: blur(12px);
+  animation: rsvp-halo-pulse 3s ease-in-out infinite alternate;
+}
+.temple-ganesha-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+}
+.temple-thankyou-title {
+  font-family: var(--font-script), 'Great Vibes', cursive;
+  font-size: clamp(2.4rem, 7vw, 3.2rem);
+  color: #fce8bd;
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+.temple-delight-msg {
+  font-family: var(--font-body), Georgia, serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.22rem);
+  color: #ffebcc;
+  font-weight: 600;
+  margin: 2px 0 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+.temple-blessing-quote {
+  font-family: var(--font-body), Georgia, serif;
+  font-style: italic;
+  font-size: 0.94rem;
+  color: #d6bc9a;
+  margin: 2px 0 0;
+  max-width: 320px;
+  line-height: 1.35;
+}
+.temple-guest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(58, 20, 24, 0.75);
+  border: 1px solid #d4af37;
+  border-radius: 9999px;
+  padding: 4px 16px;
+  font-size: 0.88rem;
+  color: #ffeab0;
+  margin: 6px 0;
+}
+.guest-name { font-weight: 600; }
+.guest-dot { color: #d4af37; }
+.guest-role { color: #ffcc66; font-style: italic; }
+
+.temple-calendar-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 6px;
+}
+.temple-cal-btn {
+  width: 100%;
+  background: linear-gradient(180deg, #fffbf2 0%, #faecd2 100%);
+  border: 2px solid #c9963e;
+  border-radius: 9999px;
+  padding: 12px 24px;
+  color: #3d1b11;
+  font-family: var(--font-body), Georgia, serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s ease;
+}
+.temple-cal-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201, 150, 62, 0.6);
+  background: #ffffff;
+}
+.temple-action-links {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 4px;
+}
+.temple-link {
+  font-size: 0.82rem;
+  color: #ffd680;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.95;
+}
+.temple-link:hover {
+  color: #ffffff;
+  opacity: 1;
+}
+.temple-link.wa {
+  color: #8bf0b2;
+}
+.temple-edit-link {
+  background: transparent;
+  border: none;
+  color: #c09d70;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 4px;
 }
 
 /* Keyframes */
@@ -4362,6 +4330,10 @@ body {
 @keyframes rsvp-lotus-bloom-in {
   0% { transform: scale(0.2); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
+}
+@keyframes rsvp-halo-pulse {
+  0% { transform: scale(0.92); opacity: 0.6; }
+  100% { transform: scale(1.08); opacity: 0.95; }
 }
 @keyframes rsvp-fade-in {
   0% { opacity: 0; transform: translateY(10px); }
