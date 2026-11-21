@@ -272,8 +272,8 @@ const weddingConfig: WeddingConfig = {
     { id: "gallery", enabled: true }, // our love story: the photo board and paper plane
     { id: "rsvp", enabled: true },
     { id: "wishingWall", enabled: true },
-    { id: "contact", enabled: true }, // for any help, call
-    { id: "travelStay", enabled: true }, // the venue
+    { id: "contact", enabled: false }, // for any help, call (removed per user request)
+    { id: "travelStay", enabled: false }, // the venue (removed per user request)
     { id: "thankYou", enabled: true }, // thank you, save the date, replay
     { id: "loveNote", enabled: true }, // a note from our hearts
     { id: "closing", enabled: true }, // the city's landmark
