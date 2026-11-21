@@ -47,7 +47,7 @@ export function FamiliesScene() {
       <HangingLamp side="left" />
       <HangingLamp side="right" />
 
-      {/* Header Plaque */}
+      {/* Header Plaque on deep maroon/brown background */}
       <header className="p5-head">
         <p className="p5-hi" lang="hi">॥ परिवार से मिलिए ॥</p>
         <h2 className="p5-title" id="p5title">
@@ -66,85 +66,136 @@ export function FamiliesScene() {
         </div>
       </header>
 
-      {/* Grand Arch Container */}
-      <div className="p5-arch" id="p5arch">
-        <div className="p5-body">
-          {/* Top of arch message */}
-          <div className="p5-bond">
-            <b lang="hi">दो परिवार · एक बंधन</b>
-            <span>Two families, one bond</span>
-            <svg viewBox="-20 -14 40 24" aria-hidden="true">
-              <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
-              <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
-              <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
-            </svg>
-          </div>
-
-          <div className="p5-unite" aria-hidden="true">
-            <span>Blessed by our elders, united by love</span>
-          </div>
-
-          {/* The Two Families */}
-          <div className="p5-fams">
-            {bride && (
-              <article className="p5-fam">
-                <p className="p5-k">The Bride&apos;s Family</p>
-                <div className="p5-ele p5-bride">
-                  <img
-                    src="/media/bride-family.jpg"
-                    alt="The Bride's Family"
-                    className="p5-photo"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-                <p className="p5-n">
-                  <b>Shri Sundaram</b>
-                  <small>Father of the Bride</small>
-                  <i>&amp;</i>
-                  <b>Smt. Lakshmi Sundaram</b>
-                  <small>Mother of the Bride</small>
-                </p>
-                <p className="p5-more">
-                  Ravi Sundaram (Brother) · Smt. Janaki (Grandmother)
-                </p>
-              </article>
-            )}
-
-            <div className="p5-div" aria-hidden="true">
-              <svg viewBox="-20 -14 40 24" aria-hidden="true">
-                <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
-                <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
-                <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
-              </svg>
+      {/* The Two Temple Arch Frames Showcase */}
+      <div className="fam-showcase">
+        {/* Bride's Family */}
+        {bride && (
+          <article className="fam-card">
+            <div className="fam-arch-wrap">
+              {/* Photo inside arch cutout */}
+              <div className="fam-photo-frame">
+                <img
+                  src="/media/bride-family.jpg"
+                  alt="The Bride's Family"
+                  className="fam-photo"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              {/* Ornate Golden Temple Arch Frame Overlay */}
+              <img
+                src="/media/temple-arch-frame.webp"
+                alt=""
+                aria-hidden="true"
+                className="fam-arch-img"
+                draggable={false}
+              />
             </div>
 
-            {groom && (
-              <article className="p5-fam">
-                <p className="p5-k">The Groom&apos;s Family</p>
-                <div className="p5-ele p5-groom">
-                  <img
-                    src="/media/groom-family.jpg"
-                    alt="The Groom's Family"
-                    className="p5-photo"
-                    loading="lazy"
-                    decoding="async"
-                  />
+            {/* Decorative Names & Details Underneath */}
+            <div className="fam-details">
+              <div className="fam-badge-wrap">
+                <span className="fam-badge">The Bride&apos;s Family</span>
+              </div>
+
+              <div className="fam-names-block">
+                <div className="fam-parent">
+                  <h3 className="fam-name">Shri Sundaram</h3>
+                  <p className="fam-role">Father of the Bride</p>
                 </div>
-                <p className="p5-n">
-                  <b>Shri Raghavan</b>
-                  <small>Father of the Groom</small>
-                  <i>&amp;</i>
-                  <b>Smt. Kamala Raghavan</b>
-                  <small>Mother of the Groom</small>
+
+                <div className="fam-amp" aria-hidden="true">
+                  <span className="fam-amp-line" />
+                  <span className="fam-amp-symbol">&amp;</span>
+                  <span className="fam-amp-line" />
+                </div>
+
+                <div className="fam-parent">
+                  <h3 className="fam-name">Smt. Lakshmi Sundaram</h3>
+                  <p className="fam-role">Mother of the Bride</p>
+                </div>
+              </div>
+
+              <div className="fam-sub-family">
+                <p className="fam-kin">
+                  <span>Ravi Sundaram <small>(Brother)</small></span>
+                  <span className="fam-dot">·</span>
+                  <span>Smt. Janaki <small>(Grandmother)</small></span>
                 </p>
-                <p className="p5-more">
-                  Divya Raghavan (Sister) · Shri Venkataraman (Grandfather)
-                </p>
-              </article>
-            )}
-          </div>
+              </div>
+            </div>
+          </article>
+        )}
+
+        {/* Center Divider */}
+        <div className="fam-center-divider" aria-hidden="true">
+          <span className="fam-v-line" />
+          <svg viewBox="-20 -14 40 24" className="fam-v-lotus">
+            <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
+            <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
+            <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
+          </svg>
+          <span className="fam-v-line" />
         </div>
+
+        {/* Groom's Family */}
+        {groom && (
+          <article className="fam-card">
+            <div className="fam-arch-wrap">
+              {/* Photo inside arch cutout */}
+              <div className="fam-photo-frame">
+                <img
+                  src="/media/groom-family.jpg"
+                  alt="The Groom's Family"
+                  className="fam-photo"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              {/* Ornate Golden Temple Arch Frame Overlay */}
+              <img
+                src="/media/temple-arch-frame.webp"
+                alt=""
+                aria-hidden="true"
+                className="fam-arch-img"
+                draggable={false}
+              />
+            </div>
+
+            {/* Decorative Names & Details Underneath */}
+            <div className="fam-details">
+              <div className="fam-badge-wrap">
+                <span className="fam-badge">The Groom&apos;s Family</span>
+              </div>
+
+              <div className="fam-names-block">
+                <div className="fam-parent">
+                  <h3 className="fam-name">Shri Raghavan</h3>
+                  <p className="fam-role">Father of the Groom</p>
+                </div>
+
+                <div className="fam-amp" aria-hidden="true">
+                  <span className="fam-amp-line" />
+                  <span className="fam-amp-symbol">&amp;</span>
+                  <span className="fam-amp-line" />
+                </div>
+
+                <div className="fam-parent">
+                  <h3 className="fam-name">Smt. Kamala Raghavan</h3>
+                  <p className="fam-role">Mother of the Groom</p>
+                </div>
+              </div>
+
+              <div className="fam-sub-family">
+                <p className="fam-kin">
+                  <span>Divya Raghavan <small>(Sister)</small></span>
+                  <span className="fam-dot">·</span>
+                  <span>Shri Venkataraman <small>(Grandfather)</small></span>
+                </p>
+              </div>
+            </div>
+          </article>
+        )}
       </div>
     </section>
   );

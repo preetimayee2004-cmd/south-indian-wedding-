@@ -385,7 +385,8 @@ export function LoveStoryScene() {
       onUpdate: (self) => void (proxy.dir = self.direction === -1 ? -1 : 1),
     });
 
-    tl.fromTo(R.plaque, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0);
+    // Plaque is visible right from the start
+    gsap.set(R.plaque, { autoAlpha: 1, y: 0 });
     const LEG = 1;
     PHOTOS.forEach((_, i) => {
       const t0 = 0.2 + i * LEG;
@@ -428,6 +429,8 @@ export function LoveStoryScene() {
       scrub={1.8}
       build={build}
     >
+      {/* Separator between family and gallery sections */}
+      <div aria-hidden="true" className="edge edge-scallop-top edge-temple" />
       <div className="gb-viewport">
         <Board r={r} still={false} onOpen={setOpen} story={story} />
       </div>
@@ -465,6 +468,7 @@ export function LoveStoryStill() {
 
   return (
     <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
+      <div aria-hidden="true" className="edge edge-scallop-top edge-temple" />
       <Board r={r} still onOpen={setOpen} story={story} />
       {open !== null && (
         <Lightbox
