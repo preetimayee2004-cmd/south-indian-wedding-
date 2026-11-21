@@ -156,6 +156,9 @@ export function InteractiveRsvp() {
 
   return (
     <section className="exact-rsvp-section" id="rsvp" aria-label="Wedding RSVP">
+      {/* Single thick gold line separator at the top */}
+      <div className="gold-stripe-separator" aria-hidden="true" />
+
       {/* Background Section Glow */}
       <div className="exact-rsvp-bg" aria-hidden="true" />
 
