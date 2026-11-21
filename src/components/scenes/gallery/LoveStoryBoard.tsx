@@ -1,9 +1,10 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
-import { gsap } from "@/lib/gsap";
+import { gsap, MotionPathPlugin, ScrollTrigger } from "@/lib/gsap";
 
+/** The love story comes from config (wedding.config.ts → gallery): up to 6 photos. */
 type Photo = { src: string; caption: string; alt: string };
 
 function useStory() {
@@ -21,303 +22,453 @@ function useStory() {
   };
 }
 
-/**
- * 6 photo spots in a loose cinematic composition:
- * 3 in the upper area, 3 in the lower area, avoiding a rigid grid.
- * Varied natural rotations and subtle gold accents on selective photos.
+/** 
+ * Where each polaroid sits across the maroon temple canvas:
+ * 3 in the upper tier, 3 in the lower tier in a loose cinematic composition.
  */
 const SPOTS = [
-  // Upper area (3 photos)
-  { rot: -3.5, accent: "corner-tl" as const },
-  { rot: 2.8, accent: null },
-  { rot: -2.0, accent: "lotus-top" as const },
-  // Lower area (3 photos)
-  { rot: 3.2, accent: null },
-  { rot: -3.0, accent: null },
-  { rot: 2.2, accent: "corner-br" as const },
+  { dx: 5, dy: 14, rot: -4.5, hold: "pin" },
+  { dx: 21, dy: 50, rot: 3.5, hold: "tape" },
+  { dx: 37, dy: 12, rot: -2.0, hold: "pin" },
+  { dx: 53, dy: 48, rot: 5.0, hold: "tape" },
+  { dx: 69, dy: 14, rot: -5.5, hold: "pin" },
+  { dx: 81, dy: 47, rot: 2.5, hold: "tape" },
 ] as const;
 
-/** Subtle antique gold corner filigree for photo 0 and photo 5 */
-function CornerFiligree({ position = "top-left" }: { position?: "top-left" | "bottom-right" }) {
-  const isBR = position === "bottom-right";
+interface BoardRefs {
+  board: HTMLDivElement | null;
+  surface: HTMLDivElement | null;
+  plaque: HTMLDivElement | null;
+  photos: (HTMLButtonElement | null)[];
+  desat: (HTMLSpanElement | null)[];
+  letters: HTMLSpanElement[][];
+  bursts: (HTMLSpanElement | null)[][];
+  tag: HTMLDivElement | null;
+  svg: SVGSVGElement | null;
+  trail: SVGPathElement | null;
+  mask: SVGPathElement | null;
+  plane: HTMLDivElement | null;
+  planeBody: HTMLDivElement | null;
+}
+
+const emptyRefs = (n: number): BoardRefs => ({
+  board: null,
+  surface: null,
+  plaque: null,
+  photos: [],
+  desat: [],
+  letters: Array.from({ length: n }, () => []),
+  bursts: Array.from({ length: n }, () => []),
+  tag: null,
+  svg: null,
+  trail: null,
+  mask: null,
+  plane: null,
+  planeBody: null,
+});
+
+type Pt = { x: number; y: number };
+
+/**
+ * The plane's flight over the photos: swooping between them, looping along the way,
+ * leaving a dotted gold flight trail, and landing at the ending tag.
+ */
+function planFlight(r: BoardRefs) {
+  const s = r.surface!;
+  const W = s.offsetWidth;
+  const H = s.offsetHeight;
+  const stops: Pt[] = r.photos.map((p) => ({
+    x: p!.offsetLeft + p!.offsetWidth * 0.84,
+    y: p!.offsetTop + p!.offsetWidth * 0.05,
+  }));
+  const tag = r.tag!;
+  stops.push({ x: tag.offsetLeft + tag.offsetWidth * 0.5, y: tag.offsetTop + tag.offsetHeight * 0.15 });
+  const start = { x: -0.04 * W, y: Math.min(0.08 * H, 0.1 * W) };
+
+  const pts: Pt[] = [start];
+  const landing: number[] = [];
+  stops.forEach((b, k) => {
+    const a = pts[pts.length - 1];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const len = Math.hypot(dx, dy) || 1;
+    const nx = -dy / len;
+    const ny = dx / len;
+    const sw = (k % 2 ? 1 : -1) * Math.min(len * 0.22, 0.12 * Math.max(W, 300));
+    const mid = { x: a.x + dx * 0.5 + nx * sw, y: a.y + dy * 0.5 + ny * sw };
+    if (k === 2 || k === 4 || k === stops.length - 1) {
+      const rr = Math.max(22, Math.min(50, len * 0.14));
+      const ux = dx / len;
+      const uy = dy / len;
+      const side = sw >= 0 ? 1 : -1;
+      const p = (fu: number, fn: number) => ({
+        x: mid.x + ux * fu * rr + nx * side * fn * rr,
+        y: mid.y + uy * fu * rr + ny * side * fn * rr,
+      });
+      pts.push(p(0, 0), p(1, 1), p(0, 2), p(-1, 1), p(0.9, 0));
+    } else {
+      pts.push(mid);
+    }
+    pts.push(b);
+    landing.push(pts.length - 1);
+  });
+
+  // Catmull-Rom → cubic Béziers
+  const seg = (i: number) => {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+    return ` C${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+  };
+  let d = `M${start.x.toFixed(1)},${start.y.toFixed(1)}`;
+  const upTo: string[] = [];
+  for (let i = 0; i < pts.length - 1; i++) {
+    d += seg(i);
+    upTo[i + 1] = d;
+  }
+  const probe = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  r.svg!.appendChild(probe);
+  probe.setAttribute("d", d);
+  const total = probe.getTotalLength() || 1;
+  const at = landing.map((idx) => {
+    probe.setAttribute("d", upTo[idx]);
+    return probe.getTotalLength() / total;
+  });
+  probe.remove();
+  return { d, W, H, at };
+}
+
+function Plane() {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 28 28"
-      className={`pointer-events-none absolute z-10 h-6 w-6 sm:h-7 sm:w-7 ${
-        isBR ? "-bottom-1.5 -right-1.5 rotate-180" : "-top-1.5 -left-1.5"
-      }`}
-    >
-      <defs>
-        <linearGradient id={`filigree-${position}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#fae5a2" />
-          <stop offset="50%" stopColor="#c9954f" />
-          <stop offset="100%" stopColor="#8a6420" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M2 2h14c-2 2-4.5 3-7 3 0 2.5-1 5-3 7V2Z"
-        fill={`url(#filigree-${position})`}
-        stroke="#7a5217"
-        strokeWidth="0.5"
-      />
-      <circle cx="6.5" cy="6.5" r="1.8" fill="#fff6d6" stroke="#7a5217" strokeWidth="0.5" />
-      <path d="M2 2l7 7" stroke="#7a5217" strokeWidth="0.6" strokeLinecap="round" />
+    <svg viewBox="0 0 48 32" className="h-full w-full overflow-visible" aria-hidden="true">
+      <path d="M2 16 46 3 29 29 21 19Z" fill="#ffffff" stroke="#e8c56b" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M21 19 46 3 17 17Z" fill="#fbf5e6" stroke="#e8c56b" strokeWidth="1.3" strokeLinejoin="round" />
+      <path d="M21 19 46 3" stroke="#7a1f2b" strokeWidth="1.1" />
     </svg>
   );
 }
 
-/** Tiny refined antique gold lotus accent on photo 2 */
-function GoldLotusPin() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 28 18"
-      className="pointer-events-none absolute -top-3 left-1/2 -translate-x-1/2 z-10 h-4 w-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]"
-    >
-      <defs>
-        <linearGradient id="gm-lotus-pin" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fff3d1" />
-          <stop offset="50%" stopColor="#d4a94a" />
-          <stop offset="100%" stopColor="#7a5217" />
-        </linearGradient>
-      </defs>
-      <path d="M14 1 C11.5 5.5, 11.5 10, 14 15 C16.5 10, 16.5 5.5, 14 1 Z" fill="url(#gm-lotus-pin)" />
-      <path d="M13 7 C8.5 6, 4.5 9, 5.5 13.5 C9 14.5, 12 11.5, 13 9.5 Z" fill="url(#gm-lotus-pin)" opacity="0.9" />
-      <path d="M15 7 C19.5 6, 23.5 9, 22.5 13.5 C19 14.5, 16 11.5, 15 9.5 Z" fill="url(#gm-lotus-pin)" opacity="0.9" />
-      <circle cx="14" cy="13" r="1.3" fill="#fff6d6" />
-    </svg>
-  );
-}
-
-interface GalleryContentProps {
-  story: ReturnType<typeof useStory>;
+function Board({
+  r,
+  still,
+  onOpen,
+  story,
+}: {
+  r: MutableRefObject<BoardRefs>;
+  still: boolean;
   onOpen: (i: number) => void;
-  isAnimated?: boolean;
-}
-
-function GalleryContent({ story, onOpen, isAnimated = false }: GalleryContentProps) {
-  const { photos, heading, subtitle, ending } = story;
+  story: ReturnType<typeof useStory>;
+}) {
+  const PHOTOS = story.photos;
+  const hide = still ? "" : "invisible";
 
   return (
-    <div className="relative mx-auto w-full max-w-7xl">
-      {/* Top Scallop Border */}
-      <div aria-hidden="true" className="edge edge-scallop-top edge-temple" />
-
-      {/* Title Plaque: Cream plaque with antique gold border */}
-      <header className="gm-plaque-wrapper mb-8 flex flex-col items-center justify-center text-center sm:mb-10 md:mb-14">
-        <div className="gm-plaque">
-          <h2 id="gallery-heading">{heading}</h2>
+    <div ref={(el) => void (r.current.board = el)} className="gb-board">
+      <div
+        ref={(el) => void (r.current.surface = el)}
+        className="gb-surface"
+        style={{ ["--count" as string]: PHOTOS.length } as CSSProperties}
+      >
+        {/* Title Plaque: NO curve line above it */}
+        <div ref={(el) => void (r.current.plaque = el)} className="gb-plaque">
+          <h2 id="gallery-heading">{story.heading}</h2>
         </div>
-        {subtitle && (
-          <p className="gm-subtitle mt-2.5 text-[0.74rem] uppercase tracking-[0.24em] font-semibold sm:text-[0.82rem]">
-            {subtitle}
-          </p>
-        )}
-      </header>
 
-      {/* Floating Canvas / Stage */}
-      <div className="gm-stage">
-        {/* Extremely subtle, organic gold dotted connecting trail */}
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 1000 700"
-          className="gm-trail-svg pointer-events-none absolute inset-0 hidden h-full w-full md:block"
-        >
-          <path
-            className="gm-trail-path"
-            d="M 150 160 C 270 230, 370 225, 490 220 C 610 215, 710 135, 820 150 C 920 230, 920 390, 830 490 C 740 575, 630 555, 510 550 C 390 545, 270 515, 180 510"
-            fill="none"
-            stroke="#e2b84f"
-            strokeOpacity="0.32"
-            strokeWidth="1.6"
-            strokeDasharray="4 8"
-            strokeLinecap="round"
-          />
-        </svg>
-
-        {/* 6 Wedding Photographs */}
-        {photos.map((p, i) => {
+        {PHOTOS.map((p, i) => {
           const s = SPOTS[i % SPOTS.length];
           return (
             <button
               key={p.src}
+              ref={(el) => void (r.current.photos[i] = el)}
               type="button"
               onClick={() => onOpen(i)}
-              data-index={i}
-              data-rot={s.rot}
-              className={`gm-photo gm-spot-${i} ${!isAnimated ? `gm-floating-${i}` : ""}`}
-              style={{ "--rot": `${s.rot}deg` } as CSSProperties}
+              className="gb-photo"
+              style={
+                {
+                  ["--i" as string]: i,
+                  ["--dx" as string]: `${s.dx}%`,
+                  ["--dy" as string]: `${s.dy}%`,
+                  ["--mx" as string]: i % 2 ? "26%" : "3%",
+                  rotate: `${s.rot}deg`,
+                } as CSSProperties
+              }
               aria-label={`Open photo: ${p.caption}`}
             >
-              <span className="gm-polaroid">
-                <span className="gm-pic">
+              <span className="gb-polaroid">
+                <span className="gb-pic">
                   <img
                     src={p.src}
                     alt={p.alt}
                     loading="lazy"
                     decoding="async"
-                    draggable={false}
                     className="block h-full w-full object-cover"
+                    draggable={false}
                   />
+                  {!still && <span ref={(el) => void (r.current.desat[i] = el)} aria-hidden className="gb-desat" />}
                 </span>
-                <span className="gm-caption" aria-hidden="true">
-                  {p.caption}
+                <span className="gb-caption" aria-hidden="true">
+                  {[...p.caption].map((ch, k) => (
+                    <span
+                      key={k}
+                      ref={(el) => void (el && (r.current.letters[i][k] = el))}
+                      className={`inline-block ${hide}`}
+                    >
+                      {ch === " " ? "\u00A0" : ch}
+                    </span>
+                  ))}
                 </span>
               </span>
-
-              {/* Minimal selective gold accents */}
-              {s.accent === "corner-tl" && <CornerFiligree position="top-left" />}
-              {s.accent === "corner-br" && <CornerFiligree position="bottom-right" />}
-              {s.accent === "lotus-top" && <GoldLotusPin />}
+              {s.hold === "pin" ? <span aria-hidden className="gb-pin" /> : <span aria-hidden className="gb-tape" />}
+              {!still &&
+                Array.from({ length: 5 }, (_, k) => (
+                  <span
+                    key={k}
+                    ref={(el) => void (r.current.bursts[i][k] = el)}
+                    aria-hidden
+                    className="gb-burst invisible"
+                    style={{ background: ["#e86a84", "#f39a1e", "#d9463e", "#f6b532", "#fff6e6"][k] }}
+                  />
+                ))}
             </button>
           );
         })}
-      </div>
 
-      {/* Ending Note */}
-      {ending && (
-        <footer className="gm-ending relative z-10 mt-10 text-center sm:mt-12 md:mt-16">
-          <p className="font-script text-[clamp(1.5rem,3vw,2.1rem)] text-[#d4af37] drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]">
-            {ending}
-          </p>
-        </footer>
-      )}
+        <div ref={(el) => void (r.current.tag = el)} className="gb-endtag">
+          <span>{story.ending}</span>
+        </div>
+
+        {/* Flight path: dotted gold trail revealed behind the plane */}
+        <svg ref={(el) => void (r.current.svg = el)} aria-hidden className="gb-flight">
+          <defs>
+            <mask id="gb-trail-mask" maskUnits="userSpaceOnUse">
+              <path
+                ref={(el) => void (r.current.mask = el)}
+                fill="none"
+                stroke="#fff"
+                strokeWidth="10"
+                pathLength={1}
+                style={{ strokeDasharray: 1, strokeDashoffset: 1 }}
+              />
+            </mask>
+          </defs>
+          <path
+            ref={(el) => void (r.current.trail = el)}
+            fill="none"
+            stroke="#e8c56b"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeDasharray="0.1 9"
+            mask="url(#gb-trail-mask)"
+          />
+        </svg>
+
+        {/* The Animated Paper Plane */}
+        <div ref={(el) => void (r.current.plane = el)} aria-hidden className="gb-plane">
+          <div ref={(el) => void (r.current.planeBody = el)} className="h-full w-full">
+            <div className="gb-plane-bob h-full w-full">
+              <Plane />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-/**
- * Our Love Story — Floating Memories Gallery
- * 6 polaroids floating across the deep maroon temple-art canvas,
- * cinematic entrance animation on entering the gallery, subtle floating effect,
- * and warm golden hover lift.
- */
+type Raw = ReturnType<typeof MotionPathPlugin.getRawPath>;
+
+const onPath = (raw: Raw, p: number) =>
+  MotionPathPlugin.getPositionOnPath(raw, Math.min(1, Math.max(0, p)), true) as {
+    x: number;
+    y: number;
+    angle: number;
+  };
+
+function setupFlight(r: BoardRefs) {
+  const plan = planFlight(r);
+  r.svg!.setAttribute("viewBox", `0 0 ${plan.W} ${plan.H}`);
+  r.trail!.setAttribute("d", plan.d);
+  r.mask!.setAttribute("d", plan.d);
+  const raw = MotionPathPlugin.getRawPath(r.trail!);
+  MotionPathPlugin.cacheRawPathMeasurements(raw);
+  return { ...plan, raw };
+}
+
+function restPlane(r: BoardRefs, raw: Raw, p: number) {
+  const q = onPath(raw, p);
+  if (r.plane) {
+    r.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${q.angle.toFixed(1)}deg)`;
+  }
+  if (r.mask) {
+    r.mask.style.strokeDashoffset = `${1 - p}`;
+  }
+}
+
+const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
+
 export function LoveStoryScene() {
   const story = useStory();
+  const PHOTOS = story.photos;
+  const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
   const [open, setOpen] = useState<number | null>(null);
-  const root = useRef<HTMLElement>(null);
-  const reduced = usePrefersReducedMotion();
+  const fly = useRef<{ p: number; dir: 1 | -1; raw: Raw | null }>({ p: 0, dir: 1, raw: null });
 
-  useLayoutEffect(() => {
-    if (reduced || !root.current) return;
-    const ctx = gsap.context(() => {
-      // 1. Plaque entrance
-      gsap.from(".gm-plaque-wrapper", {
-        opacity: 0,
-        y: -22,
-        duration: 0.9,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 78%",
-          once: true,
-        },
-      });
+  useEffect(() => {
+    let shown = 0;
+    let offset = 0;
+    let facing: 1 | -1 = 1;
+    let turn = 1;
+    let first = true;
+    const tick = (_t: number, dtMs: number) => {
+      const R = r.current;
+      const raw = fly.current.raw;
+      if (!raw || !R.plane) return;
+      const scene = R.board?.closest(".scene");
+      if (scene && !scene.classList.contains("is-live")) return;
+      const dt = Math.min(0.05, dtMs / 1000);
+      const q = onPath(raw, fly.current.p);
+      if (fly.current.dir !== facing && turn >= 1) {
+        facing = fly.current.dir;
+        turn = 0;
+      }
+      let bank = 1;
+      let lift = 0;
+      if (turn < 1) {
+        turn = Math.min(1, turn + dt / 0.5);
+        const e = turn < 0.5 ? 2 * turn * turn : 1 - (-2 * turn + 2) ** 2 / 2;
+        offset = facing === 1 ? 180 * (1 - e) : 180 * e;
+        const k = Math.sin(Math.PI * turn);
+        bank = 1 - 0.35 * k;
+        lift = -12 * k;
+      } else {
+        offset = facing === 1 ? 0 : 180;
+      }
+      const target = q.angle + offset;
+      if (first) {
+        shown = target;
+        first = false;
+      } else {
+        shown += Math.max(-7, Math.min(7, turnTo(shown, target)));
+      }
+      R.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${shown.toFixed(2)}deg)`;
+      if (R.planeBody) R.planeBody.style.transform = `translateY(${lift.toFixed(1)}px) scaleY(${bank.toFixed(3)})`;
+      if (R.mask) R.mask.style.strokeDashoffset = `${1 - fly.current.p}`;
 
-      // 2. Dotted trail entrance
-      gsap.from(".gm-trail-path", {
-        opacity: 0,
-        duration: 1.4,
-        ease: "power1.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
+      const board = R.board!;
+      const vh = window.innerHeight;
+      if (board.offsetHeight > vh - 24) {
+        const top = R.surface!.offsetTop + board.offsetTop;
+        const y = Math.min(16, Math.max(vh - board.offsetHeight - 16, vh * 0.5 - (top + q.y)));
+        board.style.transform = `translateY(${y.toFixed(1)}px)`;
+      } else {
+        board.style.transform = "";
+      }
+    };
+    gsap.ticker.add(tick);
+    return () => gsap.ticker.remove(tick);
+  }, []);
 
-      // 3. Cinematic one-by-one photo entrance: fade-in, upward glide, settling rotation
-      const photoEls = gsap.utils.toArray<HTMLElement>(".gm-photo");
-      photoEls.forEach((el, i) => {
-        const targetRot = parseFloat(el.dataset.rot || "0");
-        gsap.fromTo(
-          el,
-          {
-            opacity: 0,
-            y: 40,
-            scale: 0.93,
-            rotation: targetRot * 1.5 + (i % 2 === 0 ? -4 : 4),
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            rotation: targetRot,
-            duration: 1.05,
-            delay: 0.15 + i * 0.14,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: root.current,
-              start: "top 75%",
-              once: true,
-            },
-            onComplete: () => {
-              el.classList.add(`gm-floating-${i}`);
-            },
-          }
+  const build: Build = (tl, section) => {
+    const R = r.current;
+    const f = setupFlight(R);
+    fly.current.raw = f.raw;
+    const proxy = fly.current;
+    proxy.p = 0;
+
+    ScrollTrigger.create({
+      trigger: section,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => void (proxy.dir = self.direction === -1 ? -1 : 1),
+    });
+
+    tl.fromTo(R.plaque, { autoAlpha: 0, y: -12 }, { autoAlpha: 1, y: 0, duration: 0.2, ease: "power2.out" }, 0);
+    const LEG = 1;
+    PHOTOS.forEach((_, i) => {
+      const t0 = 0.2 + i * LEG;
+      const photo = R.photos[i];
+      tl.fromTo(proxy, { p: i ? f.at[i - 1] : 0 }, { p: f.at[i], duration: 0.7 * LEG, ease: "none", immediateRender: false }, t0);
+      tl.fromTo(photo, { scale: 0.94, autoAlpha: 0.7 }, { scale: 1.06, autoAlpha: 1, duration: 0.14 * LEG, ease: "back.out(3)" }, t0 + 0.68 * LEG);
+      tl.fromTo(R.desat[i], { opacity: 0.5 }, { opacity: 0, duration: 0.14 * LEG }, t0 + 0.68 * LEG);
+      tl.fromTo(
+        R.letters[i],
+        { autoAlpha: 0, y: 4 },
+        { autoAlpha: 1, y: 0, duration: 0.04, stagger: (0.22 * LEG) / Math.max(1, R.letters[i].length), ease: "power1.out" },
+        t0 + 0.74 * LEG,
+      );
+      R.bursts[i].forEach((b, k) => {
+        const a = (k / 5) * Math.PI * 2 - Math.PI / 2;
+        tl.fromTo(
+          b,
+          { x: 0, y: 0, scale: 0.4, rotate: 0, autoAlpha: 0 },
+          { keyframes: [{ autoAlpha: 1, duration: 0.02 }, { x: Math.cos(a) * 34, y: Math.sin(a) * 26 + 18, scale: 1, rotate: 160 + k * 40, autoAlpha: 0, duration: 0.24 * LEG }] },
+          t0 + 0.7 * LEG,
         );
       });
+      tl.to(photo, { scale: 1, duration: 0.12 * LEG, ease: "power1.out" }, t0 + LEG);
+    });
 
-      // 4. Ending tag entrance
-      gsap.from(".gm-ending", {
-        opacity: 0,
-        y: 16,
-        duration: 0.8,
-        delay: 0.2 + photoEls.length * 0.14,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: root.current,
-          start: "top 75%",
-          once: true,
-        },
-      });
-    }, root);
+    const tEnd = 0.2 + PHOTOS.length * LEG;
+    tl.fromTo(proxy, { p: f.at[PHOTOS.length - 1] }, { p: 1, duration: 0.8 * LEG, ease: "none", immediateRender: false }, tEnd);
+    tl.fromTo(R.tag, { scale: 0.9, autoAlpha: 0.6 }, { scale: 1, autoAlpha: 1, duration: 0.15, ease: "back.out(3)" }, tEnd + 0.75 * LEG);
+    tl.to(R.photos, { scale: 1.05, duration: 0.12, ease: "sine.out" }, tEnd + 0.95 * LEG).to(R.photos, { scale: 1, duration: 0.15, ease: "sine.in" }, tEnd + 1.07 * LEG);
+    tl.to({}, { duration: 0.4 });
+  };
 
-    return () => ctx.revert();
-  }, [reduced]);
-
-  if (!story.photos.length) return null;
+  if (!PHOTOS.length) return null;
 
   return (
-    <section
-      ref={root}
+    <Scene
       id="gallery"
-      aria-labelledby="gallery-heading"
-      className="gb-wall relative overflow-hidden px-4 py-16 sm:px-6 md:px-10 md:py-20 lg:px-14"
+      labelledBy="gallery-heading"
+      className="gb-wall relative overflow-hidden"
+      scrub={1.8}
+      build={build}
     >
-      <GalleryContent story={story} onOpen={setOpen} isAnimated={!reduced} />
+      <div className="gb-viewport">
+        <Board r={r} still={false} onOpen={setOpen} story={story} />
+      </div>
       {open !== null && (
         <Lightbox
-          images={story.photos.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))}
+          images={PHOTOS.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))}
           index={open}
           onIndex={setOpen}
           onClose={() => setOpen(null)}
         />
       )}
-    </section>
+    </Scene>
   );
 }
 
-/**
- * Reduced motion fallback: static presentation with no scroll triggers or float animations.
- */
 export function LoveStoryStill() {
   const story = useStory();
+  const PHOTOS = story.photos;
+  const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
   const [open, setOpen] = useState<number | null>(null);
 
-  if (!story.photos.length) return null;
+  useLayoutEffect(() => {
+    if (!r.current.surface) return;
+    const place = () => {
+      const f = setupFlight(r.current);
+      restPlane(r.current, f.raw, f.at[PHOTOS.length - 1]);
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(r.current.surface!);
+    return () => ro.disconnect();
+  }, []);
+
+  if (!PHOTOS.length) return null;
 
   return (
-    <section
-      id="gallery"
-      aria-labelledby="gallery-heading"
-      className="gb-wall relative overflow-hidden px-4 py-16 sm:px-6 md:px-10 md:py-20 lg:px-14"
-    >
-      <GalleryContent story={story} onOpen={setOpen} isAnimated={false} />
+    <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
+      <Board r={r} still onOpen={setOpen} story={story} />
       {open !== null && (
         <Lightbox
-          images={story.photos.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))}
+          images={PHOTOS.map((p) => ({ src: p.src, alt: p.alt, caption: p.caption }))}
           index={open}
           onIndex={setOpen}
           onClose={() => setOpen(null)}
