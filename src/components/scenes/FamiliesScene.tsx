@@ -44,6 +44,12 @@ export function FamiliesScene() {
 
   return (
     <section className="pg5" id="family" aria-labelledby="p5title">
+      {/* Ornate Gold Filigree Corners */}
+      <img src="/media/gold-corner.webp" alt="" aria-hidden="true" className="fam-corner fam-corner-tl" draggable={false} />
+      <img src="/media/gold-corner.webp" alt="" aria-hidden="true" className="fam-corner fam-corner-tr" draggable={false} />
+      <img src="/media/gold-corner.webp" alt="" aria-hidden="true" className="fam-corner fam-corner-bl" draggable={false} />
+      <img src="/media/gold-corner.webp" alt="" aria-hidden="true" className="fam-corner fam-corner-br" draggable={false} />
+
       <HangingLamp side="left" />
       <HangingLamp side="right" />
 

@@ -1,27 +1,10 @@
-import { Scene, type Build } from "@/components/scene/Scene";
-import { useRsvpUsable } from "@/components/sections/rsvp/RsvpPanel";
+import { InteractiveRsvp } from "@/components/sections/rsvp/InteractiveRsvp";
 
 /**
- * Scene 9 — RSVP. Left empty on its sky for now (the stone arch and its text were
- * removed); the new design goes here.
+ * Scene 9 — South Indian Wedding Interactive Two-Stage RSVP.
+ * Handcrafted temple aesthetic with personalized greeting, specialization selection,
+ * animated bird kiss & bloom interaction, and confirmation with calendar integration.
  */
 export function RsvpScene() {
-  const usable = useRsvpUsable();
-  if (!usable && !import.meta.env.DEV) return null;
-
-  const build: Build = (tl) => {
-    tl.to({}, { duration: 0.3 });
-  };
-
-  return (
-    <Scene
-      id="rsvp"
-      label="RSVP"
-      className="cobalt"
-      build={build}
-      edgeTop={<div aria-hidden className="edge edge-scallop-top" style={{ ["--edge" as string]: "var(--sky-top)" }} />}
-    >
-      <h2 className="sr-only">RSVP</h2>
-    </Scene>
-  );
+  return <InteractiveRsvp />;
 }
