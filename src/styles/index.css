@@ -2855,51 +2855,62 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   box-shadow: inset 0 14px 22px -14px rgb(80 40 10 / 0.35), inset 0 0 40px rgb(184 137 62 / 0.12);
 }
 
-/* ── The events: on the gopuram's painted tiers, drifting slowly sideways, under a deep
-   maroon veil so the doorway and the words stay in front ── */
-:root {
-  --ev-tile-h: clamp(190px, 30svh, 300px);
-}
+/* ── Events and Gallery sections: South Indian golden temple gopuram line art on royal maroon ── */
 .ev-cloth,
 .gb-wall {
-  background-color: #4a0d0d;
+  background-color: #560517;
   background-image:
-    radial-gradient(ellipse at 50% 48%, rgb(40 6 8 / 0.42), rgb(40 6 8 / 0.08) 38%, rgb(50 6 10 / 0.35) 90%),
-    linear-gradient(180deg, rgb(70 8 12 / 0.5), transparent 22%, transparent 78%, rgb(70 8 12 / 0.55)),
-    url("/media/temple-facade.webp");
-  background-size: 100% 100%, 100% 100%, auto var(--ev-tile-h);
-  background-position: 0 0, 0 0, 0 0;
-  background-repeat: no-repeat, no-repeat, repeat;
-  animation: ev-temple-drift 70s linear infinite;
-}
-@keyframes ev-temple-drift {
-  from { background-position: 0 0, 0 0, 0 0; }
-  to { background-position: 0 0, 0 0, calc(var(--ev-tile-h) * -4.886) 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ev-cloth, .gb-wall, .edge-temple { animation: none; }
+    radial-gradient(ellipse at 50% 50%, rgba(30, 2, 7, 0.2), rgba(20, 2, 5, 0.52) 95%),
+    url("/media/temple-events-bg.webp");
+  background-size: cover, cover;
+  background-position: center center, center bottom;
+  background-repeat: no-repeat, no-repeat;
 }
 
-/* the scalloped hems into the events and the gallery: cut from the same drifting temple
-   (lined up with the section's own tiles below), with a fine gold rim */
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+  .ev-cloth,
+  .gb-wall {
+    background-image:
+      radial-gradient(ellipse at 50% 50%, rgba(30, 2, 7, 0.2), rgba(20, 2, 5, 0.52) 95%),
+      url("/media/temple-events-bg@2x.webp");
+  }
+}
+
+@media (min-aspect-ratio: 1/1), (min-width: 900px) {
+  .ev-cloth,
+  .gb-wall {
+    background-image:
+      radial-gradient(ellipse at 50% 50%, rgba(30, 2, 7, 0.15), rgba(20, 2, 5, 0.48) 95%),
+      url("/media/temple-events-bg-wide.webp");
+    background-size: cover, cover;
+    background-position: center center, center bottom;
+    background-repeat: no-repeat, no-repeat;
+  }
+}
+
+@media ((min-aspect-ratio: 1/1), (min-width: 900px)) and ((-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi)) {
+  .ev-cloth,
+  .gb-wall {
+    background-image:
+      radial-gradient(ellipse at 50% 50%, rgba(30, 2, 7, 0.15), rgba(20, 2, 5, 0.48) 95%),
+      url("/media/temple-events-bg-wide@2x.webp");
+  }
+}
+
+/* the scalloped hems into the events and the gallery: matching the deep maroon temple with a fine gold rim */
 .edge-scallop-top.edge-temple {
   background:
-    linear-gradient(rgb(70 8 12 / 0.5), rgb(70 8 12 / 0.5)),
-    url("/media/temple-facade.webp") 0 17px / auto var(--ev-tile-h) repeat;
-  background-color: #4a0d0d;
+    linear-gradient(rgba(70, 8, 16, 0.55), rgba(70, 8, 16, 0.55)),
+    url("/media/temple-events-bg.webp") center top / cover no-repeat;
+  background-color: #560517;
   -webkit-mask: radial-gradient(circle at 50% 100%, #000 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
   mask: radial-gradient(circle at 50% 100%, #000 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
-  animation: edge-temple-drift 70s linear infinite;
 }
 .edge-scallop-top.edge-temple::after {
   content: "";
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at 50% 100%, transparent 13px, #c9954f 13.5px 14.5px, transparent 15px) 0 0 / 30px 18px repeat-x;
-}
-@keyframes edge-temple-drift {
-  from { background-position: 0 0, 0 17px; }
-  to { background-position: 0 0, calc(var(--ev-tile-h) * -4.886) 17px; }
 }
 
 /* the photo board: all one warm teak — the frame and the planked surface */

@@ -42,5 +42,13 @@
   "couple-bg": {
     "w": 1376,
     "h": 768
+  },
+  "temple-events-bg": {
+    "w": 726,
+    "h": 1024
+  },
+  "temple-events-bg-wide": {
+    "w": 1920,
+    "h": 1080
   }
 }

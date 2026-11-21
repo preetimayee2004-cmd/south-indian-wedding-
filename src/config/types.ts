@@ -239,6 +239,7 @@ export interface WeddingConfig {
      */
     coupleWalk: { bg: string; bride: string; groom: string };
     events: string;
+    gallery?: string;
     family: string;
     rsvp: string;
     thankYou: string;

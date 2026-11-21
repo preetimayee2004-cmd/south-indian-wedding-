@@ -229,7 +229,8 @@ const weddingConfig: WeddingConfig = {
     couple: "/media/couple-scene.webp", // landscape 1376×768, cobalt sky
     // the couple scene: empty temple background + the bride and groom cut out (they walk in and meet)
     coupleWalk: { bg: "/media/couple-bg.webp", bride: "/media/couple-bride.webp", groom: "/media/couple-groom.webp" },
-    events: "/media/pillar-frame.webp",
+    events: "/media/temple-events-bg.webp",
+    gallery: "/media/temple-events-bg.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
     rsvp: "/media/stone-arch.webp",
