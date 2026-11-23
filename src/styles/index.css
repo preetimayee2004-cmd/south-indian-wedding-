@@ -4917,3 +4917,520 @@ body {
     opacity: 0;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   FIND YOUR WAY TO US — Unified Temple Corridor (Venue, Travel, Contact)
+   Three connected architectural arches on seamless ivory canvas
+   ═══════════════════════════════════════════════════════════════ */
+.temple-corridor-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(52px, 8vh, 88px) 16px;
+  background-color: #f7ecd3;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 50% 20%, rgba(255, 253, 246, 0.85) 0%, rgba(247, 236, 211, 0.95) 70%, #ebdcb3 100%),
+    url("/media/wishing-wall-bg.webp");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  color: #3a1f16;
+  overflow: hidden;
+}
+
+.corridor-title-text {
+  font-family: Cinzel, Cormorant Garamond, "EB Garamond", Georgia, serif;
+  font-size: clamp(1.75rem, 3.8vw, 2.5rem);
+  font-weight: 800;
+  color: #5c181f;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.corridor-subtitle-text {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  color: #6b4433;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Three Connected Temple Arches: Continuous Architectural Corridor */
+.temple-corridor-row {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  max-width: 1060px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 10;
+}
+
+.temple-corridor-arch {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 260px;
+  max-width: 310px;
+  background: linear-gradient(180deg, rgba(255, 252, 244, 0.95) 0%, rgba(253, 247, 233, 0.96) 60%, rgba(248, 238, 219, 0.98) 100%);
+  border: 1.5px solid #d4a347;
+  border-radius: 130px 130px 16px 16px;
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 163, 71, 0.45),
+    0 8px 24px rgba(184, 138, 62, 0.12),
+    0 2px 6px rgba(92, 24, 31, 0.04);
+  padding: clamp(32px, 4vw, 42px) clamp(16px, 2.2vw, 24px) clamp(22px, 2.5vw, 28px);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: blur(4px);
+  box-sizing: border-box;
+}
+
+.temple-corridor-arch:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px rgba(212, 163, 71, 0.65),
+    0 12px 28px rgba(184, 138, 62, 0.18),
+    0 4px 10px rgba(92, 24, 31, 0.06);
+}
+
+.arch-top-crest {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(120, 60, 20, 0.18));
+}
+
+.arch-bottom-accent {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(120, 60, 20, 0.15));
+}
+
+.arch-inner-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+}
+
+.arch-emblem-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 1px 2px rgba(184, 138, 62, 0.25));
+}
+
+.arch-section-title {
+  font-family: Cinzel, Cormorant Garamond, "EB Garamond", serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #5c181f;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 4px 0;
+}
+
+.arch-venue-name {
+  font-family: Cinzel, Cormorant Garamond, "EB Garamond", Georgia, serif;
+  font-size: clamp(1.2rem, 1.8vw, 1.45rem);
+  font-weight: 800;
+  color: #3a1a1e;
+  line-height: 1.25;
+  margin: 4px 0 10px 0;
+}
+
+.arch-address-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  max-width: 230px;
+}
+
+.arch-address-text {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.92rem;
+  color: #5c3826;
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
+.arch-venue-note {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: #8a6540;
+  margin: 4px 0 14px 0;
+}
+
+.arch-subtitle-italic {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: #6b4433;
+  margin: 0 0 12px 0;
+}
+
+/* Architectural Connectors Between Arches */
+.temple-bridge-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(20px, 3.2vw, 40px);
+  flex-shrink: 0;
+  align-self: center;
+  margin-top: 50px;
+  z-index: 5;
+}
+
+.bridge-line {
+  flex: 1;
+  height: 1.5px;
+  background: linear-gradient(90deg, #c69538, #f0cb75, #c69538);
+  box-shadow: 0 1px 2px rgba(184, 138, 62, 0.2);
+}
+
+.bridge-medallion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 2px;
+  filter: drop-shadow(0 1px 3px rgba(184, 138, 62, 0.25));
+}
+
+/* Travel Transport Chips */
+.travel-transport-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.transport-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.chip-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid #d4a347;
+  background: #fffdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.chip-label {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #5c3826;
+  transition: color 0.2s ease;
+}
+
+.transport-chip:hover .chip-circle {
+  border-color: #7c1a22;
+  transform: translateY(-1px);
+}
+
+.transport-chip.is-active .chip-circle {
+  background: #7c1a22;
+  border-color: #7c1a22;
+  box-shadow: 0 2px 8px rgba(124, 26, 34, 0.28);
+}
+
+.transport-chip.is-active svg {
+  stroke: #ffffff;
+}
+
+.transport-chip.is-active .chip-label {
+  color: #7c1a22;
+  font-weight: 700;
+}
+
+.travel-desc-box {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 14px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  border: 1px dashed rgba(198, 149, 56, 0.45);
+  width: 100%;
+}
+
+.travel-desc-text {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.86rem;
+  color: #4a2818;
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Contact List */
+.contact-persons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 14px;
+}
+
+.contact-person-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.contact-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-role-tag {
+  font-family: Cinzel, serif;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a6540;
+}
+
+.contact-person-name {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.95rem;
+  color: #3a1a1e;
+  font-weight: 700;
+}
+
+.contact-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.contact-quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #7c1a22;
+  text-decoration: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.contact-quick-link:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
+.contact-wa-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #1e7e34;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  padding: 1px 7px;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.contact-wa-pill:hover {
+  background: rgba(37, 211, 102, 0.22);
+}
+
+.contact-icon-bubble {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #7c1a22;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-email-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #5c3826;
+  margin-top: 2px;
+}
+
+.contact-email-text {
+  font-family: "EB Garamond", Georgia, serif;
+}
+
+/* Arch CTA Buttons */
+.arch-cta-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.arch-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  font-family: Cinzel, Cormorant Garamond, Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #5c181f;
+  background: #ffffff;
+  border: 1px solid rgba(198, 149, 56, 0.85);
+  box-shadow: 0 2px 6px rgba(184, 138, 62, 0.14);
+  transition: all 0.25s ease;
+}
+
+.arch-action-btn:hover {
+  background: #5c181f;
+  color: #ffffff;
+  border-color: #5c181f;
+  box-shadow: 0 4px 12px rgba(92, 24, 31, 0.25);
+  transform: translateY(-1px);
+}
+
+.arch-action-btn:hover svg {
+  color: #ffffff;
+  stroke: #ffffff;
+  fill: #ffffff;
+}
+
+/* Bottom Ribbon */
+.corridor-bottom-ribbon-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+.corridor-bottom-ribbon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #7c1a22 0%, #520f15 100%);
+  border: 1.5px solid #d4a347;
+  box-shadow: 0 4px 14px rgba(82, 15, 21, 0.28);
+  color: #fffbf2;
+}
+
+.ribbon-text {
+  font-family: Cinzel, "EB Garamond", Georgia, serif;
+  font-size: clamp(0.85rem, 1.8vw, 1.02rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin: 0;
+  color: #fffbf2;
+}
+
+.ribbon-heart {
+  color: #ff9e9e;
+}
+
+.ribbon-leaf-left,
+.ribbon-leaf-right {
+  font-size: 1.05rem;
+  filter: sepia(1) saturate(2.5) hue-rotate(5deg);
+}
+
+/* Responsive Behavior for Tablet and Mobile */
+@media (max-width: 860px) {
+  .temple-corridor-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    max-width: 360px;
+  }
+
+  .temple-corridor-arch {
+    width: 100%;
+    max-width: 340px;
+    min-height: auto;
+    border-radius: 120px 120px 16px 16px;
+    padding: 34px 20px 22px;
+  }
+
+  .temple-bridge-connector {
+    flex-direction: column;
+    width: 100%;
+    height: 22px;
+    margin-top: 0;
+    align-self: center;
+  }
+
+  .temple-bridge-connector .bridge-line {
+    width: 1.5px;
+    height: 100%;
+    background: linear-gradient(180deg, #c69538, #f0cb75, #c69538);
+  }
+}
+

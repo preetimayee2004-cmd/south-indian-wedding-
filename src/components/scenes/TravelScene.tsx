@@ -1,9 +1,9 @@
-import { TravelStay } from "@/components/sections/TravelStay";
+import { FindYourWay } from "@/components/sections/FindYourWay";
 
 /**
  * Scene for Venue, Travel, Accommodations & Contact.
- * Unified All-In-One traditional South Indian temple framed card.
+ * Unified "Find Your Way to Us" three connected temple arches.
  */
 export function TravelScene() {
-  return <TravelStay />;
+  return <FindYourWay />;
 }
