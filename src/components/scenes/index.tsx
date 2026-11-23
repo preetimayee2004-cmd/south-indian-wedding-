@@ -48,7 +48,7 @@ export const SCENES: Record<SectionId, SceneEntry> = {
   gallery: { Component: LoveStoryScene, enter: "flow", z: 18 }, // our love story: a photo board and a paper plane
   family: { Component: FamiliesScene, enter: "flow", z: 16 }, // follows the couple scene (no overlap); lotus plants grow
   rsvp: { Component: RsvpScene, enter: "flow", z: 40 },
-  wishingWall: { Component: sheet(WishingWall), enter: "flow", z: 50 },
+  wishingWall: { Component: WishingWall, enter: "flow", z: 50 },
   travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue
   contact: { Component: sheet(Contact), enter: "flow", z: 55 },
   thankYou: { Component: ThankYouScene, enter: "flow", z: 80 }, // thank you, save the date, replay

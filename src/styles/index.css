@@ -4550,3 +4550,370 @@ body {
 .venue-contact-btn.wa {
   background: linear-gradient(135deg, #25D366 0%, #1da851 100%);
 }
+
+/* ── Royal South Indian Wishing Wall Scene ── */
+.wishing-wall-scene {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(65px, 10vh, 100px) 16px clamp(45px, 7vh, 70px);
+  background-color: #f7ecd3;
+  background-image: 
+    radial-gradient(ellipse 70% 50% at 50% 30%, rgba(255, 251, 242, 0.45) 0%, transparent 70%),
+    url("/media/wishing-wall-bg.webp");
+  background-size: 100% 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
+  color: #3a1f16;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+@media (max-width: 768px) {
+  .wishing-wall-scene {
+    background-size: cover;
+    padding: clamp(55px, 8vh, 85px) 14px clamp(35px, 6vh, 55px);
+  }
+}
+
+.wishing-title-text {
+  font-family: Cinzel, Cormorant Garamond, 'EB Garamond', Georgia, serif;
+  font-weight: 800;
+  color: #5c181f;
+  font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.wishing-subtitle-text {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.92rem, 1.8vw, 1.1rem);
+  color: #6d282e;
+  letter-spacing: 0.01em;
+}
+
+.wishing-lovebirds-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.wishing-lovebirds-art {
+  width: clamp(230px, 32vw, 360px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(130, 70, 20, 0.15));
+  animation: lovebirdsFloat 4.5s ease-in-out infinite alternate;
+}
+@keyframes lovebirdsFloat {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-4px); }
+}
+
+/* 3 Featured Wishes Grid */
+.wishing-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(12px, 2vw, 20px);
+  width: 100%;
+  max-width: 860px;
+}
+@media (max-width: 680px) {
+  .wishing-notes-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-width: 380px;
+  }
+}
+
+.wishing-note-card {
+  position: relative;
+  background: linear-gradient(180deg, #fffcf6 0%, #fbf0d8 100%);
+  border: 1px solid rgba(198, 149, 56, 0.55);
+  border-radius: 12px;
+  padding: 18px 16px 14px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(160, 110, 40, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  animation: wishNoteFadeIn 0.8s ease-out both;
+}
+.wishing-note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(160, 110, 40, 0.14);
+  border-color: rgba(198, 149, 56, 0.8);
+}
+@keyframes wishNoteFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.wish-new-bloom {
+  animation: newWishBloom 1.2s ease-out forwards;
+}
+@keyframes newWishBloom {
+  0% { transform: scale(0.92); opacity: 0; box-shadow: 0 0 24px rgba(245, 186, 60, 0.8); }
+  50% { transform: scale(1.03); box-shadow: 0 0 32px rgba(245, 186, 60, 0.5); }
+  100% { transform: scale(1); opacity: 1; box-shadow: 0 4px 16px rgba(160, 110, 40, 0.08); }
+}
+.wishing-note-crest {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.wishing-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.wishing-note-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f4deb1;
+  color: #7c1a22;
+  font-size: 11px;
+  font-weight: bold;
+}
+.wishing-note-author {
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #5c181f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.wishing-note-message {
+  font-family: 'EB Garamond', Cormorant Garamond, Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.88rem, 1.6vw, 0.98rem);
+  color: #4a261b;
+  line-height: 1.45;
+  margin-top: 4px;
+}
+.wishing-note-bottom-accent {
+  margin-top: 10px;
+  opacity: 0.6;
+}
+
+/* Leave Your Blessing Composer */
+.wishing-composer-card {
+  position: relative;
+  background: linear-gradient(180deg, #fffcf6 0%, #fbf0d8 100%);
+  border: 1.5px solid rgba(198, 149, 56, 0.65);
+  border-radius: 9999px;
+  box-shadow: 0 4px 18px rgba(160, 110, 40, 0.08);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.wishing-composer-card:focus-within {
+  border-color: rgba(198, 149, 56, 0.9);
+  box-shadow: 0 4px 22px rgba(198, 149, 56, 0.2);
+}
+.wishing-composer-crest {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.wishing-input-name {
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(184, 138, 62, 0.45);
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: 0.78rem;
+  color: #5c181f;
+  font-weight: 600;
+  padding: 4px 8px;
+  outline: none;
+  width: 140px;
+}
+.wishing-input-name::placeholder {
+  color: #9c6c4c;
+  font-weight: 400;
+}
+.wishing-input-message {
+  background: transparent;
+  border: none;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-style: italic;
+  font-size: 0.96rem;
+  color: #4a261b;
+  padding: 4px 8px;
+  outline: none;
+  width: 100%;
+}
+.wishing-input-message::placeholder {
+  color: #8c6246;
+}
+.wishing-send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c1a22 0%, #540d13 100%);
+  border: 1.5px solid #d4a347;
+  box-shadow: 0 3px 10px rgba(90, 20, 25, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.wishing-send-btn:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 4px 14px rgba(90, 20, 25, 0.4);
+}
+.wishing-send-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* View All Wishes Button */
+.wishing-view-all-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #fbebd0;
+  background: linear-gradient(135deg, #7c1a22 0%, #540d13 100%);
+  border: 1px solid rgba(212, 163, 71, 0.8);
+  box-shadow: 0 4px 14px rgba(70, 15, 20, 0.25);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.wishing-view-all-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(70, 15, 20, 0.35);
+  background: linear-gradient(135deg, #8e1f28 0%, #600f16 100%);
+}
+.wishing-btn-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Parrot Flight Animation */
+.parrot-fly-trajectory {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  animation: parrotFlightPath 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index: 45;
+  pointer-events: none;
+}
+@keyframes parrotFlightPath {
+  0% {
+    transform: translate(-50%, 0) scale(0.6) rotate(15deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  65% {
+    transform: translate(-120px, -180px) scale(1.05) rotate(-10deg);
+    opacity: 1;
+  }
+  85% {
+    transform: translate(-50px, -240px) scale(1) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(60px, -320px) scale(0.7) rotate(20deg);
+    opacity: 0;
+  }
+}
+.parrot-wing-flutter {
+  animation: parrotWingFlap 0.18s ease-in-out infinite alternate;
+}
+@keyframes parrotWingFlap {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(0.85) skewX(4deg); }
+}
+.parrot-fade-out {
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+.parrot-petal-trail {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50% 0 50% 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 230, 150, 0.8);
+  opacity: 0;
+  animation: petalTrailDrop 1.2s ease-out infinite;
+}
+.parrot-petal-trail.petal-1 { left: 10px; top: 30px; animation-delay: 0.1s; }
+.parrot-petal-trail.petal-2 { left: -10px; top: 40px; background: #ffcc00; animation-delay: 0.25s; }
+.parrot-petal-trail.petal-3 { left: 20px; top: 50px; animation-delay: 0.4s; }
+@keyframes petalTrailDrop {
+  0% { opacity: 0.9; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(35px) rotate(180deg); }
+}
+
+/* Floating Flower Petals for Wishing Wall */
+.wishing-petals-wrap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+.wishing-petal {
+  position: absolute;
+  display: block;
+  border-radius: 60% 0 60% 60%;
+  animation: wishingPetalFall 11s linear infinite;
+  opacity: 0.75;
+}
+.petal-jasmine {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fffbf0 60%, #faeed0 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.petal-marigold {
+  width: 15px;
+  height: 15px;
+  background: radial-gradient(circle at 35% 35%, #ffcc00 0%, #ff9900 65%, #e65100 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+.wishing-petal.p1 { left: 8%; animation-delay: 0s; animation-duration: 12s; }
+.wishing-petal.p2 { left: 24%; animation-delay: 3.5s; animation-duration: 14s; }
+.wishing-petal.p3 { left: 52%; animation-delay: 1.5s; animation-duration: 11s; }
+.wishing-petal.p4 { left: 78%; animation-delay: 5s; animation-duration: 13s; }
+.wishing-petal.p5 { left: 90%; animation-delay: 2s; animation-duration: 15s; }
+@keyframes wishingPetalFall {
+  0% {
+    top: -30px;
+    transform: translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    top: 105%;
+    transform: translateX(45px) rotate(360deg);
+    opacity: 0;
+  }
+}
