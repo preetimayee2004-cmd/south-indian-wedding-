@@ -2,6 +2,116 @@ import { useWedding } from "@/context/WeddingContext";
 import { Container } from "@/components/layout/Container";
 import { waLink } from "@/lib/format";
 
+function PlaneIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+    </svg>
+  );
+}
+
+function TrainIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="4" y="3" width="16" height="15" rx="3" />
+      <line x1="4" y1="11" x2="20" y2="11" />
+      <circle cx="8" cy="15" r="1.2" fill="#b8860b" />
+      <circle cx="16" cy="15" r="1.2" fill="#b8860b" />
+      <line x1="7" y1="18" x2="4" y2="21" />
+      <line x1="17" y1="18" x2="20" y2="21" />
+    </svg>
+  );
+}
+
+function CarIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M5 17h14m-12-6l1.8-4.5A2 2 0 0 1 10.6 5h2.8a2 2 0 0 1 1.8 1.5L17 11" />
+      <rect x="3" y="11" width="18" height="6" rx="2" />
+      <circle cx="7.5" cy="17.5" r="1.5" fill="#b8860b" />
+      <circle cx="16.5" cy="17.5" r="1.5" fill="#b8860b" />
+    </svg>
+  );
+}
+
+function HotelIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
+    </svg>
+  );
+}
+
+function PhoneLineIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+function ChatLineIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#b8860b"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}
+
 export function TravelStay() {
   const { venue, stay = [], contacts = [] } = useWedding();
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.mapsQuery || venue.address || venue.name)}`;
@@ -48,14 +158,18 @@ export function TravelStay() {
           </div>
 
           {/* Travel Part */}
-          <h4 className="venue-subheading">
-            ✈️ TRAVEL &amp; REACHING THERE 🚆
+          <h4 className="venue-subheading flex items-center justify-center gap-2">
+            <PlaneIcon className="w-4 h-4 text-[#b8860b] inline-block" />
+            <span>TRAVEL &amp; REACHING THERE</span>
+            <TrainIcon className="w-4 h-4 text-[#b8860b] inline-block" />
           </h4>
 
           <div className="venue-travel-grid">
             {/* By Air */}
             <div className="venue-travel-card">
-              <div className="venue-travel-icon">✈️</div>
+              <div className="venue-travel-icon">
+                <PlaneIcon className="w-5 h-5 mx-auto text-[#b8860b]" />
+              </div>
               <h5 className="venue-travel-title">By Air</h5>
               <p className="venue-travel-desc">
                 Madurai Airport (IXM)<br />
@@ -65,7 +179,9 @@ export function TravelStay() {
 
             {/* By Train */}
             <div className="venue-travel-card">
-              <div className="venue-travel-icon">🚆</div>
+              <div className="venue-travel-icon">
+                <TrainIcon className="w-5 h-5 mx-auto text-[#b8860b]" />
+              </div>
               <h5 className="venue-travel-title">By Train</h5>
               <p className="venue-travel-desc">
                 Madurai Junction (MDU)<br />
@@ -75,7 +191,9 @@ export function TravelStay() {
 
             {/* By Road */}
             <div className="venue-travel-card">
-              <div className="venue-travel-icon">🚗</div>
+              <div className="venue-travel-icon">
+                <CarIcon className="w-5 h-5 mx-auto text-[#b8860b]" />
+              </div>
               <h5 className="venue-travel-title">By Road</h5>
               <p className="venue-travel-desc">
                 Connected via NH 44<br />
@@ -89,7 +207,7 @@ export function TravelStay() {
             <div className="venue-stays-wrap mb-2">
               {stay.map((s, i) => (
                 <div key={i} className="venue-stay-chip">
-                  <span>🏨</span>
+                  <HotelIcon className="w-3.5 h-3.5 text-[#b8860b] flex-shrink-0" />
                   <span><strong>{s.name}</strong> ({s.distance})</span>
                 </div>
               ))}
@@ -104,8 +222,10 @@ export function TravelStay() {
           </div>
 
           {/* Contact Part */}
-          <h4 className="venue-subheading">
-            📞 FOR ANY ASSISTANCE · CONTACT 💬
+          <h4 className="venue-subheading flex items-center justify-center gap-2">
+            <PhoneLineIcon className="w-4 h-4 text-[#b8860b] inline-block" />
+            <span>FOR ANY ASSISTANCE · CONTACT</span>
+            <ChatLineIcon className="w-4 h-4 text-[#b8860b] inline-block" />
           </h4>
 
           <div className="venue-contacts-grid">
