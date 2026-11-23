@@ -2856,283 +2856,29 @@ svg [class*="dotIn"] { transform-box: fill-box; transform-origin: center; }
   background: #dcaf69;
 }
 
-/* ── Redesigned Opening Envelope Screen: Maroon + Gold Silk Theme ── */
-.envelope-screen {
-  background-color: #200408;
-  background-image:
-    radial-gradient(circle at 50% 40%, rgba(212, 163, 71, 0.22) 0%, rgba(45, 6, 12, 0.94) 70%, #170205 100%),
-    url("/media/rsvp-temple-bg.webp");
-  background-size: cover;
-  background-position: center center;
-  color: #fbf2dc;
-}
-
-.envelope-gopuram-bg {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: clamp(140px, 28vh, 260px);
-  background-image: url("/media/temple-facade.webp");
-  background-size: auto 100%;
-  background-position: center bottom;
-  background-repeat: repeat-x;
-  opacity: 0.18;
-  filter: drop-shadow(0 0 16px rgba(212, 163, 71, 0.4));
-  pointer-events: none;
-  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
-}
-
-.envelope-radial-glow {
-  position: absolute;
-  top: 30%;
-  left: 20%;
-  right: 20%;
-  height: 45%;
-  background: radial-gradient(circle, rgba(255, 215, 110, 0.16) 0%, transparent 70%);
-  filter: blur(30px);
-  pointer-events: none;
-}
-
-.envelope-petals-wrap {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.envelope-top-decor {
-  position: absolute;
-  top: 0;
-  inset-x: 0;
-  pointer-events: none;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.envelope-toran-img {
-  width: 100%;
-  max-width: 680px;
-  height: auto;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
-}
-.envelope-toran-garland {
-  width: 100%;
-  height: 6px;
-  background: repeating-linear-gradient(
-    90deg,
-    #ff9800 0px,
-    #ff9800 12px,
-    #fbc02d 12px,
-    #fbc02d 24px,
-    #e65100 24px,
-    #e65100 36px
-  );
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  margin-top: -6px;
-}
-
-.envelope-mute-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 60;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(30, 4, 8, 0.75);
-  border: 1.5px solid #d4a753;
-  color: #ffd36b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.envelope-mute-btn:hover {
-  transform: scale(1.1);
-  border-color: #ffe08a;
-}
-
-/* Flanking Diyas beside envelope */
-.envelope-diya {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 30;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: clamp(28px, 4vw, 38px);
-}
-.envelope-diya-left {
-  left: -32px;
-}
-.envelope-diya-right {
-  right: -32px;
-}
-@media (max-width: 440px) {
-  .envelope-diya-left { left: -14px; }
-  .envelope-diya-right { right: -14px; }
-}
-
-.env-diya-flame-wrap {
-  position: relative;
-  width: 12px;
-  height: 20px;
-  margin-bottom: -3px;
-  display: flex;
-  justify-content: center;
-}
-.env-diya-flame {
-  width: 8px;
-  height: 16px;
-  background: radial-gradient(ellipse at 50% 65%, #ffffff 0%, #ffe082 25%, #ff9800 65%, #d84315 100%);
-  border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
-  animation: diyaFlicker 1.8s ease-in-out infinite alternate;
-  transform-origin: 50% 90%;
-}
-.env-diya-glow {
-  position: absolute;
-  top: -2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 193, 7, 0.5) 0%, transparent 70%);
-  pointer-events: none;
-  animation: diyaGlowPulse 2.2s ease-in-out infinite alternate;
-}
-.env-diya-bowl {
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.6));
-}
-
-/* Redesigned Card Inside Envelope */
+/* the blue card in the envelope (the hero's sky), with the couple's names in gold-edged white */
 .open-card {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding-top: 6%;
+  padding-top: 7%;
   border-radius: 8px;
-  background: linear-gradient(180deg, #520c18 0%, #3a0812 70%, #25040a 100%);
-  border: 1.5px solid #d4a753;
-  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.6), inset 0 0 0 2px rgba(255, 235, 170, 0.4), inset 0 0 16px rgba(212, 167, 83, 0.35);
+  background: linear-gradient(180deg, #0a6ad0, #0061c2 60%, #0057ad);
+  box-shadow: 0 -6px 18px rgb(0 30 80 / 0.25), inset 0 0 0 3px #0061c2, inset 0 0 0 4.5px #e8c56b;
 }
 .open-card-names {
   display: flex;
   flex-direction: column;
   align-items: center;
   font-family: "Great Vibes", cursive;
-  font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+  font-size: clamp(1.5rem, 6.4vw, 2rem);
   line-height: 1;
-  color: #ffe8b2;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 14px rgba(255, 215, 110, 0.5);
+  color: #fff;
+  text-shadow: 0 2px 6px rgb(0 20 60 / 0.4);
 }
 .open-card-amp {
   font-size: 0.7em;
-  color: #ffd36b;
-}
-
-/* Envelope Front Pocket with Zari border & kolam pattern */
-.envelope-front-pocket {
-  background:
-    linear-gradient(to top right, #3f0812 49.6%, transparent 50%) left bottom / 51% 100% no-repeat,
-    linear-gradient(to top left, #3f0812 49.6%, transparent 50%) right bottom / 51% 100% no-repeat,
-    linear-gradient(to top, #4a0c16 0 46%, transparent 46%);
-  border-bottom: 2px solid #d4a753;
-  border-left: 2px solid #d4a753;
-  border-right: 2px solid #d4a753;
-  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.6);
-}
-.envelope-kolam-watermark {
-  position: absolute;
-  top: 48%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 1px dashed rgba(212, 167, 83, 0.35);
-  background: radial-gradient(circle, rgba(212, 167, 83, 0.12) 0%, transparent 70%);
-}
-
-.envelope-flap-piping {
-  position: absolute;
-  inset: 0;
-  border-left: 1.5px solid #d4a753;
-  border-right: 1.5px solid #d4a753;
-  box-shadow: inset 0 2px 8px rgba(255, 235, 170, 0.35);
-}
-
-/* Wax Seal with Gold/Ruby finish & Monogram */
-.envelope-seal-half {
-  background: radial-gradient(circle at 45% 45%, #b72a24 0%, #7e151c 65%, #4a090e 100%);
-  border-radius: 50%;
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.75),
-    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
-    inset 0 2px 4px rgba(255, 255, 255, 0.35);
-  border: 2px solid #d4a753;
-}
-.envelope-seal-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 82%;
-  height: 82%;
-  border-radius: 50%;
-  border: 1px dashed rgba(255, 235, 170, 0.6);
-  background: radial-gradient(circle, rgba(160, 30, 30, 0.9) 0%, rgba(90, 10, 15, 0.95) 100%);
-}
-.envelope-monogram {
-  font-family: "Cinzel", "Cormorant Garamond", Georgia, serif;
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: 0.12em;
-  color: #ffe8b2;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 220, 120, 0.6);
-}
-
-/* "Tap to Open" breathing pulse */
-.envelope-tap-hint {
-  animation: tapBreathing 2.2s ease-in-out infinite alternate;
-}
-@keyframes tapBreathing {
-  0% { opacity: 0.65; transform: scale(0.97); text-shadow: 0 0 6px rgba(255, 224, 138, 0.3); }
-  100% { opacity: 1; transform: scale(1.03); text-shadow: 0 0 16px rgba(255, 224, 138, 0.85); }
-}
-
-/* Gopuram Doors Overlay */
-.envelope-doors-overlay {
-  perspective: 1200px;
-}
-.envelope-door {
-  backface-visibility: hidden;
-  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.85);
-  border: 1.5px solid #d4a753;
-}
-.envelope-door-zari-l {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 5px;
-  background: linear-gradient(180deg, #ffe08a, #d4a753 50%, #8a6420);
-  box-shadow: 0 0 10px rgba(212, 167, 83, 0.8);
-}
-.envelope-door-zari-r {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 5px;
-  background: linear-gradient(180deg, #ffe08a, #d4a753 50%, #8a6420);
-  box-shadow: 0 0 10px rgba(212, 167, 83, 0.8);
+  color: #f3cf73;
 }
 
 /* ── Moments to Cherish: three temple windows on the temple wall ─────────────────────── */
@@ -3608,122 +3354,130 @@ body {
   }
 }
 
-/* ── Family Section: Our Families (Two Temple Arch Showcase) ── */
-.fam-bg-glow {
+/* Ornate Gold Filigree Corners in Family Section */
+.fam-corner {
   position: absolute;
-  inset: 0;
+  width: clamp(90px, 14vw, 175px);
+  height: auto;
   pointer-events: none;
-  background: radial-gradient(circle at 50% 45%, rgba(245, 186, 60, 0.16) 0%, rgba(200, 150, 40, 0.04) 55%, transparent 75%);
-  z-index: 1;
-}
-
-/* Falling Jasmine and Marigold Petals */
-.fam-petals-wrap {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
   z-index: 2;
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
 }
-.fam-falling-petal {
-  position: absolute;
-  top: -24px;
-  border-radius: 60% 40% 60% 40% / 50% 60% 40% 50%;
-  opacity: 0.82;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-  animation: petalFall linear infinite;
+.fam-corner-tl {
+  top: 0;
+  left: 0;
 }
-.petal-marigold {
-  background: radial-gradient(circle at 35% 35%, #ffd54f, #ff9800 70%, #e65100 100%);
+.fam-corner-tr {
+  top: 0;
+  right: 0;
+  transform: scaleX(-1);
 }
-.petal-jasmine {
-  background: radial-gradient(circle at 40% 30%, #ffffff, #fff9c4 75%, #ffe082 100%);
+.fam-corner-bl {
+  bottom: 0;
+  left: 0;
+  transform: scaleY(-1);
 }
-@keyframes petalFall {
-  0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0; }
-  10% { opacity: 0.85; }
-  90% { opacity: 0.85; }
-  100% { transform: translateY(105vh) rotate(360deg) translateX(35px); opacity: 0; }
+.fam-corner-br {
+  bottom: 0;
+  right: 0;
+  transform: scale(-1, -1);
 }
 
-/* Swaying brass lanterns on hanging gold chains */
-.fam-chain-lamp {
+/* Swaying brass wall lanterns */
+.p5-lamp {
   position: absolute;
   z-index: 4;
-  top: 0;
-  width: clamp(38px, 4.8vw, 56px);
+  top: 14px;
+  right: max(12px, calc(50% - 480px));
+  width: clamp(40px, 5.5vw, 68px);
   pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-.fam-chain-lamp-l {
-  left: max(16px, calc(50% - 460px));
+.p5-lamp-l {
+  right: auto;
+  left: max(12px, calc(50% - 480px));
+  transform: scaleX(-1);
 }
-.fam-chain-lamp-r {
-  right: max(16px, calc(50% - 460px));
-}
-.fam-gold-chain {
-  width: 2px;
-  height: clamp(35px, 6vh, 65px);
-  background: repeating-linear-gradient(
-    180deg,
-    #ffe79a 0px,
-    #ffe79a 4px,
-    #8a6420 5px,
-    #d4a753 6px,
-    #d4a753 10px
-  );
-  box-shadow: 0 0 3px rgba(212, 167, 83, 0.4);
-}
-.fam-lamp-sway {
-  width: 100%;
-  transform-origin: 50% 0%;
-  animation: chainSway 5.5s ease-in-out infinite alternate;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.65));
-}
-.fam-chain-lamp-l .fam-lamp-sway {
-  animation-delay: -2.75s;
-}
-.fam-lamp-svg {
+.p5-arm-svg {
   width: 100%;
   height: auto;
+  filter: drop-shadow(-3px 5px 6px rgba(20, 0, 6, 0.45));
 }
-@keyframes chainSway {
-  from { transform: rotate(-5deg); }
-  to { transform: rotate(5deg); }
+.p5-lan-svg-wrap {
+  width: 72%;
+  margin: -10px auto 0 20%;
+  transform-origin: 50% 0%;
+  animation: p5sway 4.2s ease-in-out infinite alternate;
+  filter: drop-shadow(0 6px 12px rgba(20, 0, 6, 0.55));
+}
+.p5-lamp-l .p5-lan-svg-wrap {
+  animation-delay: -2.1s;
+}
+@keyframes p5sway {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
 }
 
-/* Header plaque on deep maroon ground */
+/* Header plaque on deep maroon/brown background */
 .p5-head {
   position: relative;
   z-index: 3;
   box-sizing: border-box;
   width: min(640px, 100%);
-  margin: 0 auto clamp(20px, 3.5vh, 38px);
+  margin: 0 auto clamp(24px, 4vh, 44px);
   padding: 0 12px;
   text-align: center;
 }
-.p5-ta-subtitle {
-  font-family: 'Noto Serif Tamil', serif;
-  font-size: clamp(14px, 2.1vw, 20px);
-  font-weight: 600;
-  letter-spacing: 0.14em;
+.p5-hi {
+  margin: 0 0 0.35em;
+  font: 400 clamp(15px, 2.2vw, 22px)/1.25 "Tiro Devanagari Hindi", serif;
+  letter-spacing: 0.08em;
   color: #ffd36b;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
-  margin: 0 0 0.25em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 .p5-title {
   margin: 0;
   line-height: 1;
 }
-.p5-script-title {
-  font-family: 'Great Vibes', cursive;
-  font-size: clamp(38px, 6.5vw, 72px);
-  line-height: 1.05;
-  color: #ffe7a8;
-  text-shadow: 0 2px 0 #4a0a1c, 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 215, 100, 0.35);
+.p5-title span {
   display: block;
+}
+.p5-t1 {
+  font: 400 clamp(32px, 5.5vw, 60px)/1.05 "Great Vibes", cursive;
+  color: #ffe7a8;
+  text-shadow: 0 2px 0 #4a0a1c, 0 3px 12px rgba(0, 0, 0, 0.45);
+}
+.p5-t2 {
+  margin-top: 0.12em;
+  font: 700 clamp(18px, 3.2vw, 36px)/1.15 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #fff8e1 0%, #ffe08a 55%, #f0b941 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+.p5-t3 {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin-top: 0.25em;
+  font: 700 clamp(15px, 2.4vw, 26px)/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: #fff3dc;
+  padding-left: 0.45em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.p5-t3::before,
+.p5-t3::after {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  background: #ffd36b;
+  transform: rotate(45deg);
 }
 .p5-orn {
   display: flex;
@@ -3731,7 +3485,7 @@ body {
   justify-content: center;
   gap: 12px;
   width: min(340px, 80%);
-  margin: 0.6em auto 0;
+  margin: 0.8em auto 0;
 }
 .p5-orn i {
   flex: 1;
@@ -3746,13 +3500,13 @@ body {
   height: auto;
 }
 
-/* Two Arch Frames Showcase */
+/* Two Arch Frames Showcase (Side-by-side on brown background) */
 .fam-showcase {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: flex-start;
-  gap: clamp(20px, 3.8vw, 54px);
+  gap: clamp(24px, 4.5vw, 64px);
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
@@ -3762,25 +3516,11 @@ body {
 
 .fam-card {
   flex: 1;
-  max-width: 410px;
+  max-width: 420px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-.fam-card-left {
-  animation: archSlideLeft 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.fam-card-right {
-  animation: archSlideRight 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-@keyframes archSlideLeft {
-  from { opacity: 0; transform: translateX(-50px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-@keyframes archSlideRight {
-  from { opacity: 0; transform: translateX(50px); }
-  to { opacity: 1; transform: translateX(0); }
 }
 
 /* Arch Frame Container */
@@ -3793,69 +3533,30 @@ body {
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.7));
   transition: transform 0.4s ease, filter 0.4s ease;
 }
-.fam-card:hover .fam-arch-wrap,
-.fam-card.is-expanded .fam-arch-wrap {
-  transform: translateY(-4px) scale(1.02);
-  filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 20px rgba(212, 167, 83, 0.4));
-}
-
-.fam-arch-glow {
-  position: absolute;
-  top: 15%;
-  left: 5%;
-  right: 5%;
-  height: 80%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 45%, rgba(245, 186, 60, 0.28) 0%, rgba(212, 167, 83, 0.08) 55%, transparent 75%);
-  filter: blur(18px);
-  pointer-events: none;
-  z-index: 0;
+.fam-arch-wrap:hover {
+  transform: translateY(-6px) scale(1.02);
+  filter: drop-shadow(0 20px 36px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 20px rgba(212, 167, 83, 0.35));
 }
 
 /* Photo inside the arch opening */
 .fam-photo-frame {
   position: absolute;
-  top: 28%;
-  left: 11%;
-  right: 11%;
-  bottom: 0.5%;
+  top: 29.5%;
+  left: 12.5%;
+  right: 12.5%;
+  bottom: 3.5%;
   z-index: 1;
   overflow: hidden;
-  border-radius: 120px 120px 4px 4px;
+  border-radius: 90px 90px 4px 4px;
   background: #26050b;
-  box-shadow: inset 0 0 0 1.5px rgba(212, 167, 83, 0.75), inset 0 0 22px rgba(212, 167, 83, 0.35);
 }
+
 .fam-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center 20%;
   display: block;
-  animation: famCurtainReveal 1.4s cubic-bezier(0.25, 1, 0.5, 1) both;
-}
-@keyframes famCurtainReveal {
-  0% { clip-path: inset(0 50% 0 50%); }
-  100% { clip-path: inset(0 0% 0 0%); }
-}
-
-.fam-photo-shimmer {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    rgba(255, 235, 170, 0.04) 40%,
-    rgba(255, 235, 170, 0.22) 50%,
-    rgba(255, 235, 170, 0.04) 60%,
-    transparent 100%
-  );
-  animation: famShimmerSweep 5s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-@keyframes famShimmerSweep {
-  0% { transform: translateX(-120%); }
-  40%, 100% { transform: translateX(120%); }
 }
 
 /* Golden Ornate Temple Arch Overlay */
@@ -3869,128 +3570,87 @@ body {
   z-index: 2;
 }
 
-/* Draped Marigold Garland on top of arch */
-.fam-garland-wrap {
-  position: absolute;
-  top: 24%;
-  left: 6%;
-  right: 6%;
-  z-index: 3;
-  pointer-events: none;
-  transform-origin: 50% 0%;
-  animation: garlandSwing 4.5s ease-in-out infinite alternate;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-}
-.fam-garland-svg {
+/* Decorative Details Underneath */
+.fam-details {
+  margin-top: 20px;
+  text-align: center;
   width: 100%;
-  height: auto;
-  overflow: visible;
-}
-@keyframes garlandSwing {
-  0% { transform: rotate(-1.5deg); }
-  100% { transform: rotate(1.5deg); }
 }
 
-/* Hanging Gold Nameplate Plaque Assembly */
-.fam-nameplate-assembly {
-  width: 100%;
-  max-width: 370px;
-  margin-top: -2px;
+.fam-badge-wrap {
+  margin-bottom: 12px;
+}
+.fam-badge {
+  display: inline-block;
+  padding: 4px 20px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a1c36, #5c0f22);
+  border: 1.5px solid #d4a753;
+  color: #fff7e6;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(12px, 1.2vw, 15px);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 235, 170, 0.4);
+}
+
+.fam-names-block {
   display: flex;
   flex-direction: column;
   align-items: center;
-  position: relative;
-  z-index: 3;
-}
-.fam-nameplate-chains {
-  display: flex;
-  justify-content: space-between;
-  width: 60%;
-  height: 14px;
-}
-.fam-mini-chain {
-  width: 2px;
-  height: 100%;
-  background: repeating-linear-gradient(
-    180deg,
-    #ffe79a 0px,
-    #ffe79a 3px,
-    #8a6420 4px,
-    #d4a753 5px,
-    #d4a753 8px
-  );
-  box-shadow: 0 0 2px rgba(212, 167, 83, 0.5);
-}
-.fam-nameplate {
-  width: 100%;
-  padding: 12px 16px 14px;
-  border-radius: 12px;
-  background: radial-gradient(ellipse at 50% 50%, #4a0c16 0%, #2e050c 100%);
-  border: 1.5px solid #d4a753;
-  outline: 1px dashed rgba(255, 235, 170, 0.45);
-  outline-offset: -5px;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7), inset 0 0 14px rgba(212, 167, 83, 0.25);
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.fam-card:hover .fam-nameplate,
-.fam-card.is-expanded .fam-nameplate {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 167, 83, 0.35);
-}
-.fam-nameplate-badge {
-  display: inline-block;
-  padding: 3px 16px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #9c2339, #6a1023);
-  border: 1.2px solid #d4a753;
-  color: #fff7e6;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(11px, 1.1vw, 13px);
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  margin-bottom: 6px;
-}
-.fam-parents-title {
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(17px, 1.9vw, 22px);
-  font-weight: 700;
-  color: #ffe8b2;
-  line-height: 1.3;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-  margin: 4px 0 6px;
-}
-.fam-blessing-ta {
-  font-family: 'Noto Serif Tamil', serif;
-  font-size: clamp(12px, 1.1vw, 14px);
-  font-style: italic;
-  color: #ffd36b;
-  margin: 4px 0 0;
-  line-height: 1.4;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  gap: 2px;
 }
 
-/* Expandable Family Members Drawer on tap or hover */
-.fam-expanded-drawer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.3s ease;
-  opacity: 0;
+.fam-parent {
+  text-align: center;
 }
-.fam-card:hover .fam-expanded-drawer,
-.fam-card.is-expanded .fam-expanded-drawer {
-  max-height: 120px;
-  opacity: 1;
-  margin-top: 10px;
+.fam-name {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(20px, 2.2vw, 27px);
+  font-weight: 700;
+  color: #ffe8b2;
+  line-height: 1.25;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  margin: 0;
 }
+.fam-role {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(12px, 1.1vw, 14px);
+  font-weight: 600;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: #d4a753;
+  margin: 2px 0 0;
+}
+
+.fam-amp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 4px auto;
+  width: min(180px, 60%);
+}
+.fam-amp-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a24d 50%, transparent);
+}
+.fam-amp-symbol {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(20px, 2.2vw, 26px);
+  color: #f2cb73;
+  line-height: 1;
+}
+
 .fam-sub-family {
-  padding-top: 8px;
-  border-top: 1px dashed rgba(212, 167, 83, 0.4);
-  max-width: 320px;
-  margin: 0 auto;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(212, 167, 83, 0.35);
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .fam-kin {
   font-family: "Cormorant Garamond", Georgia, serif;
@@ -4002,7 +3662,7 @@ body {
 }
 .fam-kin small {
   font-style: italic;
-  color: #ffd36b;
+  color: #c9a24d;
   font-size: 0.9em;
 }
 .fam-dot {
@@ -4010,130 +3670,46 @@ body {
   color: #c9a24d;
 }
 
-/* Center Kalasam / Kolam Medallion flanked by flickering Diyas */
+/* Center Kolam / Lotus Divider */
 .fam-center-divider {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  align-self: center;
-  padding: 20px 0;
-  position: relative;
-  z-index: 2;
+  align-self: stretch;
+  padding: 60px 0;
+  gap: 16px;
 }
-.fam-medallion-assembly {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(10px, 1.5vw, 18px);
+.fam-v-line {
+  flex: 1;
+  width: 1.5px;
+  min-height: 120px;
+  background: linear-gradient(180deg, transparent, #c9a24d 40%, #c9a24d 60%, transparent);
 }
-.fam-kalasam-wrap {
-  position: relative;
-  width: clamp(75px, 8.5vw, 105px);
-  height: clamp(75px, 8.5vw, 105px);
-  display: grid;
-  place-items: center;
-}
-.fam-kolam-ring {
-  position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1.5px dashed rgba(212, 167, 83, 0.7);
-  outline: 1.5px solid rgba(212, 167, 83, 0.35);
-  outline-offset: 4px;
-  background: radial-gradient(circle, rgba(212, 167, 83, 0.18) 0%, transparent 70%);
-  filter: drop-shadow(0 0 12px rgba(245, 186, 60, 0.4));
-  animation: kolamSpin 24s linear infinite;
-}
-@keyframes kolamSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.fam-kalasam-img {
-  width: 90%;
-  height: 90%;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6));
-}
-
-/* Flickering Brass Oil Diya */
-.fam-diya {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: clamp(30px, 3.5vw, 42px);
-}
-.fam-diya-flame-wrap {
-  position: relative;
-  width: 12px;
-  height: 20px;
-  margin-bottom: -3px;
-  display: flex;
-  justify-content: center;
-}
-.fam-diya-flame {
-  width: 8px;
-  height: 16px;
-  background: radial-gradient(ellipse at 50% 65%, #ffffff 0%, #ffe082 25%, #ff9800 65%, #d84315 100%);
-  border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
-  animation: diyaFlicker 1.8s ease-in-out infinite alternate;
-  transform-origin: 50% 90%;
-}
-.fam-diya-glow {
-  position: absolute;
-  top: -2px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 193, 7, 0.5) 0%, transparent 70%);
-  pointer-events: none;
-  animation: diyaGlowPulse 2.2s ease-in-out infinite alternate;
-}
-@keyframes diyaFlicker {
-  0% { transform: scale(1) rotate(-1deg); }
-  25% { transform: scale(1.08, 0.94) rotate(2deg); }
-  50% { transform: scale(0.96, 1.05) rotate(-2deg); }
-  75% { transform: scale(1.04, 0.98) rotate(1deg); }
-  100% { transform: scale(1) rotate(-1deg); }
-}
-@keyframes diyaGlowPulse {
-  0% { transform: scale(0.9); opacity: 0.6; }
-  100% { transform: scale(1.15); opacity: 0.95; }
-}
-.fam-diya-bowl {
-  width: 100%;
+.fam-v-lotus {
+  width: clamp(28px, 3.2vw, 42px);
   height: auto;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
 }
 
 @media (max-width: 768px) {
   .fam-showcase {
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 48px;
   }
   .fam-center-divider {
-    padding: 10px 0;
+    flex-direction: row;
+    width: 80%;
+    padding: 0;
+    margin: 8px auto;
+    gap: 12px;
   }
-  .fam-medallion-assembly {
-    gap: 16px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fam-card-left,
-  .fam-card-right,
-  .fam-photo,
-  .fam-photo-shimmer,
-  .fam-lamp-sway,
-  .fam-garland-wrap,
-  .fam-falling-petal,
-  .fam-kolam-ring,
-  .fam-diya-flame,
-  .fam-diya-glow {
-    animation: none !important;
-    transform: none !important;
-    transition: none !important;
+  .fam-v-line {
+    width: auto;
+    height: 1.5px;
+    min-height: 0;
+    background: linear-gradient(90deg, transparent, #c9a24d 50%, transparent);
   }
 }
 
