@@ -14,11 +14,11 @@ import { TravelScene } from "./TravelScene";
 import { ThankYouScene } from "./ThankYouScene";
 import { ClosingScene } from "./ClosingScene";
 
-/** A normal-scrolling section: a parchment card on the temple maroon ground, led in by a clean seam. */
+/** A normal-scrolling section: a parchment card on the warm parchment ground, led in by a clean seam. */
 function sheet(Component: ComponentType): ComponentType {
   const Sheet = () => (
-    <div className="relative bg-[#23080c] px-3 py-6">
-      <div className="parchment frieze-border mx-auto max-w-[44rem] overflow-hidden rounded-[6px] shadow-2xl">
+    <div className="parchment-ground relative px-3 py-6">
+      <div className="parchment frieze-border mx-auto max-w-[44rem] overflow-hidden rounded-[6px] shadow-lg">
         <Component />
       </div>
     </div>

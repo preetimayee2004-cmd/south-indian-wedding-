@@ -4290,13 +4290,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(50px, 7vh, 85px) 16px;
-  background-color: #23080c;
+  padding: clamp(48px, 7vh, 80px) 16px;
+  background-color: #f7ecd3;
   background-image: 
-    radial-gradient(circle at 50% 30%, rgba(212, 163, 71, 0.16) 0%, transparent 65%),
-    url("/media/rsvp-temple-bg.webp?v=3");
-  background-size: cover;
-  background-position: center top;
+    radial-gradient(ellipse 70% 50% at 50% 25%, #fffbf2 0%, #f7ecd3 60%, #ebdcb3 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='76'%3E%3Cg fill='%23C8961E' fill-opacity='.045'%3E%3Cpath d='M22 8c8-1 13 5 11 11-1 4-6 6-9 3-2-2 0-5 2-4-3-2-8 1-8 7 0 8 6 14 13 17-12 2-22-5-23-16C7 17 13 9 22 8Z'/%3E%3Cpath d='M60 46c8-1 13 5 11 11-1 4-6 6-9 3-2-2 0-5 2-4-3-2-8 1-8 7 0 8 6 14 13 17-12 2-22-5-23-16-1-10 5-17 14-18Z' transform='translate(-8 -6)'/%3E%3C/g%3E%3C/svg%3E");
   border-top: none;
   color: #3a1f16;
   overflow: hidden;
@@ -4305,15 +4303,15 @@ body {
 .venue-frame-card {
   position: relative;
   width: 100%;
-  max-width: 680px;
+  max-width: 660px;
   margin: 0 auto;
   background-color: transparent;
   background-image: url("/media/venue-frame.webp");
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
-  filter: drop-shadow(0 14px 38px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 18px rgba(230, 180, 70, 0.16));
-  padding: clamp(75px, 11vw, 110px) clamp(30px, 6.5vw, 75px) clamp(45px, 7vw, 68px);
+  filter: drop-shadow(0 4px 18px rgba(184, 137, 62, 0.16));
+  padding: clamp(72px, 10vw, 100px) clamp(24px, 5.5vw, 56px) clamp(38px, 5.5vw, 52px);
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -4323,56 +4321,57 @@ body {
 
 .venue-mandap-art {
   width: 100%;
-  max-width: 280px;
+  max-width: 250px;
   height: auto;
   object-fit: contain;
   margin: 0 auto;
-  filter: drop-shadow(0 6px 16px rgba(70, 30, 10, 0.28));
+  filter: drop-shadow(0 4px 12px rgba(120, 60, 20, 0.16));
 }
 
 .venue-place-name {
   font-family: Cinzel, Cormorant Garamond, 'EB Garamond', Georgia, serif;
   font-weight: 900;
   color: #5c181f;
-  font-size: clamp(1.65rem, 4.2vw, 2.3rem);
-  letter-spacing: 0.05em;
-  line-height: 1.15;
+  font-size: clamp(1.55rem, 4vw, 2.15rem);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
   margin-top: 6px;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+  margin-bottom: 2px;
 }
 
 .venue-address-text {
   font-family: 'EB Garamond', Georgia, serif;
-  font-size: clamp(0.95rem, 2vw, 1.12rem);
-  font-weight: 600;
-  color: #4a261b;
-  max-width: 480px;
-  margin: 6px auto 0;
-  line-height: 1.4;
+  font-size: clamp(0.92rem, 1.9vw, 1.05rem);
+  font-weight: 500;
+  color: #5c3426;
+  max-width: 440px;
+  margin: 4px auto 0;
+  line-height: 1.45;
 }
 
 .venue-maps-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
-  padding: 8px 24px;
+  margin-top: 14px;
+  padding: 8px 22px;
   border-radius: 9999px;
   font-family: Cinzel, Cormorant Garamond, Georgia, serif;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: #3b1704;
-  background: linear-gradient(135deg, #ffe7a8 0%, #ffd26a 50%, #f4b83d 100%);
-  border: 1px solid #d4a347;
-  box-shadow: 0 4px 14px rgba(90, 40, 10, 0.25);
+  letter-spacing: 0.14em;
+  color: #4a2107;
+  background: linear-gradient(135deg, #fff2cc 0%, #fae19a 50%, #eec461 100%);
+  border: 1px solid rgba(198, 149, 56, 0.75);
+  box-shadow: 0 2px 10px rgba(184, 137, 62, 0.18);
   transition: all 0.25s ease;
   text-decoration: none;
 }
 .venue-maps-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 18px rgba(90, 40, 10, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(184, 137, 62, 0.28);
+  background: linear-gradient(135deg, #fff7df 0%, #ffeaa8 50%, #f4cb6e 100%);
 }
 
 .venue-section-divider {
@@ -4381,27 +4380,27 @@ body {
   justify-content: center;
   gap: 12px;
   width: 100%;
-  max-width: 380px;
-  margin: 16px auto;
+  max-width: 320px;
+  margin: 18px auto 14px;
 }
 .venue-divider-line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, transparent, #b88a3e, transparent);
+  background: linear-gradient(to right, transparent, rgba(184, 138, 62, 0.6), transparent);
 }
 .venue-divider-icon {
-  color: #b88a3e;
-  font-size: 11px;
+  color: #b8860b;
+  font-size: 10px;
 }
 
 .venue-subheading {
   font-family: Cinzel, Cormorant Garamond, Georgia, serif;
-  font-size: clamp(0.76rem, 1.8vw, 0.88rem);
+  font-size: clamp(0.74rem, 1.6vw, 0.84rem);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   color: #7a2318;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 /* Travel Grid */
@@ -4420,20 +4419,24 @@ body {
 }
 
 .venue-travel-card {
-  background: rgba(255, 255, 255, 0.58);
-  border: 1px solid rgba(184, 138, 62, 0.45);
-  border-radius: 10px;
+  background: rgba(255, 253, 248, 0.7);
+  border: 1px solid rgba(198, 155, 78, 0.38);
+  border-radius: 8px;
   padding: 10px 8px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(74, 40, 20, 0.08);
-  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 4px rgba(160, 110, 50, 0.05);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.venue-travel-card:hover {
+  border-color: rgba(198, 155, 78, 0.65);
+  transform: translateY(-1px);
 }
 .venue-travel-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 26px;
-  margin-bottom: 3px;
+  min-height: 24px;
+  margin-bottom: 4px;
   color: #b8860b;
 }
 .venue-travel-title {
@@ -4447,9 +4450,9 @@ body {
 .venue-travel-desc {
   font-family: 'EB Garamond', Georgia, serif;
   font-size: 0.76rem;
-  color: #4a261b;
+  color: #552d20;
   margin-top: 3px;
-  line-height: 1.3;
+  line-height: 1.35;
 }
 .venue-travel-highlight {
   font-weight: 700;
@@ -4462,18 +4465,18 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .venue-stay-chip {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px dashed rgba(184, 138, 62, 0.55);
+  background: rgba(255, 252, 245, 0.75);
+  border: 1px solid rgba(184, 138, 62, 0.4);
   border-radius: 9999px;
-  padding: 4px 12px;
+  padding: 4px 14px;
   font-family: 'EB Garamond', Georgia, serif;
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   color: #5c2d1b;
 }
 
@@ -4492,19 +4495,23 @@ body {
 }
 
 .venue-contact-card {
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(184, 138, 62, 0.45);
-  border-radius: 10px;
+  background: rgba(255, 253, 248, 0.7);
+  border: 1px solid rgba(198, 155, 78, 0.38);
+  border-radius: 8px;
   padding: 8px 6px;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(74, 40, 20, 0.08);
+  box-shadow: 0 1px 4px rgba(160, 110, 50, 0.05);
+  transition: transform 0.2s ease;
+}
+.venue-contact-card:hover {
+  transform: translateY(-1px);
 }
 .venue-contact-name {
   font-family: Cinzel, Cormorant Garamond, serif;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #5c181f;
   line-height: 1.2;
@@ -4535,7 +4542,7 @@ body {
   text-decoration: none;
 }
 .venue-contact-btn:hover {
-  transform: scale(1.15);
+  transform: scale(1.12);
 }
 .venue-contact-btn.call {
   background: linear-gradient(135deg, #c98a28 0%, #a46c14 100%);
