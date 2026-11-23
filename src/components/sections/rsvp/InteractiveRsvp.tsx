@@ -382,15 +382,12 @@ export function InteractiveRsvp() {
             <div className="temple-ganesha-wrap">
               <div className="temple-halo-pulse" aria-hidden="true"></div>
               <img
-                src="/media/ganesha-celebration.webp"
+                src="/media/ganesha-celebration.webp?v=4"
                 alt="Lord Ganesha Blessing"
                 className="temple-ganesha-img"
                 draggable={false}
               />
             </div>
-
-            {/* Grand Flowing Calligraphy Heading */}
-            <h3 className="temple-thankyou-title">Thank You!</h3>
 
             {/* Sacred Golden Lotus Divider */}
             <div className="temple-lotus-divider" aria-hidden="true">

@@ -83,9 +83,28 @@ function planFlight(r: BoardRefs) {
     y: p!.offsetTop + p!.offsetWidth * 0.05,
   }));
   const tag = r.tag!;
-  stops.push({ x: tag.offsetLeft + tag.offsetWidth * 0.5, y: tag.offsetTop + tag.offsetHeight * 0.15 });
-  const start = { x: -0.04 * W, y: Math.min(0.08 * H, 0.1 * W) };
+  const isDesktop = tag.offsetLeft > W * 0.35;
+  const planeW = r.plane?.offsetWidth || (isDesktop ? 56 : 44);
 
+  let landingPt: Pt;
+  if (isDesktop) {
+    const p4Right = (r.photos[4]?.offsetLeft || 0) + (r.photos[4]?.offsetWidth || 0);
+    const gap = tag.offsetLeft - p4Right;
+    const clear = Math.max(42, Math.min(55, (gap - planeW) * 0.45));
+    landingPt = {
+      x: tag.offsetLeft - clear - planeW * 0.5,
+      y: tag.offsetTop + tag.offsetHeight * 0.5,
+    };
+  } else {
+    const clear = 44;
+    landingPt = {
+      x: tag.offsetLeft + tag.offsetWidth + clear + planeW * 0.5,
+      y: tag.offsetTop + tag.offsetHeight * 0.5,
+    };
+  }
+  stops.push(landingPt);
+
+  const start = { x: -0.04 * W, y: Math.min(0.08 * H, 0.1 * W) };
   const pts: Pt[] = [start];
   const landing: number[] = [];
   stops.forEach((b, k) => {
@@ -97,7 +116,7 @@ function planFlight(r: BoardRefs) {
     const ny = dx / len;
     const sw = (k % 2 ? 1 : -1) * Math.min(len * 0.22, 0.12 * Math.max(W, 300));
     const mid = { x: a.x + dx * 0.5 + nx * sw, y: a.y + dy * 0.5 + ny * sw };
-    if (k === 2 || k === 4 || k === stops.length - 1) {
+    if (k === 2 || k === 4) {
       const rr = Math.max(22, Math.min(50, len * 0.14));
       const ux = dx / len;
       const uy = dy / len;
@@ -107,6 +126,12 @@ function planFlight(r: BoardRefs) {
         y: mid.y + uy * fu * rr + ny * side * fn * rr,
       });
       pts.push(p(0, 0), p(1, 1), p(0, 2), p(-1, 1), p(0.9, 0));
+    } else if (k === stops.length - 1 && isDesktop) {
+      const wp = {
+        x: landingPt.x - planeW,
+        y: Math.min(H - 20, tag.offsetTop + tag.offsetHeight + 18),
+      };
+      pts.push(wp);
     } else {
       pts.push(mid);
     }
@@ -144,10 +169,10 @@ function planFlight(r: BoardRefs) {
 
 function Plane() {
   return (
-    <svg viewBox="0 0 48 32" className="h-full w-full overflow-visible" aria-hidden="true">
-      <path d="M2 16 46 3 29 29 21 19Z" fill="#ffffff" stroke="#e8c56b" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M21 19 46 3 17 17Z" fill="#fbf5e6" stroke="#e8c56b" strokeWidth="1.3" strokeLinejoin="round" />
-      <path d="M21 19 46 3" stroke="#7a1f2b" strokeWidth="1.1" />
+    <svg viewBox="0 0 52 34" className="h-full w-full overflow-visible" aria-hidden="true">
+      <path d="M5.5 4.1 L49.5 16.9 L21.2 29.6 L19.9 16.9 Z" fill="#ffffff" stroke="#e8c56b" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d="M19.9 16.9 L49.5 16.9 L17.6 13.1 Z" fill="#fbf5e6" stroke="#e8c56b" strokeWidth="1.3" strokeLinejoin="round" />
+      <path d="M19.9 16.9 L49.5 16.9" stroke="#7a1f2b" strokeWidth="1.1" />
     </svg>
   );
 }
@@ -457,7 +482,7 @@ export function LoveStoryStill() {
     if (!r.current.surface) return;
     const place = () => {
       const f = setupFlight(r.current);
-      restPlane(r.current, f.raw, f.at[PHOTOS.length - 1]);
+      restPlane(r.current, f.raw, 1);
     };
     place();
     const ro = new ResizeObserver(place);
