@@ -137,9 +137,6 @@ export function InteractiveRsvp() {
 
   return (
     <section className="temple-rsvp-scene" id="rsvp" aria-label="Wedding RSVP">
-      {/* Single thick gold line separator at the top seam */}
-      <div className="gold-stripe-separator" aria-hidden="true" />
-
       {/* Floating Petals for Atmosphere */}
       <div className="temple-petals-layer" aria-hidden="true">
         <span className="ambient-petal p1">🌸</span>

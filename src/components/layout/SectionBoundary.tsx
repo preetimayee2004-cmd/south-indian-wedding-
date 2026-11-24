@@ -6,6 +6,8 @@ interface Props {
   enter?: string;
   /** Phone scenes: stacking order against its neighbours. */
   z?: number;
+  /** True for the very first section on the page (no separator above it). */
+  isFirst?: boolean;
   children: ReactNode;
 }
 
@@ -27,9 +29,10 @@ export class SectionBoundary extends Component<Props, { failed: boolean }> {
   }
 
   render() {
-    const { id, enter, z } = this.props;
+    const { id, enter, z, isFirst } = this.props;
     return (
       <div className="sec" data-section={id} data-enter={enter} style={z === undefined ? undefined : { zIndex: z }}>
+        {!isFirst && !this.state.failed && <div className="section-separator" aria-hidden="true" />}
         {this.state.failed ? null : this.props.children}
       </div>
     );

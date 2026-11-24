@@ -77,11 +77,11 @@ export default function App() {
         {import.meta.env.DEV && <DevTokens />}
         {sections
           .filter((s) => s.enabled)
-          .map(({ id }) => {
+          .map(({ id }, index) => {
             const scene = scenes ? SCENES[id] : undefined;
             const Component = scene?.Component ?? SECTION_REGISTRY[id];
             return (
-              <SectionBoundary key={`${id}-${scenes}`} id={id} enter={scene?.enter} z={scene?.z}>
+              <SectionBoundary key={`${id}-${scenes}`} id={id} enter={scene?.enter} z={scene?.z} isFirst={index === 0}>
                 <Component />
               </SectionBoundary>
             );

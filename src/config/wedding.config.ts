@@ -276,7 +276,7 @@ const weddingConfig: WeddingConfig = {
     { id: "contact", enabled: false }, // merged into travelStay
     { id: "thankYou", enabled: true }, // thank you, save the date, replay
     { id: "loveNote", enabled: true }, // a note from our hearts
-    { id: "closing", enabled: true }, // the city's landmark
+    { id: "closing", enabled: false }, // the city's landmark
   ],
 };
 

@@ -232,7 +232,6 @@ export function EventsSlider() {
       onPointerDown={stop}
       onKeyDown={stop}
     >
-      <div aria-hidden className="edge edge-scallop-top edge-temple" />
       <h2 id="events-heading" className="sr-only">
         The wedding celebrations
       </h2>

@@ -455,8 +455,6 @@ export function LoveStoryScene() {
       scrub={1.8}
       build={build}
     >
-      {/* Sleek metallic double gold stripe separator */}
-      <div aria-hidden="true" className="gold-stripe-separator" />
       <div className="gb-viewport">
         <Board r={r} still={false} onOpen={setOpen} story={story} />
       </div>
@@ -494,7 +492,6 @@ export function LoveStoryStill() {
 
   return (
     <section id="gallery" aria-labelledby="gallery-heading" className="gb-wall relative px-[3vw] py-12">
-      <div aria-hidden="true" className="gold-stripe-separator" />
       <Board r={r} still onOpen={setOpen} story={story} />
       {open !== null && (
         <Lightbox
