@@ -33,8 +33,9 @@ export interface StoryMilestone {
 
 /** Short sound effects the invitation can play (each optional — a missing one is silent). */
 export type SfxName =
-  | "seal" | "rustle" | "slide" | "whoosh" | "bell" | "tap" | "tick" | "thavil" | "kolusu" | "diya" | "plane"
-  | "stamp" | "pin" | "conch" | "akshathai" | "unfold" | "elephant" | "trumpet";
+  | "seal" | "rustle" | "slide" | "whoosh" | "bell" | "tap" | "tick" | "thavil" | "stamp" | "pin" | "conch"
+  | "elephant" | "trumpet" | "swish" | "step" | "reveal" | "door" | "wind" | "pop" | "breath" | "flame"
+  | "sweet" | "leaf" | "petals" | "kolam";
 
 export type EventTheme = "nalangu" | "mehendi" | "sangeet" | "muhurtham" | "reception";
 
@@ -216,10 +217,6 @@ export interface WeddingConfig {
      * Any slot left out falls back to the mobile artwork above.
      */
     desktop?: Partial<Record<DesktopSlot, DesktopArt>>;
-    /** Clear area inside the RSVP arch (below its printed title), in % of the image. */
-    rsvpArch: { top: number; left: number; width: number; height: number };
-    /** Lamp flames in the RSVP art, [x%, y%] — they get a soft live flicker. */
-    rsvpLamps: [number, number][];
     /** Parchment area of the family gateway art, in % of the image; it continues below as a scroll. */
     familyParchment: { left: number; width: number; top: number; color: string };
     /** Symmetrical entrance art behind the threads; splits open like doors. */
@@ -246,8 +243,6 @@ export interface WeddingConfig {
     events: string;
     gallery?: string;
     family: string;
-    rsvp: string;
-    thankYou: string;
   };
   audio: {
     music?: string;

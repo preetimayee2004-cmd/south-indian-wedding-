@@ -8,7 +8,7 @@ import { WishingWall } from "./WishingWall";
 import { Rsvp } from "./Rsvp";
 import { TravelStay } from "./TravelStay";
 import { Contact } from "./Contact";
-import { ThankYou } from "./ThankYou";
+import { ThankYouScene as ThankYou } from "@/components/scenes/ThankYouScene";
 import { LoveNote } from "./LoveNote";
 import { ClosingScene } from "@/components/scenes/ClosingScene";
 

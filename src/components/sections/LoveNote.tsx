@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef } from "react";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { useGuest } from "@/context/GuestContext";
@@ -18,8 +17,6 @@ export function LoveNote() {
   const { guestName } = useGuest();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
-  // the letter unfolds
-  useSfxOnView(root, [["unfold", { volume: 0.9 }]], { rootMargin: "0px 0px -25% 0px" });
 
   useLayoutEffect(() => {
     if (!root.current) return;

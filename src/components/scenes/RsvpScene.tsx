@@ -1,10 +1,6 @@
-import { InteractiveRsvp } from "@/components/sections/rsvp/InteractiveRsvp";
+import { KolamRsvp } from "@/components/sections/rsvp/KolamRsvp";
 
-/**
- * Scene 9 — South Indian Wedding Interactive Two-Stage RSVP.
- * Handcrafted temple aesthetic with personalized greeting, specialization selection,
- * animated bird kiss & bloom interaction, and confirmation with calendar integration.
- */
+/** Scene 9 — the Kolam RSVP (normal scroll, no pin). */
 export function RsvpScene() {
-  return <InteractiveRsvp />;
+  return <KolamRsvp />;
 }

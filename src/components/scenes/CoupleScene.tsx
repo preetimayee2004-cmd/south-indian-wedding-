@@ -1,5 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type MutableRefObject } from "react";
 import { useSfxOnView } from "@/hooks/useSfxOnView";
+import { useAudio } from "@/context/AudioContext";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Petal, rand } from "@/components/scene/Decor";
@@ -161,8 +162,7 @@ function CoupleRoom({
  * (CSS couple-idle, outside the scrub).
  */
 export function CoupleScene() {
-  // footsteps and the bride's anklets (kolusu) as the two walk in
-  useSfxOnView("#couple", [["kolusu", { volume: 0.9 }]], { rootMargin: "0px 0px -12% 0px" });
+  const { playSfx } = useAudio();
   const refs = {
     stage: useRef<HTMLDivElement>(null),
     bg: useRef<HTMLDivElement>(null),
@@ -210,7 +210,15 @@ export function CoupleScene() {
 
     // the walking bob: 6px, ~7 steps, fading out as they stop (scrubbed, so it reverses too)
     const step = { t: 0 };
+    // a soft "tup" for each of the ~7 steps, only while scrolling forward; the two alternate
+    let lastStep = 0;
     const bob = () => {
+      const n = Math.min(7, Math.floor(step.t * 7 + 0.15));
+      // (only while the couple are actually on screen — never from a re-measure or a late catch-up)
+      const box = stage.getBoundingClientRect();
+      const onScreen = box.top < window.innerHeight && box.bottom > 0;
+      if (n > lastStep && step.t < 0.995 && onScreen) playSfx("step", { volume: 0.8, rate: n % 2 ? 0.92 : 1.08 });
+      lastStep = n;
       const fade = (1 - step.t) ** 1.5;
       gsap.set(refs.brideBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 7)) * fade });
       gsap.set(refs.groomBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 7 + 0.9)) * fade });
@@ -233,6 +241,13 @@ export function CoupleScene() {
 
     // "THE COUPLE", then the names write in letter by letter, the "&" in its lotus, then the flourish draws
     tl.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: at(0.025), ease: "power2.out" }, at(0.45));
+    // a soft airy "fwip" once, the first time the names write in
+    let revealed = false;
+    tl.call(() => {
+      if (revealed) return;
+      revealed = true;
+      playSfx("reveal", { volume: 0.6 });
+    }, undefined, at(0.475));
     const half = c.letters.length;
     tl.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: at(0.02), stagger: at(0.11) / Math.max(1, half), ease: "power2.out" }, at(0.475));
     tl.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: at(0.03), ease: "back.out(2)" }, at(0.52));
@@ -294,6 +309,7 @@ export function CoupleScene() {
 
 /** Reduced motion: no pinning; the couple simply stand where they meet, and the section fades in. */
 export function CoupleStill() {
+  useSfxOnView("#couple", [["reveal", { volume: 0.6 }]], { rootMargin: "0px 0px -30% 0px" });
   return (
     <section id="couple" aria-labelledby="couple-heading" className="couple-fade relative h-[100svh] min-h-[520px] overflow-hidden" style={{ containerType: "size", backgroundColor: COUPLE_SKY }}>
       <CoupleRoom still />

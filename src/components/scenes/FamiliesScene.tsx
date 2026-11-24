@@ -1,6 +1,50 @@
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
+import { useAudio } from "@/context/AudioContext";
+import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { gsap } from "@/lib/gsap";
+
+/** One carved wooden temple door leaf (the arch opening clips it to the arch shape). */
+function DoorLeaf({ side }: { side: "l" | "r" }) {
+  return (
+    <span className={`fam-door fam-door--${side}`} aria-hidden>
+      <svg viewBox="0 0 100 300" preserveAspectRatio="none" className="fam-door-svg">
+        <defs>
+          <linearGradient id={`fam-wood-${side}`} x1="0" x2="1">
+            <stop offset="0" stopColor={side === "l" ? "#3e1d0c" : "#6a3818"} />
+            <stop offset="0.5" stopColor="#5a2e14" />
+            <stop offset="1" stopColor={side === "l" ? "#6a3818" : "#3e1d0c"} />
+          </linearGradient>
+        </defs>
+        <rect width="100" height="300" fill={`url(#fam-wood-${side})`} />
+        {/* carved panels with a gold bead border */}
+        {[
+          [14, 70, 72, 70],
+          [14, 152, 72, 58],
+          [14, 222, 72, 64],
+        ].map(([x, y, w, h]) => (
+          <g key={y}>
+            <rect x={x} y={y} width={w} height={h} rx="3" fill="#4a240f" stroke="#c99a45" strokeWidth="1.6" />
+            <rect x={x + 6} y={y + 6} width={w - 12} height={h - 12} rx="2" fill="none" stroke="#2d1407" strokeWidth="1.2" />
+          </g>
+        ))}
+        {/* a lotus carved in the middle panel */}
+        <g transform="translate(50 181)" fill="#c99a45">
+          <path d="M0 12C-4 4-4-6 0-14 4-6 4 4 0 12Z" />
+          <path d="M0 12C-9 8-14 0-15-8-7-6-2 2 0 12Z" opacity="0.85" />
+          <path d="M0 12C9 8 14 0 15-8 7-6 2 2 0 12Z" opacity="0.85" />
+        </g>
+        {/* brass studs */}
+        {[40, 105, 145, 215, 292].map((y) =>
+          [26, 50, 74].map((x) => <circle key={`${x}-${y}`} cx={x} cy={y} r="2.4" fill="#e2b553" />),
+        )}
+        {/* the edge where the two leaves meet, and a brass ring handle */}
+        <rect x={side === "l" ? 96 : 0} width="4" height="300" fill="#2a1206" />
+        <circle cx={side === "l" ? 88 : 12} cy="150" r="6" fill="none" stroke="#e2b553" strokeWidth="2" />
+      </svg>
+    </span>
+  );
+}
 
 /** Traditional hanging wall lantern with swaying animation */
 function HangingLamp({ side }: { side: "left" | "right" }) {
@@ -85,7 +129,7 @@ function Kuthuvilakku() {
 }
 
 /** One family: the photo in the golden arch, then the names underneath (as before). */
-function FamilyCard({ side, who, photo, archRef }: { side: Side; who: "Bride" | "Groom"; photo: string; archRef: (el: HTMLDivElement | null) => void }) {
+function FamilyCard({ side, who, photo, archRef, doors }: { side: Side; who: "Bride" | "Groom"; photo: string; archRef: (el: HTMLDivElement | null) => void; doors: boolean }) {
   const father = side.members.find((m) => /father/i.test(m.relation) && !/grand/i.test(m.relation));
   const mother = side.members.find((m) => /mother/i.test(m.relation) && !/grand/i.test(m.relation));
   const others = side.members.filter((m) => m !== father && m !== mother);
@@ -94,6 +138,12 @@ function FamilyCard({ side, who, photo, archRef }: { side: Side; who: "Bride" | 
       <div ref={archRef} className="fam-arch-wrap">
         <div className="fam-photo-frame">
           <img src={photo} alt={side.title} className="fam-photo" loading="lazy" decoding="async" />
+          {doors && (
+            <>
+              <DoorLeaf side="l" />
+              <DoorLeaf side="r" />
+            </>
+          )}
         </div>
         <picture>
           <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
@@ -160,8 +210,38 @@ export function FamiliesScene() {
   const arches = useRef<{ bride: HTMLDivElement | null; groom: HTMLDivElement | null }>({ bride: null, groom: null });
   const [g, setG] = useState<Garland | null>(null);
   const initials = `${couple.bride.name[0]} & ${couple.groom.name[0]}`;
-  // a match is struck and the lamp between the two families catches, as they come into view
-  useSfxOnView(stage, [["diya", { volume: 0.9 }]]);
+  const reduced = usePrefersReducedMotion();
+  const { playSfx } = useAudio();
+
+  // each arch: two carved wooden doors swing open (bride first, groom 0.35s after), the family photo behind
+  useLayoutEffect(() => {
+    if (reduced) return;
+    let brideAt = 0;
+    const ctx = gsap.context(() => {
+      (["bride", "groom"] as const).forEach((who) => {
+        const arch = arches.current[who];
+        if (!arch) return;
+        const l = arch.querySelector(".fam-door--l");
+        const r = arch.querySelector(".fam-door--r");
+        const pic = arch.querySelector(".fam-photo");
+        gsap.set(pic, { scale: 1.06, autoAlpha: 0 });
+        const tl = gsap.timeline({ paused: true, defaults: { duration: 1.4, ease: "power2.inOut" } });
+        tl.to(l, { rotateY: -105 }, 0)
+          .to(r, { rotateY: 105 }, 0)
+          .to(pic, { scale: 1, autoAlpha: 1, clearProps: "transform" }, 0.1);
+        gsap.timeline({ scrollTrigger: { trigger: arch, start: "top 70%", once: true } }).call(() => {
+          const now = performance.now() / 1000;
+          const wait = who === "groom" ? Math.max(0, brideAt + 0.35 - now) : 0;
+          if (who === "bride") brideAt = now;
+          gsap.delayedCall(wait, () => {
+            playSfx("door", { volume: 0.6, rate: who === "groom" ? 0.97 : 1 });
+            tl.play();
+          });
+        });
+      });
+    }, stage);
+    return () => ctx.revert();
+  }, [reduced, playSfx, bride, groom]);
 
   // the garland is drawn between the two arches wherever they actually stand (wide screens)
   useLayoutEffect(() => {
@@ -254,9 +334,9 @@ export function FamiliesScene() {
           </p>
         )}
 
-        {bride && <FamilyCard side={bride} who="Bride" photo="/media/bride-family.jpg" archRef={(el) => void (arches.current.bride = el)} />}
+        {bride && <FamilyCard side={bride} who="Bride" photo="/media/bride-family.jpg" archRef={(el) => void (arches.current.bride = el)} doors={!reduced} />}
         {g ? bond : <div className="fm-bond-row">{bond}</div>}
-        {groom && <FamilyCard side={groom} who="Groom" photo="/media/groom-family.jpg" archRef={(el) => void (arches.current.groom = el)} />}
+        {groom && <FamilyCard side={groom} who="Groom" photo="/media/groom-family.jpg" archRef={(el) => void (arches.current.groom = el)} doors={!reduced} />}
       </div>
     </section>
   );

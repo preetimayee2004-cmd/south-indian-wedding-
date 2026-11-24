@@ -26,7 +26,22 @@ interface AudioState {
   toggle: () => void;
   /** Sound effects always play (once the guest has tapped anything), whether the song is on or off. */
   playSfx: (name: Sfx, opts?: SfxOptions) => void;
+  /**
+   * A looping effect (e.g. wind behind the paper plane), silent until `set` raises it.
+   * Source (loop) → bandpass → gain; level, speed and filter glide smoothly.
+   */
+  startLoop: (name: Sfx) => SfxLoop;
 }
+
+export interface SfxLoop {
+  /** level 0–1 (on top of the effects volume), playback rate, optional bandpass centre in Hz */
+  set: (level: number, rate?: number, freq?: number) => void;
+  /** fades out quickly and frees the nodes */
+  stop: () => void;
+}
+
+/** What startLoop returns before the guest has tapped (silent; try again later). */
+export const NO_LOOP: SfxLoop = { set: () => undefined, stop: () => undefined };
 
 const Ctx = createContext<AudioState | null>(null);
 const FADE_IN = 2.5;
@@ -239,6 +254,65 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     else void pending.current.get(name)?.then((b) => b && fire(b));
   }, [unlock]);
 
+  const startLoop = useCallback((name: Sfx): SfxLoop => {
+    if (!unlocked.current) return NO_LOOP;
+    const c = ctx.current;
+    const out = fxGain.current;
+    if (!c || !out || c.state === "closed" || !audio.sfx[name]) return NO_LOOP;
+    const filter = c.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.7;
+    const gain = c.createGain();
+    gain.gain.value = 0;
+    filter.connect(gain).connect(out);
+    let src: AudioBufferSourceNode | null = null;
+    let stopped = false;
+    let level = 0;
+    let rate = 1;
+    const begin = (b: AudioBuffer) => {
+      if (stopped) return;
+      src = c.createBufferSource();
+      src.buffer = b;
+      src.loop = true;
+      src.playbackRate.value = rate;
+      src.connect(filter);
+      src.start();
+      gain.gain.setTargetAtTime(level, c.currentTime, 0.08);
+    };
+    const ready = buffers.current.get(name);
+    if (ready) begin(ready);
+    else void pending.current.get(name)?.then((b) => b && begin(b));
+    return {
+      set(l, r, f) {
+        if (stopped) return;
+        const t = c.currentTime;
+        level = Math.max(0, Math.min(1, l));
+        gain.gain.setTargetAtTime(level, t, 0.08);
+        if (r != null) {
+          rate = r;
+          src?.playbackRate.setTargetAtTime(r, t, 0.1);
+        }
+        if (f != null) filter.frequency.setTargetAtTime(f, t, 0.1);
+      },
+      stop() {
+        if (stopped) return;
+        stopped = true;
+        gain.gain.setTargetAtTime(0, c.currentTime, 0.06);
+        const s = src;
+        window.setTimeout(() => {
+          try {
+            s?.stop();
+          } catch {
+            /* already stopped */
+          }
+          s?.disconnect();
+          gain.disconnect();
+        }, 400);
+      },
+    };
+  }, [audio.sfx]);
+
   // Effects are automatic: the guest's first tap or key press anywhere wakes the audio up
   // (browsers allow no sound before that). This never starts the song.
   useEffect(() => {
@@ -251,6 +325,19 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     evs.forEach((e) => window.addEventListener(e, wake, { capture: true, passive: true }));
     return () => evs.forEach((e) => window.removeEventListener(e, wake, true));
   }, [hasSfx, unlock]);
+
+  // A soft wooden-bead "pop" on every button and chip (pm-btn, and anything marked data-pop):
+  // one delegated listener for the whole page.
+  useEffect(() => {
+    if (!audio.sfx.pop) return;
+    const onClick = (e: MouseEvent) => {
+      const el = (e.target as Element | null)?.closest?.(".pm-btn, [data-pop]");
+      if (!el || (el as HTMLButtonElement).disabled) return;
+      playSfx("pop", { volume: 0.35, gesture: true });
+    };
+    document.addEventListener("click", onClick, true);
+    return () => document.removeEventListener("click", onClick, true);
+  }, [audio.sfx.pop, playSfx]);
 
   // Be polite: pause when the tab is hidden, resume when it returns.
   useEffect(() => {
@@ -277,8 +364,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AudioState>(
-    () => ({ hasMusic: Boolean(audio.music), playing, start, toggle, playSfx }),
-    [audio.music, playing, start, toggle, playSfx],
+    () => ({ hasMusic: Boolean(audio.music), playing, start, toggle, playSfx, startLoop }),
+    [audio.music, playing, start, toggle, playSfx, startLoop],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

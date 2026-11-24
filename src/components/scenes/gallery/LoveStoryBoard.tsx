@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
+import { useAudio, NO_LOOP, type SfxLoop } from "@/context/AudioContext";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
@@ -23,18 +23,19 @@ function useStory() {
   };
 }
 
-/** 
- * Where each polaroid sits across the maroon temple canvas:
- * 3 in the upper tier, 3 in the lower tier in a loose cinematic composition.
- * Sized large, with ample clearance below the center plaque to prevent any overlap!
+/**
+ * Where each polaroid sits. Wide screens: a 3 × 2 grid under the plaque (dx/dy are % of the
+ * board; the columns leave ~12% of the width between photos, the rows a clear gap so a caption
+ * never runs under the photo below). Phones: one column, zig-zagging left and right (CSS).
+ * A small tilt only (±2°).
  */
 const SPOTS = [
-  { dx: 4, dy: 16, rot: -4.5, hold: "pin" },
-  { dx: 73, dy: 16, rot: 4.5, hold: "pin" },
-  { dx: 38.5, dy: 23, rot: -2.0, hold: "tape" },
-  { dx: 12, dy: 58, rot: 4.0, hold: "tape" },
-  { dx: 49, dy: 56, rot: -4.0, hold: "pin" },
-  { dx: 78, dy: 58, rot: 3.0, hold: "tape" },
+  { dx: 11, dy: 18, rot: -2, hold: "pin" },
+  { dx: 41, dy: 18, rot: 1.5, hold: "tape" },
+  { dx: 71, dy: 18, rot: -1.5, hold: "pin" },
+  { dx: 11, dy: 57, rot: 2, hold: "tape" },
+  { dx: 41, dy: 57, rot: -2, hold: "pin" },
+  { dx: 71, dy: 57, rot: 1.5, hold: "tape" },
 ] as const;
 
 interface BoardRefs {
@@ -218,7 +219,7 @@ function Board({
                   ["--i" as string]: i,
                   ["--dx" as string]: `${s.dx}%`,
                   ["--dy" as string]: `${s.dy}%`,
-                  ["--mx" as string]: i % 2 ? "26%" : "3%",
+                  ["--mx" as string]: i % 2 ? "24%" : "2%",
                   rotate: `${s.rot}deg`,
                 } as CSSProperties
               }
@@ -340,8 +341,7 @@ const TOUCH = typeof window !== "undefined" && window.matchMedia("(pointer: coar
 const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
 
 export function LoveStoryScene() {
-  // the paper plane takes off over the photos
-  useSfxOnView("#gallery", [["plane", { volume: 0.9 }]], { rootMargin: "0px 0px -45% 0px" });
+  const { playSfx, startLoop } = useAudio();
   const story = useStory();
   const PHOTOS = story.photos;
   const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
@@ -415,6 +415,37 @@ export function LoveStoryScene() {
     return () => gsap.ticker.remove(tick);
   }, []);
 
+  // The wind follows the plane: a soft wind loop while the section is on screen, louder, faster
+  // and brighter the faster the plane flies, fading out within ~250ms when it stops.
+  const inside = useRef(false);
+  useEffect(() => {
+    let loop: SfxLoop | null = null;
+    let prevP = fly.current.p;
+    let speed = 0;
+    const tick = (_t: number, dtMs: number) => {
+      if (!inside.current) {
+        if (loop) {
+          loop.stop();
+          loop = null;
+        }
+        return;
+      }
+      if (!loop || loop === NO_LOOP) loop = startLoop("wind"); // retries until the guest has tapped once
+      const dt = Math.max(0.008, dtMs / 1000);
+      const p = fly.current.p;
+      const v = Math.abs(p - prevP) / dt; // path progress per second
+      prevP = p;
+      speed += (v - speed) * Math.min(1, dt * 8); // a little smoothing
+      const s = Math.min(1, speed * 4);
+      loop.set(s < 0.02 ? 0 : Math.min(0.6, s * 0.75), 0.9 + s * 0.4, 600 + s * 1600);
+    };
+    gsap.ticker.add(tick);
+    return () => {
+      gsap.ticker.remove(tick);
+      loop?.stop();
+    };
+  }, [startLoop]);
+
   const build: Build = (tl, section) => {
     const R = r.current;
     const f = setupFlight(R);
@@ -422,6 +453,12 @@ export function LoveStoryScene() {
     const proxy = fly.current;
     proxy.p = 0;
 
+    ScrollTrigger.create({
+      trigger: section,
+      start: "top bottom",
+      end: "bottom top",
+      onToggle: (self) => void (inside.current = self.isActive),
+    });
     ScrollTrigger.create({
       trigger: section,
       start: "top top",
@@ -436,6 +473,15 @@ export function LoveStoryScene() {
       const t0 = 0.2 + i * LEG;
       const photo = R.photos[i];
       tl.fromTo(proxy, { p: i ? f.at[i - 1] : 0 }, { p: f.at[i], duration: 0.7 * LEG, ease: "none", immediateRender: false }, t0);
+      // the plane touches down on the photo: a very soft paper tap (only flying forward)
+      tl.call(
+        () => {
+          const b = section.getBoundingClientRect();
+          if (proxy.dir === 1 && b.top < window.innerHeight && b.bottom > 0) playSfx("tap", { volume: 0.3 });
+        },
+        undefined,
+        t0 + 0.68 * LEG,
+      );
       tl.fromTo(photo, { scale: 0.94, autoAlpha: 0.7 }, { scale: 1.06, autoAlpha: 1, duration: 0.14 * LEG, ease: "back.out(3)" }, t0 + 0.68 * LEG);
       tl.fromTo(R.desat[i], { opacity: 0.5 }, { opacity: 0, duration: 0.14 * LEG }, t0 + 0.68 * LEG);
       tl.fromTo(
@@ -489,7 +535,6 @@ export function LoveStoryScene() {
 }
 
 export function LoveStoryStill() {
-  useSfxOnView("#gallery", [["plane", { volume: 0.9 }]], { rootMargin: "0px 0px -45% 0px" });
   const story = useStory();
   const PHOTOS = story.photos;
   const r = useRef<BoardRefs>(emptyRefs(story.photos.length));

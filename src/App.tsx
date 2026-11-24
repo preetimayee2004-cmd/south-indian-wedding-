@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { MusicToggle } from "@/components/layout/MusicToggle";
-import { Footer } from "@/components/layout/Footer";
 import { Loader, usePreload } from "@/components/layout/Loader";
 import { SectionBoundary } from "@/components/layout/SectionBoundary";
 import { Opening } from "@/components/opening/Opening";
@@ -86,7 +85,6 @@ export default function App() {
               </SectionBoundary>
             );
           })}
-        <Footer />
       </AppShell>
       {revealed && <MusicToggle />}
       <Loader done={artReady} />

@@ -235,10 +235,6 @@ const weddingConfig: WeddingConfig = {
     gallery: "/media/temple-events-bg.webp",
     family: "/media/gopuram-frame.webp",
     familyParchment: { left: 17, width: 66, top: 34, color: "#efd391" },
-    rsvp: "/media/stone-arch.webp",
-    rsvpArch: { top: 36, left: 13, width: 74, height: 42 },
-    rsvpLamps: [[13, 75.5], [87, 75.5], [5.5, 82.5], [94.5, 82.5]],
-    thankYou: "/media/thank-you-temple.webp",
   },
 
   audio: {
@@ -260,14 +256,21 @@ const weddingConfig: WeddingConfig = {
       tap: "/audio/sfx/tap.mp3", // small taps
       tick: "/audio/sfx/tick.mp3", // countdown: an old wall clock
       thavil: "/audio/sfx/thavil.mp3", // events: a gatti melam thavil flourish
-      kolusu: "/audio/sfx/kolusu.mp3", // couple: footsteps with anklets
-      diya: "/audio/sfx/diya.mp3", // family: a match lights the lamp
-      plane: "/audio/sfx/plane.mp3", // love story: the paper plane
+      swish: "/audio/sfx/swish.mp3", // events: a silk swish as the event changes; RSVP: a step turns
+      step: "/audio/sfx/step.mp3", // couple: soft slipper steps as they walk in
+      reveal: "/audio/sfx/reveal.mp3", // couple: their names appear in the cloud
+      door: "/audio/sfx/door.mp3", // family: carved wooden doors open
+      wind: "/audio/sfx/wind.mp3", // love story: wind behind the paper plane (loop)
+      pop: "/audio/sfx/pop.mp3", // a soft wooden-bead pop on buttons and chips
+      breath: "/audio/sfx/breath.mp3", // (loop) soft air, free for a hold-to-light control
+      flame: "/audio/sfx/flame.mp3", // RSVP: a lamp catches
+      sweet: "/audio/sfx/sweet.mp3", // wishing wall: two soft tings as a wish is pinned
+      leaf: "/audio/sfx/leaf.mp3", // where to stay: a palm leaf opens
+      petals: "/audio/sfx/petals.mp3", // thank you / RSVP: petals fall
+      kolam: "/audio/sfx/kolam.mp3", // RSVP: rice flour as the kolam is drawn
       stamp: "/audio/sfx/stamp.mp3", // RSVP confirmed
       pin: "/audio/sfx/pin.mp3", // a wish pinned to the wall
       conch: "/audio/sfx/conch.mp3", // venue: the shankh
-      akshathai: "/audio/sfx/akshathai.mp3", // thank you: blessing rice showered
-      unfold: "/audio/sfx/unfold.mp3", // love note: the letter opens
       elephant: "/audio/sfx/elephant.mp3", // finale: temple elephants walk in, neck bells
       trumpet: "/audio/sfx/trumpet.mp3", // finale: an elephant trumpets
     },
@@ -298,8 +301,8 @@ const weddingConfig: WeddingConfig = {
     { id: "wishingWall", enabled: true },
     { id: "travelStay", enabled: true }, // venue, travel & contacts all-in-one in traditional golden frame
     { id: "contact", enabled: false }, // merged into travelStay
-    { id: "thankYou", enabled: true }, // thank you, save the date, replay
-    { id: "loveNote", enabled: true }, // a note from our hearts
+    { id: "thankYou", enabled: true }, // the finale: thank you, the love note, the elephants, calendar/share/replay
+    { id: "loveNote", enabled: false }, // now part of thank you
     { id: "closing", enabled: false }, // the city's landmark
   ],
 };

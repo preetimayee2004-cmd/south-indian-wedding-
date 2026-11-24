@@ -339,55 +339,6 @@
 }
 
 /* RSVP: gold line icons, a gold selected state, a quieter quote, light petals */
-.ambient-petal {
-  width: 11px;
-  height: 14px;
-  border-radius: 80% 0 80% 0;
-  background: linear-gradient(135deg, #ffd1dc, #e86a84);
-  filter: none;
-  opacity: 0.8;
-}
-.ambient-petal.p2,
-.ambient-petal.p4 {
-  background: linear-gradient(135deg, #ffd27a, #f08a12);
-}
-.spec-icon {
-  display: inline-flex;
-  color: #e8c56b;
-}
-.temple-user-icon {
-  display: inline-flex;
-}
-.temple-spec-label {
-  letter-spacing: 0.22em;
-}
-.temple-spec-pill {
-  padding: 8px 6px;
-  gap: 5px;
-}
-.temple-spec-pill.selected {
-  background: linear-gradient(180deg, #fbe39c 0%, #e2b553 60%, #c99a3d 100%);
-  border: 1px solid #fff0bf;
-  color: #4a0d16;
-  box-shadow: 0 6px 16px -6px rgb(212 159 55 / 0.8);
-  transform: none;
-}
-.temple-spec-pill.selected .spec-icon {
-  color: #6a0f1f;
-}
-.temple-quote-plaque {
-  background: none;
-  border: none;
-  border-top: 1px solid rgb(232 197 107 / 0.55);
-  border-bottom: 1px solid rgb(232 197 107 / 0.55);
-  border-radius: 0;
-  box-shadow: none;
-  padding: 10px 8px;
-}
-.temple-quote-text {
-  color: #f6e7c8;
-  text-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
-}
 
 /* Wishing Wall: framed blessing cards */
 .wishing-note-card {
@@ -430,48 +381,56 @@
   }
 }
 
-/* Thank You: the couple and the temple straight on the silk (cut-out painting, no frame),
-   a soft gold glow behind them; the date on a framed ivory plaque */
-.ty-arch::before {
-  content: "";
-  position: absolute;
-  inset: 18% -12% -4%;
-  background: radial-gradient(50% 55% at 50% 62%, rgb(243 207 115 / 0.26), rgb(243 207 115 / 0.08) 55%, transparent 75%);
-  pointer-events: none;
-}
-.ty-date {
+/* Thank You (the finale): the love note as a quote, falling petals, the closing buttons */
+.ty-note {
   position: relative;
-  padding: 14px 18px 16px;
-  border-radius: 8px;
-  border: 1px solid #d4a54a;
-  background: linear-gradient(180deg, #fffaf0 0%, #f4e4c0 100%);
-  outline: 1px solid rgb(232 197 107 / 0.7);
-  outline-offset: 4px;
-  box-shadow: 0 18px 36px -12px rgb(0 0 0 / 0.65);
+  max-width: 30rem;
+  margin: clamp(2rem, 5vw, 2.75rem) auto 0;
+  padding: 0 2.2rem;
 }
-.ty-date-label {
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.42em;
-  text-transform: uppercase;
-  color: #8a1b2c;
-}
-.ty-date-num {
-  margin-top: 4px;
-  font-size: clamp(1.7rem, 7.4vw, 2.2rem);
+.ty-quote {
+  position: absolute;
+  font-family: Georgia, "EB Garamond", serif;
+  font-size: 4.4rem;
   line-height: 1;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-  color: #6a0f1f;
+  color: #e2b553;
+  opacity: 0.85;
 }
-.ty-date-sub {
-  margin-top: 6px;
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: #5c3a2b;
+.ty-quote--open { top: -0.6rem; left: 0; }
+.ty-quote--close { bottom: 1.2rem; right: 0; }
+.ty-note-text {
+  font-style: italic;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  color: #f6e7c8;
+  text-wrap: pretty;
 }
+.ty-note-sign {
+  margin-top: 0.9rem;
+  font-family: "Great Vibes", cursive;
+  font-size: 2rem;
+  line-height: 1.1;
+  color: #f3cf73;
+}
+.ty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 1.75rem;
+}
+.ty-falls { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
+.ty-fall {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 13px;
+  border-radius: 80% 0 80% 0;
+  background: #e86a84;
+  opacity: 0;
+}
+.ty-fall--marigold { background: #f39a1e; }
+.ty-fall--jasmine { background: #fff6e6; }
 
 /* A Note from our Hearts: ivory letter, gold double rule, filigree corners, wax seal */
 .ln-letter {
@@ -544,8 +503,7 @@
   .temple-corridor-arch,
   .temple-corridor-arch:hover,
   .wishing-lovebirds-art,
-  .corridor-ribbon-img,
-  .temple-rsvp-plaque-svg {
+  .corridor-ribbon-img {
     filter: none;
   }
 }
@@ -1481,13 +1439,40 @@
 }
 @keyframes fw-bell-ring {
   0% { transform: rotate(0deg); }
-  12% { transform: rotate(16deg); }
-  28% { transform: rotate(-13deg); }
-  44% { transform: rotate(9deg); }
-  60% { transform: rotate(-6deg); }
+  12% { transform: rotate(20deg); }
+  28% { transform: rotate(-16deg); }
+  44% { transform: rotate(11deg); }
+  60% { transform: rotate(-7deg); }
   76% { transform: rotate(3deg); }
   100% { transform: rotate(0deg); }
 }
+/* as the contact block comes into view: one damped swing each, in turn */
+.fw-bell.is-swaying {
+  animation: fw-bell-sway 1.6s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes fw-bell-sway {
+  0% { transform: rotate(0deg); }
+  14% { transform: rotate(14deg); }
+  32% { transform: rotate(-10deg); }
+  50% { transform: rotate(6.5deg); }
+  68% { transform: rotate(-3.5deg); }
+  84% { transform: rotate(1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+/* family: the carved wooden doors in each arch (they swing open on their outer hinges) */
+.fam-photo-frame { perspective: 900px; }
+.fam-door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: 50%;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+.fam-door--l { left: 0; transform-origin: 0% 50%; }
+.fam-door--r { right: 0; transform-origin: 100% 50%; }
+.fam-door-svg { display: block; width: 100%; height: 100%; }
 .fw-plaque {
   display: flex;
   flex: 1;
@@ -2696,3 +2681,287 @@
   outline: 2px solid #f3cf73;
   outline-offset: 2px;
 }
+
+/* Wishing Wall: the new wish flies onto the wall, a brass pin drops, hearts burst */
+.ww-wall.is-landing .ww-track { animation-play-state: paused; }
+.ww-fly {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 13rem;
+  padding: 14px 16px 12px;
+  border: 1px solid #d4a54a;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fffaf0, #f4e4c0);
+  box-shadow: 0 14px 28px -10px rgb(12 0 3 / 0.6);
+  color: #3d1c14;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: center;
+  pointer-events: none;
+}
+.ww-fly strong {
+  font-family: "Great Vibes", cursive;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: #8a1b2c;
+}
+.ww-fly-pin {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #8e1a2c 0 26%, transparent 28%),
+    radial-gradient(circle at 35% 30%, #fff4c8, #e2b553 45%, #8a6420);
+  box-shadow: 0 3px 5px rgb(0 0 0 / 0.45);
+}
+.ww-heart {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 301;
+  margin: -0.5em 0 0 -0.35em;
+  font-size: 15px;
+  line-height: 1;
+  pointer-events: none;
+}
+.ww-heart--gold { color: #e9bd57; }
+.ww-heart--rose { color: #e4607b; }
+
+/* ── Kolam RSVP ───────────────────────────────────────────────────────────
+   An ivory card inside a large rice-flour kolam on maroon silk; the kolam draws in
+   part by part as the guest moves through the steps (only transform/opacity/dashoffset move). */
+.kr-section {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.6rem, 7vw, 4.5rem) 16px clamp(2.6rem, 7vw, 4.5rem);
+  text-align: center;
+}
+.kr-head { position: relative; z-index: 2; }
+.kr-head .pm-script-title { font-size: clamp(2.5rem, 11vw, 4rem); margin-top: 4px; }
+.kr-deadline { margin-top: 6px; font-style: italic; font-size: 0.95rem; color: #f1dfbd; }
+.kr-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin-top: 1.25rem;
+}
+.kr-kolam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  width: min(150vw, 40rem);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0.35;
+  pointer-events: none;
+}
+@media (min-width: 768px) {
+  .kr-stage { min-height: min(46rem, 90vw); }
+  .kr-kolam { width: min(46rem, 90vw); opacity: 1; }
+}
+.kr-dot { fill: #e2b553; }
+.kr-line {
+  fill: none;
+  stroke: #f6e7c8;
+  stroke-width: 0.07;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.kr-card-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 26rem;
+  margin-top: 46px;
+  perspective: 900px;
+}
+.kr-crest {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  z-index: 3;
+  width: 92px;
+  translate: -50% 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.kr-crest-flame { fill: #ff9a28; }
+.kr-card {
+  position: relative;
+  padding: 30px 20px 18px;
+  border: 1px solid #d4a54a;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e4c0 100%);
+  outline: 1px solid rgb(232 197 107 / 0.6);
+  outline-offset: 4px;
+  box-shadow: 0 22px 44px -18px rgb(12 0 3 / 0.75);
+  color: #3d1c14;
+  text-align: center;
+}
+.kr-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.kr-dots li {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #b8862f;
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.kr-dots li.is-done { background: #e2b553; }
+.kr-dots li.is-now { background: #8a1b2c; border-color: #8a1b2c; transform: scale(1.3); }
+.kr-body { min-height: 12.5rem; }
+.kr-step { border: 0; margin: 0; padding: 0; min-width: 0; }
+.kr-legend {
+  width: 100%;
+  padding: 0;
+  font-family: "Great Vibes", cursive;
+  font-size: 2.05rem;
+  line-height: 1.15;
+  color: #8a1b2c;
+  outline: none;
+}
+.kr-hint { margin-top: 2px; font-style: italic; font-size: 0.9rem; color: #6b4a3a; }
+.kr-sub { margin: 16px 0 8px; font-style: italic; font-size: 0.95rem; color: #5c3a2b; }
+.kr-input {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid #d4a54a;
+  border-radius: 8px;
+  background: #fffdf6;
+  color: #3d1c14;
+  font-size: 1.05rem;
+  text-align: center;
+}
+.kr-input:focus { outline: 2px solid #c99a3d; outline-offset: 1px; }
+.kr-textarea { resize: none; text-align: left; line-height: 1.45; }
+.kr-counter { margin-top: 4px; text-align: right; font-size: 0.78rem; color: #7a5a48; }
+.kr-attend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.kr-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 8px 12px;
+  border: 1px solid rgb(212 165 74 / 0.6);
+  border-radius: 10px;
+  background: #fffaf0;
+  color: #5c1a24;
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.kr-choice .kr-deepam { width: 46px; height: 50px; }
+.kr-choice.is-on { background: #fbecc4; border-color: #b8862f; box-shadow: inset 0 0 0 2px #e2b553; }
+.kr-choice:active, .kr-chip:active, .kr-lamp:active { transform: scale(0.96); }
+.kr-lamps { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-top: 16px; }
+.kr-lamp { width: 46px; height: 52px; padding: 2px; border-radius: 8px; }
+.kr-lamp[aria-checked="true"] { box-shadow: inset 0 -2px 0 #b8862f; }
+.kr-lamp .kr-deepam { width: 100%; height: 100%; }
+.kr-count { margin-top: 10px; font-family: "Great Vibes", cursive; font-size: 1.7rem; color: #8a1b2c; }
+.kr-deepam { display: block; overflow: visible; }
+.kr-deepam-flame {
+  fill: #ff9a28;
+  opacity: 0;
+  transform: scaleY(0);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.kr-deepam-glow { opacity: 0; }
+.kr-deepam.is-lit .kr-deepam-flame { opacity: 1; transform: none; }
+.kr-deepam.is-lit .kr-deepam-glow { opacity: 1; }
+.kr-deepam.kr-anim .kr-deepam-flame,
+.kr-deepam.kr-anim .kr-deepam-glow { transition: transform 0.3s ease-out, opacity 0.3s ease-out; }
+.kr-deepam.kr-anim.is-lit .kr-deepam-flame,
+.kr-deepam.kr-anim.is-lit .kr-deepam-glow { transition-delay: var(--d, 0s); }
+.kr-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+.kr-chip {
+  padding: 7px 15px;
+  border: 1px solid rgb(184 134 47 / 0.7);
+  border-radius: 999px;
+  background: #fffaf0;
+  color: #5c1a24;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.kr-chip.is-on { background: linear-gradient(180deg, #fbe39c, #e2b553); border-color: #b8862f; color: #4a0d16; font-weight: 600; }
+.kr-choice:focus-visible, .kr-chip:focus-visible, .kr-lamp:focus-visible { outline: 2px solid #8a1b2c; outline-offset: 2px; }
+.kr-error { margin-top: 10px; font-size: 0.9rem; color: #8a1b2c; }
+.kr-retry { margin-left: 8px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.kr-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
+.kr-nav--pass { justify-content: center; flex-wrap: wrap; }
+.kr-card .pm-btn--ghost { color: #6a0f1f; background: transparent; border-color: #c99a3d; }
+.kr-card .pm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.kr-back:disabled { visibility: hidden; }
+
+/* the Guest Pass: a golden palm leaf with two holes and a cord, sealed with a kumkum thumbprint */
+.kr-card--pass {
+  padding: 26px 30px 20px;
+  border-color: #b8862f;
+  border-radius: 46px / 34px;
+  background:
+    repeating-linear-gradient(180deg, rgb(120 80 30 / 0.1) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, #f6e4b5 0%, #ecd197 55%, #ddb878 100%);
+}
+.kr-pass { position: relative; }
+.kr-hole {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #4c0813;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 0 0 2px rgb(150 100 40 / 0.5);
+}
+.kr-hole::after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  width: 30px;
+  height: 2px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(90deg, #8a1b2c 0 4px, #c14a3a 4px 7px);
+}
+.kr-hole--l { left: -14px; }
+.kr-hole--l::after { right: 6px; }
+.kr-hole--r { right: -14px; }
+.kr-hole--r::after { left: 6px; }
+.kr-pass-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #8a5d1f; }
+.kr-pass-name { margin-top: 4px; font-family: "Great Vibes", cursive; font-size: 2.3rem; line-height: 1.1; color: #8a1b2c; }
+.kr-pass-line { margin-top: 4px; font-style: italic; font-size: 1rem; color: #3d1c14; }
+.kr-pass-small { margin-top: 3px; font-size: 0.86rem; color: #5c3a2b; }
+.kr-pass-rule { display: block; width: 60%; height: 1px; margin: 12px auto 8px; background: linear-gradient(90deg, transparent, #b8862f, transparent); }
+.kr-pass-couple { font-family: "Great Vibes", cursive; font-size: 1.6rem; line-height: 1.1; color: #6a0f1f; }
+.kr-pass-lamp { width: 58px; height: 64px; margin: 0 auto 4px; }
+.kr-seal { position: absolute; right: -8px; top: -6px; width: 44px; rotate: -8deg; }
+.kr-thumb { display: block; width: 100%; height: auto; }
+.kr-falls { position: absolute; inset: 0; z-index: 4; overflow: hidden; pointer-events: none; }
+.kr-fall {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 13px;
+  border-radius: 80% 0 80% 0;
+  background: #f7c3cc;
+  opacity: 0;
+}
+.kr-fall--marigold { background: #f39a1e; }

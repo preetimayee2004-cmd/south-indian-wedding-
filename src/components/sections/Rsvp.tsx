@@ -1,8 +1,6 @@
-import { InteractiveRsvp } from "./rsvp/InteractiveRsvp";
+import { KolamRsvp } from "./rsvp/KolamRsvp";
 
-/**
- * Section 07 — South Indian Wedding Interactive Two-Stage RSVP.
- */
+/** Section 07 — the Kolam RSVP (reduced motion: the same, without animation). */
 export function Rsvp() {
-  return <InteractiveRsvp />;
+  return <KolamRsvp />;
 }

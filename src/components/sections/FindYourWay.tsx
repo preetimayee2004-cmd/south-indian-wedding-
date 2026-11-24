@@ -140,7 +140,7 @@ const BELL_PITCH = [1, 0.8909, 1.1225, 0.7937];
 /** Ring a bell: restart its swing. */
 function ring(e: MouseEvent<HTMLButtonElement>) {
   const el = e.currentTarget;
-  el.classList.remove("is-ringing");
+  el.classList.remove("is-ringing", "is-swaying");
   void el.offsetWidth;
   el.classList.add("is-ringing");
 }
@@ -182,8 +182,32 @@ export function FindYourWay() {
   // the cards fade up, one after another, as the section comes into view
   useLayoutEffect(() => {
     const el = root.current;
-    if (!el || reduced) return;
+    if (!el) return;
     const ctx = gsap.context(() => {
+      const leaves = gsap.utils.toArray<HTMLElement>(".fw-leaf", el);
+      const bells = gsap.utils.toArray<HTMLElement>(".fw-bell", el);
+      // where to stay: each palm leaf starts rolled shut and opens in turn, with a dry leaf rustle
+      if (leaves.length) {
+        if (!reduced) gsap.set(leaves, { scaleY: 0.08, autoAlpha: 0, transformOrigin: "50% 0%" });
+        const open = gsap.timeline({ paused: true });
+        leaves.forEach((leaf, i) => {
+          open.call(() => playSfx("leaf", { volume: 0.5, rate: 0.92 + ((i * 7) % 5) * 0.04 }), undefined, i * 0.35);
+          if (!reduced) open.to(leaf, { scaleY: 1, autoAlpha: 1, duration: 0.7, ease: "power2.out", clearProps: "transform" }, i * 0.35);
+        });
+        gsap.timeline({ scrollTrigger: { trigger: leaves[0].parentElement, start: "top 75%", once: true } }).call(() => void open.play());
+      }
+      // contact: the bells swing one after another as they come into view, each with its own voice
+      if (bells.length) {
+        gsap.timeline({ scrollTrigger: { trigger: bells[0], start: "top 80%", once: true } }).call(() => {
+          bells.forEach((b, i) =>
+            gsap.delayedCall(0.3 * i, () => {
+              if (!reduced) b.classList.add("is-swaying");
+              playSfx("bell", { rate: BELL_PITCH[i % BELL_PITCH.length], volume: 0.45 });
+            }),
+          );
+        });
+      }
+      if (reduced) return;
       gsap.from(gsap.utils.toArray<HTMLElement>("[data-rise]", el), {
         autoAlpha: 0,
         y: 24,
@@ -194,7 +218,7 @@ export function FindYourWay() {
       });
     }, el);
     return () => ctx.revert();
-  }, [reduced]);
+  }, [reduced, playSfx]);
 
   return (
     <section ref={root} id="travelStay" aria-labelledby="fw-heading" className="fw-section">

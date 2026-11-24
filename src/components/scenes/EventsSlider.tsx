@@ -2,6 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProp
 import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
+import { useAudio } from "@/context/AudioContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { mapsUrl } from "@/lib/format";
 import type { EventTheme, WeddingEvent } from "@/config/types";
@@ -117,6 +118,20 @@ export function EventsSlider() {
   const door = useRef<HTMLDivElement>(null);
   // gatti melam: a thavil flourish as the temple doorway comes up
   useSfxOnView(door, [["thavil", { volume: 0.6 }]], { threshold: 0.35, rootMargin: "0px" });
+  // a soft silk swish each time the event changes (auto, swipe or dot), never more than once per 400ms
+  const { playSfx } = useAudio();
+  const lastSwish = useRef(0);
+  const firstCur = useRef(true);
+  useEffect(() => {
+    if (firstCur.current) {
+      firstCur.current = false;
+      return;
+    }
+    const now = performance.now();
+    if (now - lastSwish.current < 400) return;
+    lastSwish.current = now;
+    playSfx("swish", { volume: 0.5, rate: 0.95 + Math.random() * 0.1 });
+  }, [cur, playSfx]);
   const stopped = useRef(false);
   const visible = useRef(false);
   const timer = useRef(0);

@@ -1,95 +1,173 @@
-import { useRef } from "react";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { Scene, type Build } from "@/components/scene/Scene";
-import { GoldCorners, GoldDivider } from "@/components/ui/GoldDivider";
-import { Petals, addPetals } from "./CoupleScene";
+import { useAudio } from "@/context/AudioContext";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
+import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { GoldDivider } from "@/components/ui/GoldDivider";
+import { TempleDress } from "@/components/ui/TempleDress";
+import { calendarUrl } from "@/lib/format";
+import { gsap } from "@/lib/gsap";
+
+/** Link to share: the page without personal params, so a forwarded link never carries this guest's name. */
+function shareableUrl(dropParams: string[]): string {
+  const u = new URL(window.location.href);
+  [...dropParams, "nointro", "tokens", "wishdemo", "rsvpform"].forEach((p) => u.searchParams.delete(p));
+  u.hash = "";
+  return u.toString();
+}
+
+const PETALS = 16;
 
 /**
- * Scene 11 — Thank You (with Save the Date, Add to Calendar and Replay
- * Invitation). On deep maroon silk inside a gold frame: the couple facing the
- * temple in a gold-rimmed arch, easing back from 1 to 0.92 as you scroll while
- * petals fall; "Thank You" fades in above them, the Save the Date plaque
- * rises over the foot of the arch.
+ * The finale (normal scroll, no pin), on the dressed temple damask — the last section:
+ * "Thank You", the couple's love note as a quote, two temple elephants facing each other with the
+ * couple's medallion between them, the names, date and city, Add to Calendar · Share · Replay,
+ * and a last line of thanks. Petals fall as it arrives.
  */
 export function ThankYouScene() {
-  const { thankYou, couple, wedding, events, venue } = useWedding();
+  const { thankYou, loveNote, couple, wedding, events, venue, meta, personalization } = useWedding();
+  const reduced = usePrefersReducedMotion();
+  const { playSfx } = useAudio();
+  const root = useRef<HTMLElement>(null);
+  const scene = useRef<HTMLDivElement>(null);
+  const [shared, setShared] = useState<"idle" | "copied" | "fail">("idle");
+
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
-  const tz = wedding.timeZone;
-  const d = new Date(wedding.dateISO);
-  const part = (o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: tz, ...o }).format(d);
-  const saveDate = `${part({ day: "2-digit" })} · ${part({ month: "2-digit" })} · ${part({ year: "numeric" })}`;
-  const weekday = part({ weekday: "long" });
-  // Google Calendar: the muhurtham (with its end time when known)
+  const date = new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, day: "numeric", month: "long", year: "numeric" }).format(new Date(wedding.dateISO));
   const muh = events.find((e) => e.startISO === wedding.dateISO);
-  const end = muh?.endISO ? new Date(muh.endISO) : new Date(d.getTime() + 90 * 60000);
-  const stamp = (t: Date) => t.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
-  const calendarUrl =
-    "https://calendar.google.com/calendar/render?action=TEMPLATE" +
-    `&text=${encodeURIComponent(`${first.name} weds ${second.name} – Wedding`)}` +
-    `&dates=${stamp(d)}/${stamp(end)}` +
-    `&location=${encodeURIComponent(`${venue.name}, ${venue.address}`)}`;
-  const pic = useRef<HTMLDivElement>(null);
-  const head = useRef<HTMLDivElement>(null);
-  const words = useRef<HTMLDivElement>(null);
-  const petals = useRef<(HTMLDivElement | null)[]>([]);
-  // akshathai: blessing rice and petals showered, as the petals fall
-  useSfxOnView("#thankYou", [["akshathai", { volume: 0.9 }]], { rootMargin: "0px 0px -40% 0px" });
+  const calUrl = calendarUrl(`${first.name} weds ${second.name} – Wedding`, wedding.dateISO, `${venue.name}, ${venue.address}`, muh?.endISO);
+  const signature = loveNote?.signature ?? `${first.name} & ${second.name}`;
 
-  const build: Build = (tl) => {
-    tl.fromTo(pic.current, { scale: 1 }, { scale: 0.92, duration: 2, ease: "none" }, 0)
-      .from(head.current!.children, { opacity: 0, y: 16, duration: 0.4, stagger: 0.12, ease: "power2.out" }, 0.2)
-      .from(words.current!.children, { opacity: 0, y: 12, duration: 0.3, stagger: 0.12, ease: "power2.out" }, 0.7);
-    addPetals(tl, petals.current, 0, 2);
+  // petals fall as the section arrives (a soft rustle, once); reduced motion: just the sound
+  useSfxOnView(root, [["petals", { volume: 0.5 }]], { rootMargin: "0px 0px -35% 0px" });
+  // reduced motion: no walk-in, but the elephants are still heard
+  useSfxOnView(scene, [["elephant", { volume: 0.75 }], ["trumpet", { volume: 0.5, delay: 1.3 }]], { enabled: reduced });
+
+  useLayoutEffect(() => {
+    const el = root.current;
+    if (!el || reduced) return;
+    const ctx = gsap.context(() => {
+      // the words rise in
+      gsap.from(".ty-in", { autoAlpha: 0, y: 16, duration: 0.7, stagger: 0.1, ease: "power2.out", scrollTrigger: { trigger: el, start: "top 70%", once: true } });
+
+      // a shower of petals from the top as the section comes in
+      gsap.utils.toArray<HTMLElement>(".ty-fall", el).forEach((p, i) => {
+        gsap.fromTo(
+          p,
+          { y: -30, x: 0, rotate: i * 41, autoAlpha: 0 },
+          {
+            keyframes: [
+              { autoAlpha: 0.95, duration: 0.3 },
+              { y: () => window.innerHeight * (0.7 + (i % 4) * 0.08), x: (i % 2 ? 1 : -1) * (24 + (i % 5) * 14), rotate: `+=${220 + i * 18}`, autoAlpha: 0, duration: 3.2, ease: "sine.in" },
+            ],
+            delay: (i % 8) * 0.18,
+            scrollTrigger: { trigger: el, start: "top 65%", once: true },
+          },
+        );
+      });
+
+      // two temple elephants walk in — heavy steps, neck bells clanking — and one trumpets as the
+      // couple's medallion rises between them
+      const tl = gsap.timeline({ scrollTrigger: { trigger: el.querySelector(".fn-scene"), start: "top 85%", once: true } });
+      tl.call(() => playSfx("elephant", { volume: 0.75 }), undefined, 0)
+        .from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" }, 0)
+        .from(".fn-ele--r", { autoAlpha: 0, x: 30, duration: 1, ease: "power2.out" }, "<")
+        .from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, "-=0.5")
+        .call(() => playSfx("trumpet", { volume: 0.5 }), undefined, "<")
+        .fromTo(".fn-glow", { autoAlpha: 0.4, scale: 0.9 }, { autoAlpha: 1, scale: 1.06, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+    }, el);
+    return () => ctx.revert();
+  }, [reduced, playSfx]);
+
+  const share = async () => {
+    const url = shareableUrl(personalization.queryParams);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: meta.title, text: meta.description, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setShared("copied");
+    } catch (e) {
+      if ((e as DOMException)?.name === "AbortError") return; // closed the share sheet
+      setShared("fail");
+    }
+    window.setTimeout(() => setShared("idle"), 2400);
   };
 
   return (
-    <Scene id="thankYou" labelledBy="thanks-heading" className="pm-silk" build={build}>
-      {/* the gold frame around the whole screen, with filigree corners */}
-      <span aria-hidden className="pm-frame" />
-      <GoldCorners />
+    <section ref={root} id="thankYou" aria-labelledby="thanks-heading" className="fn-finale td-host td-bg relative isolate overflow-hidden text-center">
+      <TempleDress deepams />
+      <div className="ty-falls" aria-hidden>
+        {Array.from({ length: PETALS }, (_, i) => (
+          <span key={i} className={`ty-fall ${i % 3 === 0 ? "ty-fall--marigold" : i % 3 === 1 ? "ty-fall--jasmine" : ""}`} style={{ left: `${4 + ((i * 37) % 92)}%` }} />
+        ))}
+      </div>
 
-      <div className="relative z-[2] mx-auto flex h-full max-w-[34rem] flex-col items-center px-[1.6rem] pb-[max(1.4rem,3svh)] pt-[max(1.6rem,4.5svh)] text-center">
-        <div ref={head}>
-          <p className="pm-eyebrow">॥ शुभमस्तु ॥</p>
-          <h2 id="thanks-heading" className="pm-script-title mt-1">Thank You</h2>
-          <GoldDivider className="mt-2" />
-          <p className="pm-lede mt-1">{thankYou.message}</p>
+      <div className="relative z-10 mx-auto max-w-3xl px-gutter pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[clamp(5.5rem,10vw,7.5rem)]">
+        {/* 1 · thank you */}
+        <p className="ty-in pm-eyebrow">॥ शुभमस्तु ॥</p>
+        <h2 id="thanks-heading" className="ty-in pm-script-title mt-1">
+          Thank You
+        </h2>
+        <GoldDivider className="ty-in mt-2" />
+        <p className="ty-in pm-lede mt-1">{thankYou.message}</p>
+
+        {/* 2 · the couple's love note, as a quote */}
+        {loveNote && (
+          <figure className="ty-in ty-note">
+            <span aria-hidden className="ty-quote ty-quote--open">
+              &ldquo;
+            </span>
+            <blockquote className="ty-note-text">{loveNote.text}</blockquote>
+            <span aria-hidden className="ty-quote ty-quote--close">
+              &rdquo;
+            </span>
+            <figcaption className="ty-note-sign">{signature}</figcaption>
+          </figure>
+        )}
+
+        {/* 3 · two temple elephants facing each other, the couple's initials between them */}
+        <div ref={scene} className="fn-scene" aria-hidden>
+          <span className="fn-glow" />
+          <img src="/media/elephant-warm.webp" alt="" className="fn-ele fn-ele--l" draggable={false} loading="lazy" decoding="async" />
+          <span className="fn-medal">
+            <span className="fn-medal-text">
+              {first.name[0]} <span className="fn-amp">&amp;</span> {second.name[0]}
+            </span>
+          </span>
+          <img src="/media/elephant-green.webp" alt="" className="fn-ele fn-ele--r" draggable={false} loading="lazy" decoding="async" />
+          <span className="fn-floor" />
         </div>
 
-        {/* the couple facing the temple, standing straight on the silk (no frame), a soft gold glow behind */}
-        <div className="ty-arch relative mt-3 w-full max-w-[26rem] min-h-0 flex-1">
-          <div ref={pic} data-layer className="absolute inset-0">
-            <img
-              src="/media/thank-you-temple-cut.webp"
-              alt={`${first.name} and ${second.name} facing the sacred temple`}
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-contain object-bottom"
-              draggable={false}
-            />
-          </div>
-        </div>
+        {/* 4 · names, date and city */}
+        <p className="fn-names">
+          {first.name} <span className="fn-amp">&amp;</span> {second.name}
+        </p>
+        <p className="fn-date">
+          {date} · {wedding.city.split(",")[0]}
+        </p>
 
-        {/* save the date: the day, add to calendar, replay the invitation */}
-        <div ref={words} className="relative z-10 -mt-4 w-full">
-          <div className="ty-date mx-auto max-w-[20rem]">
-            <p className="ty-date-label">Save the Date</p>
-            <p className="ty-date-num">{saveDate}</p>
-            <p className="ty-date-sub">
-              {weekday} · {wedding.city.split(",")[0]}
-            </p>
-            <a href={calendarUrl} target="_blank" rel="noopener noreferrer" className="pm-btn pm-btn--solid mt-3">
-              Add to Calendar
-            </a>
-          </div>
-          <button type="button" onClick={() => window.dispatchEvent(new Event("invitation:replay"))} className="pm-btn pm-btn--ghost mt-3">
+        {/* 5 · add to calendar · share · replay */}
+        <div className="ty-actions">
+          <a href={calUrl} target="_blank" rel="noopener noreferrer" className="pm-btn pm-btn--solid">
+            Add to Calendar
+          </a>
+          <button type="button" onClick={share} className="pm-btn pm-btn--ghost">
+            {shared === "copied" ? "Link copied ✓" : shared === "fail" ? "Couldn’t share" : "Share Invitation"}
+          </button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event("invitation:replay"))} className="pm-btn pm-btn--ghost">
             ↺&nbsp; Replay Invitation
           </button>
         </div>
+        <span role="status" aria-live="polite" className="sr-only">
+          {shared === "copied" ? "Invitation link copied" : ""}
+        </span>
+
+        {/* 6 · the last line */}
+        <p className="mt-8 text-[0.8rem] italic text-[#e9d6b0]">Made with love for our families and friends.</p>
       </div>
-      <Petals refs={petals} z="z-30" />
-    </Scene>
+    </section>
   );
 }
