@@ -88,14 +88,19 @@ export function FamiliesScene() {
                   decoding="async"
                 />
               </div>
-              {/* Ornate Golden Temple Arch Frame Overlay */}
-              <img
-                src="/media/temple-arch-frame.webp"
-                alt=""
-                aria-hidden="true"
-                className="fam-arch-img"
-                draggable={false}
-              />
+              {/* Ornate Golden Filigree Arch Frame Overlay */}
+              <picture>
+                <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
+                <img
+                  src="/media/family-arch-frame.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="fam-arch-img"
+                  width={463}
+                  height={672}
+                  draggable={false}
+                />
+              </picture>
             </div>
 
             {/* Decorative Names & Details Underneath */}
@@ -158,14 +163,19 @@ export function FamiliesScene() {
                   decoding="async"
                 />
               </div>
-              {/* Ornate Golden Temple Arch Frame Overlay */}
-              <img
-                src="/media/temple-arch-frame.webp"
-                alt=""
-                aria-hidden="true"
-                className="fam-arch-img"
-                draggable={false}
-              />
+              {/* Ornate Golden Filigree Arch Frame Overlay */}
+              <picture>
+                <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
+                <img
+                  src="/media/family-arch-frame.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="fam-arch-img"
+                  width={463}
+                  height={672}
+                  draggable={false}
+                />
+              </picture>
             </div>
 
             {/* Decorative Names & Details Underneath */}
