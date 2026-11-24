@@ -558,3 +558,787 @@
     animation: none;
   }
 }
+
+/* ── Wishing Wall, premium: framed blessing cards, an endless slow marquee, a blessing composer ── */
+.ww-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 0.25rem;
+  text-align: center;
+}
+.ww-eyebrow {
+  margin-bottom: 4px;
+  font-family: "Tiro Devanagari Hindi", "EB Garamond", serif;
+  font-size: clamp(13px, 1.3vw, 15px);
+  letter-spacing: 0.22em;
+  color: #b8862e;
+}
+.ww-count {
+  margin-top: 6px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.3vw, 16px);
+  color: #7a4b2a;
+}
+/* the lovebirds fade into the wall instead of standing in a box */
+.ww-lovebirds {
+  filter: none;
+  -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, #000 55%, transparent 100%);
+}
+
+/* the row of cards */
+.ww-wall {
+  width: 100vw;
+  max-width: 100vw;
+  margin: clamp(14px, 2vw, 22px) calc(50% - 50vw) 0;
+  padding: 14px 0 18px;
+}
+.ww-track {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(14px, 1.6vw, 22px);
+}
+.ww-wall--still .ww-track {
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 0 16px;
+}
+/* desktop: an endless, slow sideways marquee (transform only), fading at both edges */
+@media (min-width: 768px) {
+  .ww-wall--marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  }
+  .ww-wall--marquee .ww-track {
+    width: max-content;
+    animation: ww-marquee var(--ww-dur, 60s) linear infinite;
+  }
+  .ww-wall--marquee:hover .ww-track {
+    animation-play-state: paused;
+  }
+}
+@keyframes ww-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - clamp(14px, 1.6vw, 22px) / 2)); }
+}
+/* phones: a swipe row that snaps to each card, with a peek of the next one */
+@media (max-width: 767px) {
+  .ww-wall--marquee {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ww-wall--marquee::-webkit-scrollbar {
+    display: none;
+  }
+  .ww-wall--marquee .ww-track {
+    width: max-content;
+    padding: 0 9vw;
+  }
+  .ww-wall--marquee .ww-card {
+    scroll-snap-align: center;
+  }
+  .ww-dup {
+    display: none;
+  }
+}
+
+/* one framed blessing card */
+.ww-card {
+  position: relative;
+  flex: none;
+  width: clamp(240px, 78vw, 300px);
+  margin: 0;
+  padding: 26px 24px 18px;
+  border: 1px solid #d4a54a;
+  border-radius: 14px;
+  background: linear-gradient(170deg, #fffdf6, #fbf1da 60%, #f6e6c4);
+  box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px rgb(212 165 74 / 0.7), 0 10px 22px rgb(92 40 12 / 0.16), 0 2px 5px rgb(92 40 12 / 0.1);
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ww-card:hover {
+  transform: rotate(0deg) translateY(-4px);
+}
+.ww-card--new {
+  animation: ww-bloom 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ww-bloom {
+  from { opacity: 0; transform: rotate(var(--tilt, 0deg)) translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: rotate(var(--tilt, 0deg)); }
+}
+.ww-corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  user-select: none;
+}
+.ww-corner--tl { top: 3px; left: 3px; }
+.ww-corner--tr { top: 3px; right: 3px; transform: scaleX(-1); }
+.ww-corner--bl { bottom: 3px; left: 3px; transform: scaleY(-1); }
+.ww-corner--br { bottom: 3px; right: 3px; transform: scale(-1, -1); }
+.ww-quote {
+  position: absolute;
+  top: 2px;
+  left: 30px;
+  font-family: "Great Vibes", cursive;
+  font-size: 3rem;
+  line-height: 1;
+  color: #d4a54a;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.ww-message {
+  position: relative;
+  margin: 14px 0 0;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 1.2vw, 1.1rem);
+  line-height: 1.5;
+  color: #3d1c14;
+  overflow-wrap: anywhere;
+}
+.ww-rule {
+  display: block;
+  width: 54px;
+  height: 1px;
+  margin: 12px 0 10px;
+  background: linear-gradient(90deg, #d4a54a, rgb(212 165 74 / 0));
+}
+.ww-sign {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.ww-medallion {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
+  box-shadow: 0 0 0 1.5px #d4a54a, 0 0 0 3px rgb(212 165 74 / 0.25);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f3cf73;
+}
+.ww-name {
+  min-width: 0;
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.45rem, 2vw, 1.65rem);
+  line-height: 1.1;
+  color: #6a0f1f;
+  overflow-wrap: anywhere;
+}
+
+/* the composer: a proper blessing card */
+.ww-composer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(100%, 560px);
+  margin-top: clamp(26px, 3.6vw, 40px);
+  padding: 30px clamp(18px, 3vw, 30px) 22px;
+  border: 1px solid #d4a54a;
+  border-radius: 16px;
+  background: linear-gradient(170deg, #fffdf6, #fbf1da 60%, #f6e6c4);
+  box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px rgb(212 165 74 / 0.7), 0 12px 26px rgb(92 40 12 / 0.16);
+}
+.ww-composer-crest {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  padding: 0 8px;
+  background: radial-gradient(closest-side, #fbf1da 70%, transparent);
+}
+.ww-composer-title {
+  text-align: center;
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3.4vw, 2.3rem);
+  line-height: 1.1;
+  color: #6a0f1f;
+}
+.ww-field {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+.ww-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 8px 4px;
+  border: 0;
+  border-bottom: 1px solid rgb(212 165 74 / 0.6);
+  border-radius: 0;
+  background: transparent;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1.05rem;
+  color: #3d1c14;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.ww-input::placeholder {
+  color: #9a7a5a;
+  font-style: italic;
+}
+.ww-input:focus {
+  border-bottom-color: #b8862e;
+  box-shadow: 0 1px 0 0 #d4a54a;
+}
+.ww-textarea {
+  resize: none;
+  line-height: 1.5;
+}
+.ww-help {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: -4px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.85rem;
+}
+.ww-error {
+  font-style: italic;
+  color: #9e2a2b;
+}
+.ww-counter {
+  flex: none;
+  color: #9a7a5a;
+  font-variant-numeric: tabular-nums;
+}
+.ww-send,
+.ww-view-all {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1.5px solid #d4a54a;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
+  box-shadow: inset 0 0 0 3px #6a0f1f, inset 0 0 0 4px rgb(232 197 107 / 0.55), 0 6px 14px rgb(76 8 19 / 0.25);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #f3cf73;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.ww-send {
+  align-self: center;
+  margin-top: 4px;
+  padding: 12px 30px;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+}
+.ww-send:hover:not(:disabled),
+.ww-view-all:hover {
+  transform: translateY(-2px);
+}
+.ww-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ww-view-all {
+  padding: 10px 26px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+/* petals: real petal shapes, slow and few, transform/opacity only */
+.ww-petals {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ww-petal {
+  position: absolute;
+  top: -24px;
+  width: 12px;
+  height: 12px;
+  border-radius: 80% 0 80% 0;
+  opacity: 0;
+  animation: ww-petal-fall 18s linear infinite;
+}
+.ww-petal--jasmine {
+  background: linear-gradient(135deg, #fffdf6, #f1e6cc);
+  box-shadow: inset -1px -1px 0 rgb(200 180 140 / 0.5);
+}
+.ww-petal--marigold {
+  background: linear-gradient(135deg, #ffb53d, #e8790f);
+}
+.ww-petal--0 { left: 8%; animation-delay: -2s; }
+.ww-petal--1 { left: 22%; animation-delay: -9s; animation-duration: 22s; }
+.ww-petal--2 { left: 41%; animation-delay: -14s; }
+.ww-petal--3 { left: 63%; animation-delay: -5s; animation-duration: 21s; }
+.ww-petal--4 { left: 78%; animation-delay: -11s; }
+.ww-petal--5 { left: 92%; animation-delay: -17s; animation-duration: 24s; }
+@keyframes ww-petal-fall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  8% { opacity: 0.85; }
+  50% { transform: translate(26px, 50vh) rotate(200deg); }
+  90% { opacity: 0.7; }
+  100% { transform: translate(-10px, 100vh) rotate(380deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ww-wall--marquee .ww-track,
+  .ww-petal {
+    animation: none;
+  }
+}
+
+/* ── Our Venue & Travel: featured venue card, travel + stay, contacts, ribbon ── */
+/* the corridor picture keeps its proportions at the top (its garland and bells stay clear of the
+   words: the heading starts below them) and fades into the same cream paper below */
+.fw-section {
+  --fw-art-h: calc(100vw * 497 / 1024);
+  position: relative;
+  width: 100%;
+  overflow-x: clip;
+  padding: calc(var(--fw-art-h) * 0.36 + 18px) 16px clamp(48px, 7vw, 88px);
+  background-color: #fbe6b4;
+  background-image:
+    linear-gradient(180deg, rgb(251 230 180 / 0) 0, rgb(251 230 180 / 0) 55%, #fbe6b4 100%),
+    url("/media/temple-corridor-bg.webp");
+  background-size: 100% var(--fw-art-h), 100% var(--fw-art-h);
+  background-position: center top, center top;
+  background-repeat: no-repeat, no-repeat;
+}
+.fw-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.fw-eyebrow {
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(12px, 1.2vw, 15px);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #a8740f;
+}
+.fw-title {
+  margin-top: 6px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(1.7rem, 4.2vw, 2.7rem);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  color: #6a0f1f;
+}
+.fw-sub {
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  color: #5a3a24;
+}
+
+/* the shared card: ivory, a gold double border, filigree corners */
+.fw-card {
+  position: relative;
+  border: 1px solid #d4a54a;
+  border-radius: 16px;
+  background: linear-gradient(170deg, #fffdf6, #fbf1da 60%, #f6e6c4);
+  box-shadow: inset 0 0 0 5px #fffaf0, inset 0 0 0 6px rgb(212 165 74 / 0.7), 0 14px 30px rgb(92 40 12 / 0.14), 0 3px 8px rgb(92 40 12 / 0.08);
+}
+.fw-corner {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+  user-select: none;
+}
+.fw-corner--tl { top: 4px; left: 4px; }
+.fw-corner--tr { top: 4px; right: 4px; transform: scaleX(-1); }
+.fw-corner--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+.fw-corner--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+
+/* the featured venue card */
+.fw-venue {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(20px, 3.4vw, 44px);
+  width: min(100%, 960px);
+  margin-top: clamp(24px, 3.4vw, 40px);
+  padding: clamp(26px, 3.6vw, 44px);
+}
+.fw-window {
+  padding: 6px;
+  border: 2px solid #d4a54a;
+  border-radius: 999px 999px 12px 12px;
+  background: linear-gradient(180deg, #f3cf73, #d4a54a);
+}
+.fw-window-inner {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 999px 999px 8px 8px;
+  box-shadow: inset 0 0 0 1px #fffaf0;
+  background: #f3e6c8;
+}
+.fw-venue-art,
+.fw-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+/* the whole mandap, standing under the arch on the cream (it has a transparent background) */
+.fw-venue-art {
+  inset: 14% 3% 6%;
+  width: 94%;
+  height: 80%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.fw-window-inner {
+  background: radial-gradient(ellipse at 50% 70%, #fffaf0, #f3e6c8 75%);
+}
+.fw-map {
+  filter: sepia(0.22) saturate(0.85);
+}
+.fw-map-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: rgb(255 250 240 / 0.92);
+}
+.fw-venue-text {
+  min-width: 0;
+}
+.fw-kicker {
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #a8740f;
+}
+.fw-venue-name {
+  margin-top: 6px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
+  line-height: 1.15;
+  color: #6a0f1f;
+  overflow-wrap: anywhere;
+}
+.fw-address {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: #3d1c14;
+}
+.fw-pin {
+  flex: none;
+  margin-top: 3px;
+  color: #b8862e;
+}
+.fw-date {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 6px 14px;
+  border: 1px solid rgb(212 165 74 / 0.8);
+  border-radius: 999px;
+  background: rgb(255 250 240 / 0.7);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: #6a0f1f;
+}
+.fw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+/* pill buttons */
+.fw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+.fw-btn:hover {
+  transform: translateY(-2px);
+}
+.fw-map-btn:hover {
+  transform: translateX(-50%) translateY(-2px);
+}
+.fw-btn--solid {
+  border: 1.5px solid #d4a54a;
+  background: linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
+  box-shadow: inset 0 0 0 3px #6a0f1f, inset 0 0 0 4px rgb(232 197 107 / 0.5), 0 6px 14px rgb(76 8 19 / 0.22);
+  color: #f3cf73;
+}
+.fw-btn--ghost {
+  border: 1.5px solid #d4a54a;
+  color: #6a0f1f;
+}
+.fw-btn--ghost:hover {
+  background: #6a0f1f;
+  color: #f3cf73;
+}
+
+/* Getting There + Where to Stay */
+.fw-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: clamp(18px, 2.4vw, 28px);
+  width: min(100%, 960px);
+  margin-top: clamp(20px, 2.8vw, 32px);
+}
+.fw-list-card {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(26px, 3vw, 36px) clamp(22px, 3vw, 34px);
+}
+.fw-card-title {
+  text-align: center;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  letter-spacing: 0.06em;
+  color: #6a0f1f;
+}
+.fw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 16px;
+}
+.fw-travel-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.fw-medal {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid #d4a54a;
+  border-radius: 50%;
+  background: #fffaf0;
+  color: #9a6b18;
+}
+.fw-travel-text {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  color: #3d1c14;
+}
+.fw-card-cta {
+  align-self: center;
+  margin-top: auto;
+  padding-top: 10px;
+}
+.fw-list-card .fw-card-cta {
+  margin-top: 20px;
+}
+.fw-stay-row {
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgb(212 165 74 / 0.35);
+}
+.fw-stay-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.fw-stay-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.fw-stay-name {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #6a0f1f;
+}
+.fw-pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f3cf73, #d4a54a);
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.8rem;
+  color: #4c0813;
+}
+.fw-stay-note {
+  margin-top: 4px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.98rem;
+  color: #5a3a24;
+}
+.fw-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a6b18;
+}
+
+/* need help? call us */
+.fw-help {
+  width: min(100%, 960px);
+  margin-top: clamp(28px, 3.6vw, 44px);
+  text-align: center;
+}
+.fw-help-title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3.4vw, 2.4rem);
+  color: #6a0f1f;
+}
+.fw-contacts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+@media (max-width: 767px) {
+  .fw-contacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+.fw-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 16px 10px 14px;
+  border: 1px solid #d4a54a;
+  border-radius: 14px;
+  background: linear-gradient(170deg, #fffdf6, #f8ecd2);
+  box-shadow: inset 0 0 0 3px #fffaf0, inset 0 0 0 4px rgb(212 165 74 / 0.55), 0 8px 18px rgb(92 40 12 / 0.1);
+}
+.fw-initial {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
+  box-shadow: 0 0 0 1.5px #d4a54a, 0 0 0 3px rgb(212 165 74 / 0.25);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  color: #f3cf73;
+}
+.fw-contact-name {
+  margin-top: 8px;
+  max-width: 100%;
+  font-family: "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #3d1c14;
+  overflow-wrap: anywhere;
+}
+.fw-contact-role {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: #7a4b2a;
+}
+.fw-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.fw-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: 1px solid #d4a54a;
+  border-radius: 999px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.82rem;
+  color: #6a0f1f;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.fw-mini:hover {
+  background: #6a0f1f;
+  color: #f3cf73;
+}
+
+/* the closing ribbon, drawn in CSS: maroon band, gold border and hairline, notched ends */
+.fw-ribbon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: clamp(30px, 4vw, 48px);
+}
+.fw-ribbon {
+  position: relative;
+  padding: 12px clamp(40px, 6vw, 64px) 14px;
+  background:
+    linear-gradient(#f3cf73, #f3cf73) 0 4px / 100% 1px no-repeat,
+    linear-gradient(#f3cf73, #f3cf73) 0 calc(100% - 4px) / 100% 1px no-repeat,
+    linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
+  border-top: 2px solid #d4a54a;
+  border-bottom: 2px solid #d4a54a;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 50%, 100% 100%, 0 100%, 18px 50%);
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  line-height: 1.2;
+  text-align: center;
+  color: #f3cf73;
+}
+.fw-heart {
+  width: 22px;
+  margin-top: 8px;
+}
+@media (max-width: 767px) {
+  .fw-venue {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fw-window {
+    width: min(100%, 300px);
+    margin: 0 auto;
+  }
+  .fw-venue-text {
+    text-align: center;
+  }
+  .fw-address {
+    justify-content: center;
+    text-align: left;
+  }
+  .fw-actions {
+    justify-content: center;
+  }
+}

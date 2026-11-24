@@ -1,331 +1,274 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Container } from "@/components/layout/Container";
+import { GoldDivider } from "@/components/ui/GoldDivider";
+import { directionsUrl, mapEmbedUrl } from "@/lib/format";
+import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { gsap } from "@/lib/gsap";
 
-/* ── SVG Icons ── */
-
-function TempleGopuramIcon({ className = "w-8 h-8" }: { className?: string }) {
+/* ── small gold line icons ── */
+const ICON = { fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round" } as const;
+function PinIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 36 36" fill="none" className={className} aria-hidden="true">
-      <path
-        d="M18 2 L22 7 L20 11 L24 16 L22 22 L27 27 L25 32 L11 32 L9 27 L14 22 L12 16 L16 11 L14 7 Z"
-        fill="#f8ecd2"
-        stroke="#c69538"
-        strokeWidth="1.3"
-      />
-      <circle cx="18" cy="2" r="1.5" fill="#c69538" />
-      <line x1="18" y1="12" x2="18" y2="32" stroke="#c69538" strokeWidth="0.8" strokeDasharray="1 2" />
-      <rect x="16" y="24" width="4" height="8" rx="2" fill="#7c1a22" />
+    <svg viewBox="0 0 24 24" className={className} {...ICON} aria-hidden>
+      <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z" />
+      <circle cx="12" cy="9.5" r="2.5" />
     </svg>
   );
 }
-
-function AirplaneEmblem({ className = "w-8 h-8" }: { className?: string }) {
+function PlaneIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#c69538" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" {...ICON} aria-hidden>
+      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5Z" />
     </svg>
   );
 }
-
-function PhoneEmblem({ className = "w-8 h-8" }: { className?: string }) {
+function TrainIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#c69538" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" {...ICON} aria-hidden>
+      <rect x="5" y="3" width="14" height="14" rx="3" />
+      <path d="M5 10h14M8 21l2-4M16 21l-2-4" />
+      <circle cx="9" cy="13.5" r=".8" fill="currentColor" />
+      <circle cx="15" cy="13.5" r=".8" fill="currentColor" />
     </svg>
   );
 }
-
-function MapPinIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+function BusIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
-      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" {...ICON} aria-hidden>
+      <rect x="4" y="3" width="16" height="15" rx="2.5" />
+      <path d="M4 11h16M8 18v2M16 18v2" />
+      <circle cx="8" cy="14.5" r=".8" fill="currentColor" />
+      <circle cx="16" cy="14.5" r=".8" fill="currentColor" />
     </svg>
   );
 }
-
-function CarChipIcon({ className = "w-4 h-4" }: { className?: string }) {
+function CarIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#7c1a22" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M5 17h14m-12-6l1.8-4.5A2 2 0 0 1 10.6 5h2.8a2 2 0 0 1 1.8 1.5L17 11" />
+    <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" {...ICON} aria-hidden>
+      <path d="M5 16h14M7 11l1.6-4A2 2 0 0 1 10.5 5.7h3a2 2 0 0 1 1.9 1.3L17 11" />
       <rect x="3" y="11" width="18" height="6" rx="2" />
-      <circle cx="7.5" cy="17.5" r="1.5" fill="#7c1a22" />
-      <circle cx="16.5" cy="17.5" r="1.5" fill="#7c1a22" />
+      <circle cx="7.5" cy="17.5" r="1.4" />
+      <circle cx="16.5" cy="17.5" r="1.4" />
     </svg>
   );
 }
-
-function TrainChipIcon({ className = "w-4 h-4" }: { className?: string }) {
+function PhoneIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#7c1a22" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <rect x="4" y="3" width="16" height="15" rx="3" />
-      <line x1="4" y1="11" x2="20" y2="11" />
-      <circle cx="8" cy="15" r="1.2" fill="#7c1a22" />
-      <circle cx="16" cy="15" r="1.2" fill="#7c1a22" />
-      <line x1="7" y1="18" x2="4" y2="21" />
-      <line x1="17" y1="18" x2="20" y2="21" />
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...ICON} aria-hidden>
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
     </svg>
   );
 }
-
-function FlightChipIcon({ className = "w-4 h-4" }: { className?: string }) {
+function ChatIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#7c1a22" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
-      <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" />
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...ICON} aria-hidden>
+      <path d="M20.5 11.5a8.5 8.5 0 0 1-12.4 7.6L3.5 20.5l1.4-4.4A8.5 8.5 0 1 1 20.5 11.5Z" />
     </svg>
   );
 }
+/** The icon for a travel note, picked from its words. */
+function travelIcon(text: string) {
+  const t = text.toLowerCase();
+  if (/airport|flight|fly|plane/.test(t)) return <PlaneIcon />;
+  if (/railway|station|train|junction/.test(t)) return <TrainIcon />;
+  if (/\bbus\b/.test(t)) return <BusIcon />;
+  return <CarIcon />;
+}
 
-function RoutePaperPlaneIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
+function Corners() {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" fill="currentColor" fillOpacity="0.2" />
-    </svg>
+    <>
+      {(["tl", "tr", "bl", "br"] as const).map((c) => (
+        <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`fw-corner fw-corner--${c}`} />
+      ))}
+    </>
   );
 }
 
-function MailIcon({ className = "w-3.5 h-3.5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-      <polyline points="22,6 12,13 2,6" />
-    </svg>
-  );
+/** "Monday, 15 Feb 2027 · Muhurtham 7:00 – 8:30 AM", from the config. */
+function dateLine(iso: string, timeZone: string, muhurtham?: string) {
+  const d = new Intl.DateTimeFormat("en-GB", { timeZone, weekday: "long", day: "numeric", month: "short", year: "numeric" }).formatToParts(new Date(iso));
+  const p = (t: string) => d.find((x) => x.type === t)?.value ?? "";
+  const day = `${p("weekday")}, ${p("day")} ${p("month")} ${p("year")}`;
+  return muhurtham ? `${day} · Muhurtham ${muhurtham}` : day;
 }
 
-function PhoneIcon({ className = "w-3 h-3" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.02-.24 11.72 11.72 0 003.68.59 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.72 11.72 0 00.59 3.68 1 1 0 01-.24 1.02l-2.23 2.09z" />
-    </svg>
-  );
-}
-
-/* ── Gold Connector Medallion Between Arches ── */
-function ArchBridgeConnector({ className = "" }: { className?: string }) {
-  return (
-    <div className={`temple-bridge-connector ${className}`} aria-hidden="true">
-      <span className="bridge-medallion">
-        <svg viewBox="0 0 24 24" className="w-5 h-5 text-[#c69538]" fill="currentColor">
-          <circle cx="12" cy="12" r="3.2" fill="#7c1a22" stroke="#d4a347" strokeWidth="1" />
-          <path d="M12 2 L13.5 8 L19 6.5 L15.5 11 L21 13 L15.5 15 L19 19.5 L13.5 18 L12 24 L10.5 18 L5 19.5 L8.5 15 L3 13 L8.5 11 L5 6.5 L10.5 8 Z" fill="#d4a347" fillOpacity="0.85" />
-        </svg>
-      </span>
-    </div>
-  );
-}
-
-/* ── Main Unified Section: Find Your Way to Us / Our Venue & Travel ── */
+/**
+ * Our Venue & Travel: a featured venue card (an arched window with the venue — the map loads
+ * only when asked for), Getting There and Where to Stay, the family to call, and a closing
+ * ribbon — all on the cream temple corridor, every detail from wedding.config.ts.
+ */
 export function FindYourWay() {
-  const { venue } = useWedding();
+  const { venue, wedding, travelNotes = [], stay = [], contacts } = useWedding();
+  const reduced = usePrefersReducedMotion();
+  const root = useRef<HTMLElement>(null);
+  const [showMap, setShowMap] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const query = venue.mapsQuery || `${venue.name}, ${venue.address}`;
 
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    venue.mapsQuery || venue.address || venue.name
-  )}`;
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(`${venue.name}, ${venue.address}`);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard blocked: nothing to show */
+    }
+  };
+
+  // the cards fade up, one after another, as the section comes into view
+  useLayoutEffect(() => {
+    const el = root.current;
+    if (!el || reduced) return;
+    const ctx = gsap.context(() => {
+      gsap.from(gsap.utils.toArray<HTMLElement>("[data-rise]", el), {
+        autoAlpha: 0,
+        y: 24,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 70%", once: true },
+      });
+    }, el);
+    return () => ctx.revert();
+  }, [reduced]);
 
   return (
-    <section id="travelStay" aria-labelledby="corridor-heading" className="temple-corridor-section">
-      <Container className="relative z-10 w-full max-w-6xl mx-auto flex flex-col items-center">
-        {/* Section Heading */}
-        <div className="text-center pt-2 md:pt-4">
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-[#b8860b] text-base md:text-xl font-serif select-none" aria-hidden="true">
-              ❧
-            </span>
-            <h2 id="corridor-heading" className="corridor-title-text">
-              Our Venue &amp; Travel
-            </h2>
-            <span className="text-[#b8860b] text-base md:text-xl font-serif select-none" aria-hidden="true">
-              ❧
-            </span>
-          </div>
+    <section ref={root} id="travelStay" aria-labelledby="fw-heading" className="fw-section">
+      <Container className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center">
+        {/* heading */}
+        <header className="fw-head" data-rise>
+          <p className="fw-eyebrow">॥ Find your way to us ॥</p>
+          <h2 id="fw-heading" className="fw-title">
+            Our Venue &amp; Travel
+          </h2>
+          <GoldDivider className="mt-3" />
+          <p className="fw-sub">Everything you need to be part of our celebrations.</p>
+        </header>
 
-          <p className="corridor-subtitle-text mt-1.5 md:mt-2">
-            Find your way to be a part of our celebrations <span className="text-[#7c1a22]">❤</span>
-          </p>
+        {/* the venue */}
+        <article className="fw-card fw-venue" data-rise>
+          <Corners />
+          <div className="fw-window">
+            <div className="fw-window-inner">
+              {showMap ? (
+                <iframe title={`Map showing ${venue.name}`} src={mapEmbedUrl(query)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="fw-map" allowFullScreen />
+              ) : (
+                <>
+                  <img src="/media/mandap-venue.webp" alt={`An illustration of ${venue.name}`} className="fw-venue-art" loading="lazy" decoding="async" draggable={false} />
+                  <button type="button" className="fw-btn fw-btn--ghost fw-map-btn" onClick={() => setShowMap(true)}>
+                    <PinIcon className="h-3.5 w-3.5" /> View on map
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="fw-venue-text">
+            <p className="fw-kicker">The venue</p>
+            <h3 className="fw-venue-name">{venue.name}</h3>
+            <p className="fw-address">
+              <span className="fw-pin" aria-hidden>
+                <PinIcon />
+              </span>
+              <span>{venue.address}</span>
+            </p>
+            <p className="fw-date">{dateLine(wedding.dateISO, wedding.timeZone, wedding.muhurthamLabel)}</p>
+            <div className="fw-actions">
+              <a className="fw-btn fw-btn--solid" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+                Get Directions
+              </a>
+              <button type="button" className="fw-btn fw-btn--ghost" onClick={copy}>
+                {copied ? "Copied ✓" : "Copy Address"}
+              </button>
+              <span role="status" aria-live="polite" className="sr-only">
+                {copied ? "Address copied" : ""}
+              </span>
+            </div>
+          </div>
+        </article>
+
+        {/* getting there + where to stay */}
+        <div className="fw-pair">
+          {travelNotes.length > 0 && (
+            <article className="fw-card fw-list-card" data-rise>
+              <Corners />
+              <h3 className="fw-card-title">Getting There</h3>
+              <ul className="fw-list">
+                {travelNotes.map((note) => (
+                  <li key={note} className="fw-travel-row">
+                    <span className="fw-medal" aria-hidden>
+                      {travelIcon(note)}
+                    </span>
+                    <span className="fw-travel-text">{note}</span>
+                  </li>
+                ))}
+              </ul>
+              <a className="fw-btn fw-btn--ghost fw-card-cta" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+                Plan your route
+              </a>
+            </article>
+          )}
+          {stay.length > 0 && (
+            <article className="fw-card fw-list-card" data-rise>
+              <Corners />
+              <h3 className="fw-card-title">Where to Stay</h3>
+              <ul className="fw-list">
+                {stay.map((s) => (
+                  <li key={s.name} className="fw-stay-row">
+                    <div className="fw-stay-top">
+                      <span className="fw-stay-name">{s.name}</span>
+                      {s.distance && <span className="fw-pill">{s.distance}</span>}
+                    </div>
+                    {s.note && <p className="fw-stay-note">{s.note}</p>}
+                    {s.url && (
+                      <a className="fw-link" href={s.url} target="_blank" rel="noopener noreferrer">
+                        View ›
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          )}
         </div>
 
-        {/* ── Three Connected Temple Arches ── */}
-        <div className="temple-corridor-row mt-6 md:mt-9">
-          
-          {/* ── ARCH 1: VENUE ── */}
-          <div className="temple-corridor-arch arch-venue">
-            <div className="arch-inner-content">
-              {/* Top Emblem */}
-              <div className="arch-emblem-wrap">
-                <TempleGopuramIcon className="w-8 h-8 mx-auto text-[#c69538]" />
-              </div>
-
-              {/* Title */}
-              <h3 className="arch-section-title">― Venue ―</h3>
-
-              {/* Venue Name */}
-              <h4 className="arch-venue-name">{venue.name || "Sri Meenakshi Mahal"}</h4>
-
-              {/* Venue Address with Location Pin */}
-              <div className="arch-address-wrap">
-                <MapPinIcon className="w-3.5 h-3.5 text-[#7c1a22] flex-shrink-0 mt-0.5" />
-                <p className="arch-address-text">
-                  North Chitrai Street,<br />
-                  Madurai, Tamil Nadu 625001
-                </p>
-              </div>
-
-              {/* CTA Button: Get Directions */}
-              <div className="arch-cta-wrap mt-auto">
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="arch-action-btn"
-                  title="Open in Google Maps"
-                >
-                  <MapPinIcon className="w-3.5 h-3.5 text-[#7c1a22]" />
-                  <span>Get Directions</span>
-                  <span className="arrow-glyph" aria-hidden="true">›</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Bridge Connector 1 */}
-          <ArchBridgeConnector className="bridge-1" />
-
-          {/* ── ARCH 2: TRAVEL ── */}
-          <div className="temple-corridor-arch arch-travel">
-            <div className="arch-inner-content">
-              {/* Top Emblem */}
-              <div className="arch-emblem-wrap">
-                <AirplaneEmblem className="w-7 h-7 mx-auto text-[#c69538]" />
-              </div>
-
-              {/* Title & Subtitle */}
-              <h3 className="arch-section-title">― Travel ―</h3>
-              <p className="arch-subtitle-italic">Reach us with ease</p>
-
-              {/* Small Floral Divider */}
-              <div className="arch-floral-divider" aria-hidden="true">
-                <span className="divider-flourish">✦ ❁ ✦</span>
-              </div>
-
-              {/* Three Transport Elements Side-by-Side */}
-              <div className="travel-transport-row" aria-label="Transport options">
-                <div className="transport-item">
-                  <div className="transport-circle">
-                    <CarChipIcon className="w-4 h-4 text-[#7c1a22]" />
-                  </div>
-                  <span className="transport-label">By Car</span>
-                </div>
-
-                <div className="transport-item">
-                  <div className="transport-circle">
-                    <TrainChipIcon className="w-4 h-4 text-[#7c1a22]" />
-                  </div>
-                  <span className="transport-label">By Train</span>
-                </div>
-
-                <div className="transport-item">
-                  <div className="transport-circle">
-                    <FlightChipIcon className="w-4 h-4 text-[#7c1a22]" />
-                  </div>
-                  <span className="transport-label">By Flight</span>
-                </div>
-              </div>
-
-              {/* CTA Button: Plan Your Route */}
-              <div className="arch-cta-wrap mt-auto">
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="arch-action-btn"
-                  title="Plan route on Google Maps"
-                >
-                  <RoutePaperPlaneIcon className="w-3.5 h-3.5 text-[#7c1a22]" />
-                  <span>Plan Your Route</span>
-                  <span className="arrow-glyph" aria-hidden="true">›</span>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Bridge Connector 2 */}
-          <ArchBridgeConnector className="bridge-2" />
-
-          {/* ── ARCH 3: CONTACT ── */}
-          <div className="temple-corridor-arch arch-contact">
-            <div className="arch-inner-content">
-              {/* Top Emblem */}
-              <div className="arch-emblem-wrap">
-                <PhoneEmblem className="w-7 h-7 mx-auto text-[#c69538]" />
-              </div>
-
-              {/* Title & Subtitle */}
-              <h3 className="arch-section-title">― Contact ―</h3>
-              <p className="arch-subtitle-italic">For any queries, feel free to reach out</p>
-
-              {/* Contact Rows Matching Mockup */}
-              <div className="contact-exact-list">
-                <a
-                  href="tel:+919876543210"
-                  className="contact-row-entry"
-                  title="Call +91 98765 43210"
-                >
-                  <span className="contact-circle-bubble">
-                    <PhoneIcon className="w-3 h-3 text-white" />
+        {/* need help? */}
+        {contacts.length > 0 && (
+          <div className="fw-help" data-rise>
+            <h3 className="fw-help-title">Need help? Call us</h3>
+            <ul className="fw-contacts">
+              {contacts.map((c) => (
+                <li key={c.name} className="fw-contact">
+                  <span className="fw-initial" aria-hidden>
+                    {c.name.trim().charAt(0).toUpperCase()}
                   </span>
-                  <span className="contact-number-text">+91 98765 43210</span>
-                </a>
-
-                <a
-                  href="tel:+918765432109"
-                  className="contact-row-entry"
-                  title="Call +91 87654 32109"
-                >
-                  <span className="contact-circle-bubble">
-                    <PhoneIcon className="w-3 h-3 text-white" />
-                  </span>
-                  <span className="contact-number-text">+91 87654 32109</span>
-                </a>
-
-                <a
-                  href="mailto:wedding@ourmail.com"
-                  className="contact-row-entry"
-                  title="Email wedding@ourmail.com"
-                >
-                  <span className="contact-circle-bubble">
-                    <MailIcon className="w-3 h-3 text-white" />
-                  </span>
-                  <span className="contact-number-text">wedding@ourmail.com</span>
-                </a>
-              </div>
-
-              {/* CTA Button: Get in Touch */}
-              <div className="arch-cta-wrap mt-auto">
-                <a
-                  href="tel:+919876543210"
-                  className="arch-action-btn"
-                  title="Call family for assistance"
-                >
-                  <MailIcon className="w-3.5 h-3.5 text-[#7c1a22]" />
-                  <span>Get in Touch</span>
-                  <span className="arrow-glyph" aria-hidden="true">›</span>
-                </a>
-              </div>
-            </div>
+                  <span className="fw-contact-name">{c.name}</span>
+                  {c.role && <span className="fw-contact-role">{c.role}</span>}
+                  {c.phone && (
+                    <span className="fw-contact-actions">
+                      <a className="fw-mini" href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${c.name}`}>
+                        <PhoneIcon /> Call
+                      </a>
+                      {c.whatsapp && (
+                        <a className="fw-mini" href={`https://wa.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${c.name}`}>
+                          <ChatIcon /> WhatsApp
+                        </a>
+                      )}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
+        )}
 
-        </div>
-
-        {/* ── Decorative Maroon & Gold Bottom Ribbon ── */}
-        <div className="corridor-bottom-ribbon-wrap mt-7 md:mt-9">
-          <img
-            src="/media/venue-ribbon.webp"
-            alt="We can't wait to celebrate with you!"
-            className="corridor-ribbon-img"
-            width={384}
-            height={75}
-          />
+        {/* closing ribbon */}
+        <div className="fw-ribbon-wrap" data-rise>
+          <p className="fw-ribbon">We can&rsquo;t wait to celebrate with you!</p>
+          <svg aria-hidden viewBox="0 0 24 22" className="fw-heart">
+            <path d="M12 20.5S2.5 14.6 2.5 8.2A4.7 4.7 0 0 1 12 5.6a4.7 4.7 0 0 1 9.5 2.6c0 6.4-9.5 12.3-9.5 12.3Z" fill="#d4a54a" stroke="#9a6b18" strokeWidth=".8" />
+          </svg>
         </div>
       </Container>
     </section>

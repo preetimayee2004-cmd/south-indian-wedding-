@@ -1,77 +1,50 @@
 import { useState, useEffect, useRef } from "react";
 import { useWedding } from "@/context/WeddingContext";
-import { fetchWishes, addWish, type Wish } from "@/lib/wishes";
+import { fetchWishes, addWish, subscribeWishes, validateWish, WISH_LIMITS, type Wish } from "@/lib/wishes";
 import { Container } from "@/components/layout/Container";
+import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
 import { ParrotFlightAnimation } from "./wishes/ParrotFlightAnimation";
 import { burstHearts } from "@/lib/hearts";
 
+/** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
+const ON_WALL = 12;
+/** Below this many, the cards simply stand in a centred row (no marquee). */
+const MARQUEE_FROM = 4;
+
 function LotusCrest({ className = "w-7 h-5" }: { className?: string }) {
   return (
     <svg viewBox="0 0 32 20" fill="none" className={className} aria-hidden="true">
-      <path
-        d="M16 2 C16 2, 19 8, 19 13 C19 15.5, 17.5 17, 16 17 C14.5 17, 13 15.5, 13 13 C13 8, 16 2, 16 2 Z"
-        fill="#d4a347"
-        stroke="#9a6b18"
-        strokeWidth="0.8"
-      />
-      <path
-        d="M16 6 C17.5 6, 23 10, 23 14 C23 16.5, 21 17.5, 19 17 C18 15, 17 12, 16 10"
-        fill="#e6be65"
-        stroke="#9a6b18"
-        strokeWidth="0.8"
-      />
-      <path
-        d="M16 6 C14.5 6, 9 10, 9 14 C9 16.5, 11 17.5, 13 17 C14 15, 15 12, 16 10"
-        fill="#e6be65"
-        stroke="#9a6b18"
-        strokeWidth="0.8"
-      />
-      <path
-        d="M16 10 C18 10, 27 12, 28 16 C28 18, 25 18.5, 22 17.5 C20 16, 18 13.5, 16 12"
-        fill="#f3d485"
-        stroke="#9a6b18"
-        strokeWidth="0.8"
-      />
-      <path
-        d="M16 10 C14 10, 5 12, 4 16 C4 18, 7 18.5, 10 17.5 C12 16, 14 13.5, 16 12"
-        fill="#f3d485"
-        stroke="#9a6b18"
-        strokeWidth="0.8"
-      />
+      <path d="M16 2C16 2 19 8 19 13C19 15.5 17.5 17 16 17C14.5 17 13 15.5 13 13C13 8 16 2 16 2Z" fill="#d4a347" stroke="#9a6b18" strokeWidth="0.8" />
+      <path d="M16 6C17.5 6 23 10 23 14C23 16.5 21 17.5 19 17C18 15 17 12 16 10" fill="#e6be65" stroke="#9a6b18" strokeWidth="0.8" />
+      <path d="M16 6C14.5 6 9 10 9 14C9 16.5 11 17.5 13 17C14 15 15 12 16 10" fill="#e6be65" stroke="#9a6b18" strokeWidth="0.8" />
+      <path d="M16 10C18 10 27 12 28 16C28 18 25 18.5 22 17.5C20 16 18 13.5 16 12" fill="#f3d485" stroke="#9a6b18" strokeWidth="0.8" />
+      <path d="M16 10C14 10 5 12 4 16C4 18 7 18.5 10 17.5C12 16 14 13.5 16 12" fill="#f3d485" stroke="#9a6b18" strokeWidth="0.8" />
       <ellipse cx="16" cy="18" rx="8" ry="1.5" fill="#c49028" />
     </svg>
   );
 }
 
-function FloralAccent({ className = "w-3 h-3" }: { className?: string }) {
+/** One framed blessing card: a big gold quote mark, the message, a gold rule and the guest's signature. */
+function BlessingCard({ wish, tilt, fresh, hidden }: { wish: Wish; tilt: number; fresh?: boolean; hidden?: boolean }) {
+  const initial = wish.name.trim().charAt(0).toUpperCase() || "✦";
   return (
-    <svg viewBox="0 0 16 16" fill="#c49028" className={className} aria-hidden="true">
-      <circle cx="8" cy="4" r="1.8" />
-      <circle cx="8" cy="12" r="1.8" />
-      <circle cx="4" cy="8" r="1.8" />
-      <circle cx="12" cy="8" r="1.8" />
-      <circle cx="8" cy="8" r="1.2" fill="#fff" />
-    </svg>
-  );
-}
-
-function GopuramWatermark({ className = "w-14 h-14" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 60 70" fill="none" className={className} aria-hidden="true">
-      <path
-        d="M26 4 L34 4 L32 10 L28 10 Z M24 10 L36 10 L34 18 L26 18 Z M21 18 L39 18 L37 28 L23 28 Z M18 28 L42 28 L40 40 L20 40 Z M15 40 L45 40 L43 54 L17 54 Z M12 54 L48 54 L46 68 L14 68 Z M24 68 L24 58 C24 55, 36 55, 36 58 L36 68 Z"
-        stroke="#c8961e"
-        strokeWidth="1"
-        strokeOpacity="0.5"
-        fill="#fdf7e7"
-        fillOpacity="0.2"
-      />
-      <circle cx="30" cy="2" r="1.5" fill="#c8961e" fillOpacity="0.6" />
-      <line x1="30" y1="0.5" x2="30" y2="4" stroke="#c8961e" strokeWidth="1" strokeOpacity="0.6" />
-      <path d="M8 68 Q 6 50 10 42 M10 42 Q 4 38 2 42 M10 42 Q 6 34 8 32 M10 42 Q 14 36 12 30" stroke="#c8961e" strokeWidth="0.8" strokeOpacity="0.35" />
-      <path d="M52 68 Q 54 50 50 42 M50 42 Q 56 38 58 42 M50 42 Q 54 34 52 32 M50 42 Q 46 36 48 30" stroke="#c8961e" strokeWidth="0.8" strokeOpacity="0.35" />
-    </svg>
+    <figure className={`ww-card ${fresh ? "ww-card--new" : ""}`} style={{ ["--tilt" as string]: `${tilt}deg` }} aria-hidden={hidden || undefined}>
+      {(["tl", "tr", "bl", "br"] as const).map((c) => (
+        <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
+      ))}
+      <span className="ww-quote" aria-hidden>
+        &ldquo;
+      </span>
+      <blockquote className="ww-message">{wish.message}</blockquote>
+      <span className="ww-rule" aria-hidden />
+      <figcaption className="ww-sign">
+        <span className="ww-medallion" aria-hidden>
+          {initial}
+        </span>
+        <span className="ww-name">{wish.name}</span>
+      </figcaption>
+    </figure>
   );
 }
 
@@ -94,36 +67,30 @@ export function WishingWall() {
         if (active && data) setWishes(data);
       })
       .catch(() => {});
+    // new blessings from other guests appear live (when the backend is set up)
+    const stop = subscribeWishes(weddingId, (w) => setWishes((prev) => (prev.some((p) => p.id === w.id) ? prev : [w, ...prev])));
     return () => {
       active = false;
+      stop();
     };
   }, [weddingId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanMsg = guestMessage.trim();
-    if (!cleanMsg) {
-      setValidationError("Please share your warm blessing or wish.");
+    const cleanName = guestName.trim() || "Well-Wisher";
+    const problem = validateWish(cleanName, guestMessage);
+    if (problem) {
+      setValidationError(problem);
       return;
     }
-    const cleanName = guestName.trim() || "Well-Wisher";
-
     setIsSubmitting(true);
     setValidationError(null);
-
     try {
-      // Trigger parrot flight animation
       setShowParrotFlight(true);
-      if (sendBtnRef.current) {
-        burstHearts(sendBtnRef.current, { puff: true });
-      }
-
-      // Add wish in background
-      const createdWish = await addWish(weddingId, cleanName, cleanMsg);
+      if (sendBtnRef.current) burstHearts(sendBtnRef.current, { puff: true });
+      const createdWish = await addWish(weddingId, cleanName, guestMessage);
       setNewlyAddedId(createdWish.id);
       setWishes((prev) => [createdWish, ...prev.filter((w) => w.id !== createdWish.id)]);
-
-      // Reset form fields
       setGuestMessage("");
       setGuestName("");
     } catch (err) {
@@ -133,182 +100,110 @@ export function WishingWall() {
     }
   };
 
-  // Only the top 3 wishes are featured in the main display
-  const featuredWishes = wishes.slice(0, 3);
+  const onWall = wishes.slice(0, ON_WALL);
+  const marquee = onWall.length >= MARQUEE_FROM;
+  const count = wishes.length;
+  // the marquee runs at the same reading speed however many cards there are
+  const duration = `${Math.max(30, onWall.length * 9)}s`;
 
   return (
     <section id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene">
-      {/* Floating flower petals */}
-      <div className="wishing-petals-wrap" aria-hidden="true">
-        <span className="wishing-petal petal-jasmine p1" />
-        <span className="wishing-petal petal-marigold p2" />
-        <span className="wishing-petal petal-jasmine p3" />
-        <span className="wishing-petal petal-marigold p4" />
-        <span className="wishing-petal petal-jasmine p5" />
+      {/* a few slow falling petals: jasmine and marigold */}
+      <div className="ww-petals" aria-hidden="true">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <span key={i} className={`ww-petal ${i % 2 ? "ww-petal--marigold" : "ww-petal--jasmine"} ww-petal--${i}`} />
+        ))}
       </div>
 
-      <Container className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center">
-        {/* Centered Heading */}
-        <div className="text-center pt-2 md:pt-4">
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-[#b8860b] text-base md:text-xl font-serif select-none" aria-hidden="true">
-              ❧
+      <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
+        {/* heading */}
+        <header className="ww-head">
+          <p className="ww-eyebrow">॥ आशीर्वाद ॥</p>
+          <h2 id="wishing-wall-heading" className="wishing-title-text">
+            Wishing Wall
+          </h2>
+          <p className="wishing-subtitle-text mt-1.5 md:mt-2">Leave a little love and a blessing for our new beginning.</p>
+          <GoldDivider className="mt-3" />
+          {count > 0 && (
+            <p className="ww-count" aria-live="polite">
+              {count} {count === 1 ? "blessing" : "blessings"} so far
+            </p>
+          )}
+        </header>
+
+        {/* the lovebirds, fading softly into the wall */}
+        <div className="wishing-lovebirds-container mt-2 md:mt-3">
+          <img src="/media/wishing-lovebirds-clean.webp" alt="Two lovebirds sitting on a blossoming floral branch" className="wishing-lovebirds-art ww-lovebirds" draggable={false} />
+        </div>
+
+        {/* the latest blessings: an endless slow marquee on desktop, a swipe row on phones */}
+        {onWall.length > 0 && (
+          <div className={`ww-wall ${marquee ? "ww-wall--marquee" : "ww-wall--still"}`} role="region" aria-label="Blessings from guests">
+            <div className="ww-track" style={{ ["--ww-dur" as string]: duration }}>
+              {onWall.map((w, i) => (
+                <BlessingCard key={w.id} wish={w} tilt={i % 2 ? 0.6 : -0.6} fresh={w.id === newlyAddedId} />
+              ))}
+              {/* the second copy makes the marquee seamless (desktop only; hidden from screen readers) */}
+              {marquee &&
+                onWall.map((w, i) => (
+                  <div key={`dup-${w.id}`} className="ww-dup">
+                    <BlessingCard wish={w} tilt={i % 2 ? 0.6 : -0.6} hidden />
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* leave your blessing */}
+        <form onSubmit={handleSubmit} className="ww-composer" noValidate>
+          <span className="ww-composer-crest" aria-hidden="true">
+            <LotusCrest className="h-6 w-10" />
+          </span>
+          {(["tl", "tr", "bl", "br"] as const).map((c) => (
+            <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
+          ))}
+          <h3 className="ww-composer-title">Leave your blessing</h3>
+          <label className="ww-field">
+            <span className="sr-only">Your name</span>
+            <input type="text" value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your name" maxLength={WISH_LIMITS.name} className="ww-input" autoComplete="name" />
+          </label>
+          <label className="ww-field">
+            <span className="sr-only">Your blessing</span>
+            <textarea
+              value={guestMessage}
+              onChange={(e) => {
+                setGuestMessage(e.target.value);
+                if (validationError) setValidationError(null);
+              }}
+              placeholder="Write your blessing…"
+              maxLength={WISH_LIMITS.message}
+              rows={3}
+              className="ww-input ww-textarea"
+              aria-invalid={validationError ? true : undefined}
+              aria-describedby="ww-help"
+            />
+          </label>
+          <div id="ww-help" className="ww-help">
+            <span className="ww-error" role="alert">
+              {validationError ?? ""}
             </span>
-            <h2 id="wishing-wall-heading" className="wishing-title-text">
-              Wishing Wall
-            </h2>
-            <span className="text-[#b8860b] text-base md:text-xl font-serif select-none" aria-hidden="true">
-              ❧
+            <span className="ww-counter">
+              {guestMessage.length} / {WISH_LIMITS.message}
             </span>
           </div>
+          <button ref={sendBtnRef} type="submit" disabled={isSubmitting || !guestMessage.trim()} className="ww-send">
+            {isSubmitting ? "Sending…" : "Send Blessing ✦"}
+          </button>
+        </form>
 
-          <p className="wishing-subtitle-text mt-1.5 md:mt-2">
-            Leave a little love and a blessing for our new beginning. <span className="text-[#9e2a2b]">❤</span>
-          </p>
-        </div>
-
-        {/* Delicate Lovebirds Illustration */}
-        <div className="wishing-lovebirds-container mt-2 md:mt-3">
-          <img
-            src="/media/wishing-lovebirds-clean.webp"
-            alt="Two lovebirds sitting on a blossoming floral branch"
-            className="wishing-lovebirds-art"
-            draggable={false}
-          />
-        </div>
-
-        {/* 3 Featured Wishes: Handwritten Blessing Notes on Parchment */}
-        <div className="wishing-notes-grid mt-4 md:mt-5" role="region" aria-label="Featured blessings from guests">
-          {featuredWishes.map((wish, index) => {
-            const isNew = wish.id === newlyAddedId;
-            return (
-              <div
-                key={wish.id}
-                className={`wishing-note-card ${isNew ? "wish-new-bloom" : ""}`}
-                style={{ animationDelay: `${index * 120}ms` }}
-              >
-                {/* Top golden lotus crest */}
-                <div className="wishing-note-crest" aria-hidden="true">
-                  <LotusCrest className="w-6 h-4 mx-auto text-[#b8860b]" />
-                </div>
-
-                {/* Card Header: Guest Icon & Name */}
-                <div className="wishing-note-header">
-                  <span className="wishing-note-avatar" aria-hidden="true">
-                    ♡
-                  </span>
-                  <h4 className="wishing-note-author">
-                    {wish.name}
-                  </h4>
-                </div>
-
-                {/* Handwritten calligraphic message */}
-                <p className="wishing-note-message">
-                  &ldquo;{wish.message}&rdquo;
-                </p>
-
-                {/* Bottom decorative floral accent */}
-                <div className="wishing-note-bottom-accent" aria-hidden="true">
-                  <FloralAccent className="w-2.5 h-2.5 mx-auto" />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Leave Your Blessing Input Area */}
-        <div className="wishing-composer-wrap mt-6 md:mt-8 w-full max-w-2xl">
-          <form onSubmit={handleSubmit} className="wishing-composer-card relative">
-            {/* Top golden lotus crest */}
-            <div className="wishing-composer-crest" aria-hidden="true">
-              <LotusCrest className="w-6 h-4 text-[#b8860b]" />
-            </div>
-
-            <div className="wishing-composer-inner flex items-center gap-3 px-4 py-3 md:py-3.5">
-              {/* Left Gopuram Watermark Illustration */}
-              <div className="hidden sm:block flex-shrink-0 opacity-80" aria-hidden="true">
-                <GopuramWatermark className="w-11 h-12" />
-              </div>
-
-              {/* Input Fields */}
-              <div className="flex-1 flex flex-col sm:flex-row gap-2 sm:gap-3 items-center min-w-0">
-                <input
-                  type="text"
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  placeholder="Your Name (optional)"
-                  maxLength={50}
-                  className="wishing-input-name"
-                  aria-label="Your Name"
-                />
-                <input
-                  type="text"
-                  value={guestMessage}
-                  onChange={(e) => {
-                    setGuestMessage(e.target.value);
-                    if (validationError) setValidationError(null);
-                  }}
-                  placeholder="Write your wish here..."
-                  maxLength={280}
-                  className="wishing-input-message"
-                  aria-label="Write your wish here"
-                  required
-                />
-              </div>
-
-              {/* Circular Send Button */}
-              <button
-                ref={sendBtnRef}
-                type="submit"
-                disabled={isSubmitting || !guestMessage.trim()}
-                className="wishing-send-btn flex-shrink-0"
-                title="Send your blessing"
-                aria-label="Send your blessing"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 text-[#fffbf2] transform rotate-45 -translate-y-0.5 translate-x-0.5"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                </svg>
-              </button>
-            </div>
-
-            {/* Validation Error Message */}
-            {validationError && (
-              <p className="text-center text-xs text-[#9e2a2b] font-serif italic pb-2">
-                {validationError}
-              </p>
-            )}
-          </form>
-        </div>
-
-        {/* View All Wishes Button */}
-        <div className="wishing-view-all-wrap mt-5 md:mt-6">
-          <button
-            type="button"
-            onClick={() => setIsModalOpen(true)}
-            className="wishing-view-all-btn"
-          >
-            <span>View All Wishes</span>
-            <span className="wishing-btn-arrow" aria-hidden="true">›</span>
+        <div className="mt-5 md:mt-6">
+          <button type="button" onClick={() => setIsModalOpen(true)} className="ww-view-all">
+            View All Wishes <span aria-hidden="true">›</span>
           </button>
         </div>
 
-        {/* Flying Parrot Carrying the Message Animation */}
-        <ParrotFlightAnimation
-          active={showParrotFlight}
-          onComplete={() => setShowParrotFlight(false)}
-        />
-
-        {/* All Wishes Modal */}
-        <AllWishesModal
-          wishes={wishes}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <ParrotFlightAnimation active={showParrotFlight} onComplete={() => setShowParrotFlight(false)} />
+        <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </Container>
     </section>
   );
