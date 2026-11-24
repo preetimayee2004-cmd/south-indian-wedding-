@@ -39,8 +39,9 @@ if (typeof window !== "undefined") {
     }
   });
   window.addEventListener("orientationchange", () => refreshSoon(300));
-  // any <img> finishing later (lazy art, guest photos)
-  document.addEventListener("load", (e) => e.target instanceof HTMLImageElement && refreshSoon(300), true);
+  // A picture finishing later only matters when it changes the page height, and the
+  // ResizeObserver above already catches that. Re-measuring on every image load made
+  // phones stall mid-scroll (each refresh re-measures every pinned scene).
 }
 
 export { gsap, ScrollTrigger, MotionPathPlugin };

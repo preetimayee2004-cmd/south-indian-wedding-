@@ -1,0 +1,560 @@
+/*
+ * Premium layer — loaded after index.css (see main.tsx).
+ *  1. The opening envelope: maroon Kanjeevaram silk, gold zari, gold-foil seal.
+ *  2. Everything after the Family section, in one palette:
+ *     deep maroon + antique gold + ivory, the gold filigree corners of the family arches.
+ *  3. Phone performance: lighter effects on touch screens.
+ */
+
+/* ── 1. Opening envelope ─────────────────────────────────────────────── */
+.op-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 62% 42% at 50% 57%, rgb(255 214 120 / 0.26), transparent 72%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 52%, rgb(2 20 66 / 0.6) 100%);
+}
+.op-toran {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: min(100%, 720px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.op-star {
+  position: absolute;
+  pointer-events: none;
+  background: linear-gradient(135deg, #fff7d6, #f3cf73 60%, #c99a45);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: op-twinkle 3.2s ease-in-out infinite;
+}
+@keyframes op-twinkle {
+  0%, 100% { opacity: 0.15; transform: scale(0.6) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+.op-float {
+  animation: op-float 3.4s ease-in-out infinite;
+}
+@keyframes op-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+.op-back {
+  border-radius: 10px;
+  background:
+    linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.07) 45%, transparent 60%),
+    linear-gradient(160deg, #82182a, #5a0b19);
+  box-shadow:
+    0 26px 44px -14px rgb(4 18 60 / 0.65),
+    0 0 0 1px rgb(243 207 115 / 0.65);
+}
+.op-corner {
+  position: absolute;
+  z-index: 21;
+  bottom: 10.5%;
+  width: 17%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.op-corner--l {
+  left: 1.5%;
+  transform: rotate(-90deg);
+}
+.op-corner--r {
+  right: 1.5%;
+  transform: rotate(180deg);
+}
+.op-dear {
+  font-size: clamp(1.5rem, 6.6vw, 2.05rem);
+  color: #f7dc8e;
+  text-shadow: 0 1px 0 rgb(60 4 14 / 0.7), 0 0 14px rgb(243 207 115 / 0.25);
+}
+.op-flap {
+  transform-style: preserve-3d;
+}
+.op-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.op-face--back {
+  transform: rotateX(180deg);
+}
+.op-seal,
+.op-pulse {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  width: 23%;
+  aspect-ratio: 1;
+  margin-left: -11.5%;
+  margin-top: -11.5%; /* % of the width, like the size */
+}
+.op-seal {
+  z-index: 3;
+  display: block;
+}
+.op-pulse {
+  z-index: 2;
+  border-radius: 50%;
+  border: 2px solid rgb(247 220 142 / 0.9);
+  animation: op-pulse 2.2s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes op-pulse {
+  0% { transform: scale(0.95); opacity: 0.9; }
+  100% { transform: scale(1.7); opacity: 0; }
+}
+.op-spark {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 53%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffbe6 0 30%, #f3cf73 55%, rgb(243 207 115 / 0) 72%);
+  box-shadow: 0 0 10px 2px rgb(255 215 106 / 0.55);
+  pointer-events: none;
+}
+.op-shadow {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: -26px;
+  height: 28px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgb(3 18 58 / 0.5), transparent 70%);
+  pointer-events: none;
+}
+.op-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 22px;
+  border: 1px solid rgb(243 207 115 / 0.8);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgb(120 20 40 / 0.82), rgb(78 9 24 / 0.82));
+  box-shadow: 0 6px 18px rgb(3 18 58 / 0.35), inset 0 1px 0 rgb(255 240 200 / 0.18);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #fbf2dc;
+}
+.op-hint::before,
+.op-hint::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  background: #f3cf73;
+}
+
+/* ── 2. After the Family section: one maroon · gold · ivory language ───────── */
+
+/* shared pieces: maroon silk ground, gold frame + filigree corners, titles, buttons */
+.pm-silk {
+  background-color: #4c0813;
+  background-image:
+    radial-gradient(ellipse 85% 55% at 50% 36%, rgb(150 30 50 / 0.55), transparent 72%),
+    radial-gradient(circle at 1px 1px, rgb(243 207 115 / 0.11) 1px, transparent 1.7px),
+    linear-gradient(180deg, #5b0b18 0%, #3e0610 100%);
+  background-size: auto, 18px 18px, auto;
+  color: #f6e7c8;
+}
+.pm-frame {
+  position: absolute;
+  inset: 12px;
+  z-index: 1;
+  border: 1px solid rgb(226 181 83 / 0.75);
+  border-radius: 3px;
+  outline: 1px solid rgb(226 181 83 / 0.35);
+  outline-offset: 4px;
+  pointer-events: none;
+}
+.pm-corner {
+  position: absolute;
+  z-index: 1;
+  width: clamp(58px, 15vw, 110px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.95;
+}
+.pm-corner--tl { top: 4px; left: 4px; }
+.pm-corner--tr { top: 4px; right: 4px; transform: scaleX(-1); }
+.pm-corner--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+.pm-corner--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+.pm-eyebrow {
+  font-size: 0.82rem;
+  letter-spacing: 0.28em;
+  color: #e8c56b;
+}
+.pm-script-title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(2.9rem, 13vw, 4.6rem);
+  line-height: 1;
+  background: linear-gradient(180deg, #fff1bd 10%, #e8c06a 55%, #b98a35 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding: 0 0.15em; /* room for the script's swashes */
+}
+.pm-caps-title {
+  font-family: Cinzel, "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  font-size: clamp(0.86rem, 3.6vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #f6e7c8;
+}
+.pm-lede {
+  font-style: italic;
+  font-size: 1.02rem;
+  color: #f1dfbd;
+}
+.pm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.pm-btn:active {
+  transform: scale(0.97);
+}
+.pm-btn--solid {
+  color: #4a0d16;
+  background: linear-gradient(180deg, #fbe39c 0%, #e2b553 55%, #c99a3d 100%);
+  border: 1px solid #fff0bf;
+  box-shadow: 0 6px 16px -6px rgb(120 70 10 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.55);
+}
+.pm-btn--ghost {
+  color: #f6e7c8;
+  border: 1px solid rgb(232 197 107 / 0.7);
+  background: rgb(40 4 12 / 0.35);
+}
+.pm-btn--ghost:hover {
+  color: #ffe9a8;
+  border-color: #f3cf73;
+}
+
+/* Moments to Cherish: ivory gallery mounts, gold rims and gold photo corners */
+.gb-plaque {
+  padding: 7px 40px 9px;
+  border: 1.5px solid #d4a54a;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e6c6 100%);
+  outline: 1px solid rgb(232 197 107 / 0.65);
+  outline-offset: 3px;
+}
+.gb-plaque::before,
+.gb-plaque::after {
+  color: #b8862f;
+}
+.gb-polaroid {
+  padding: 5.5% 5.5% 4%;
+  border-radius: 4px;
+  border: 1px solid #d4a54a;
+  background: linear-gradient(180deg, #fffcf4 0%, #f6ead0 100%);
+  box-shadow:
+    0 16px 30px -8px rgb(12 0 3 / 0.6),
+    0 2px 6px rgb(0 0 0 / 0.25),
+    inset 0 0 0 4px #fffaf0,
+    inset 0 0 0 5px rgb(212 165 74 / 0.55);
+}
+.gb-pic {
+  outline: 1px solid rgb(184 134 47 / 0.85);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+/* "not yet reached" = gently dimmed (a plain fade: the old colour-blend layer was heavy on phones) */
+.gb-desat {
+  background: #2a030b;
+  mix-blend-mode: normal;
+}
+.gb-caption {
+  color: #6a0f1f;
+}
+/* gold photo-corner mounts in place of the washi tape */
+.gb-tape {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  translate: none;
+  rotate: none;
+  opacity: 1;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+.gb-tape::before,
+.gb-tape::after {
+  content: "";
+  position: absolute;
+  top: 2.2%;
+  width: 15%;
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, #fff0b8, #d9ab4d 45%, #a8772a);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.35);
+}
+.gb-tape::before {
+  left: 2.2%;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+.gb-tape::after {
+  right: 2.2%;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.gb-pin {
+  top: -8px;
+  width: 18px;
+  height: 18px;
+  background:
+    radial-gradient(circle at 50% 50%, #8e1a2c 0 26%, transparent 28%),
+    radial-gradient(circle at 35% 30%, #fff4c8, #e2b553 45%, #8a6420);
+  box-shadow: 0 3px 5px rgb(0 0 0 / 0.45);
+}
+.gb-endtag {
+  border: 1px solid #d4a54a;
+  background: linear-gradient(180deg, #8a1a2c, #5e0d1a);
+  color: #f7dc8e;
+  box-shadow: 0 6px 14px rgb(12 0 3 / 0.45), inset 0 0 0 3px #5e0d1a, inset 0 0 0 4px rgb(232 197 107 / 0.6);
+}
+
+/* RSVP: gold line icons, a gold selected state, a quieter quote, light petals */
+.ambient-petal {
+  width: 11px;
+  height: 14px;
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #ffd1dc, #e86a84);
+  filter: none;
+  opacity: 0.8;
+}
+.ambient-petal.p2,
+.ambient-petal.p4 {
+  background: linear-gradient(135deg, #ffd27a, #f08a12);
+}
+.spec-icon {
+  display: inline-flex;
+  color: #e8c56b;
+}
+.temple-user-icon {
+  display: inline-flex;
+}
+.temple-spec-label {
+  letter-spacing: 0.22em;
+}
+.temple-spec-pill {
+  padding: 8px 6px;
+  gap: 5px;
+}
+.temple-spec-pill.selected {
+  background: linear-gradient(180deg, #fbe39c 0%, #e2b553 60%, #c99a3d 100%);
+  border: 1px solid #fff0bf;
+  color: #4a0d16;
+  box-shadow: 0 6px 16px -6px rgb(212 159 55 / 0.8);
+  transform: none;
+}
+.temple-spec-pill.selected .spec-icon {
+  color: #6a0f1f;
+}
+.temple-quote-plaque {
+  background: none;
+  border: none;
+  border-top: 1px solid rgb(232 197 107 / 0.55);
+  border-bottom: 1px solid rgb(232 197 107 / 0.55);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 10px 8px;
+}
+.temple-quote-text {
+  color: #f6e7c8;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.5);
+}
+
+/* Wishing Wall: framed blessing cards */
+.wishing-note-card {
+  border: 1px solid #cfa24c;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fffdf7 0%, #faf0d6 100%);
+  outline: 1px solid rgb(207 162 76 / 0.45);
+  outline-offset: -6px;
+  box-shadow: 0 14px 28px -14px rgb(110 60 15 / 0.45);
+  padding: 20px 18px 16px;
+}
+.wishing-note-author {
+  color: #6a0f1f;
+  letter-spacing: 0.16em;
+}
+.wishing-note-message {
+  color: #3d1c14;
+  font-size: clamp(0.95rem, 1.7vw, 1.02rem);
+}
+.wishing-composer-card {
+  border: 1.5px solid #cfa24c;
+  outline: 1px solid rgb(207 162 76 / 0.4);
+  outline-offset: 3px;
+}
+.wishing-view-all-btn {
+  border: 1px solid #e2b553 !important;
+  box-shadow: 0 8px 18px -8px rgb(90 10 20 / 0.6), inset 0 0 0 3px #5e0d1a, inset 0 0 0 4px rgb(232 197 107 / 0.55) !important;
+}
+
+/* Venue & Travel: arches sized to what they hold, bigger travel chips */
+@media (max-width: 860px) {
+  .temple-corridor-arch {
+    height: auto;
+    min-height: 250px;
+    padding-top: 46px;
+    padding-bottom: 26px;
+  }
+  .arch-cta-wrap {
+    margin-top: 14px;
+  }
+}
+
+/* Thank You: the couple in a gold-rimmed arch, the date on a framed ivory plaque */
+.ty-arch {
+  border-radius: 999px 999px 10px 10px;
+  overflow: hidden;
+  background: #fffdfa; /* the painting's own paper colour, so its edge never shows */
+  border: 3px solid #d9ab4d;
+  box-shadow:
+    0 0 0 5px #4c0813,
+    0 0 0 6.5px rgb(226 181 83 / 0.8),
+    0 22px 40px -10px rgb(0 0 0 / 0.6);
+}
+.ty-date {
+  position: relative;
+  padding: 14px 18px 16px;
+  border-radius: 8px;
+  border: 1px solid #d4a54a;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e4c0 100%);
+  outline: 1px solid rgb(232 197 107 / 0.7);
+  outline-offset: 4px;
+  box-shadow: 0 18px 36px -12px rgb(0 0 0 / 0.65);
+}
+.ty-date-label {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: #8a1b2c;
+}
+.ty-date-num {
+  margin-top: 4px;
+  font-size: clamp(1.7rem, 7.4vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: #6a0f1f;
+}
+.ty-date-sub {
+  margin-top: 6px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #5c3a2b;
+}
+
+/* A Note from our Hearts: ivory letter, gold double rule, filigree corners, wax seal */
+.ln-letter {
+  padding: 34px 26px 46px;
+  border-radius: 4px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 0.7), transparent 60%),
+    linear-gradient(180deg, #fffaf0 0%, #f6e8c8 100%);
+  border: 1px solid #d4a54a;
+  outline: 1px solid rgb(232 197 107 / 0.7);
+  outline-offset: 5px;
+  box-shadow: 0 26px 50px -18px rgb(0 0 0 / 0.7);
+}
+.ln-corner {
+  position: absolute;
+  width: 52px;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.ln-corner--tl { top: 3px; left: 3px; }
+.ln-corner--tr { top: 3px; right: 3px; transform: scaleX(-1); }
+.ln-corner--bl { bottom: 3px; left: 3px; transform: scaleY(-1); }
+.ln-corner--br { bottom: 3px; right: 3px; transform: scale(-1, -1); }
+.ln-seal {
+  position: absolute;
+  left: 50%;
+  bottom: -30px;
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  display: grid;
+  place-items: center;
+  border-radius: 48% 52% 50% 50% / 52% 48% 52% 48%;
+  background: radial-gradient(circle at 38% 32%, #c0394b, #8a1426 55%, #5e0a18);
+  box-shadow:
+    inset 0 -3px 6px rgb(0 0 0 / 0.3),
+    inset 0 2px 3px rgb(255 255 255 / 0.25),
+    0 0 0 3px rgb(138 20 38 / 0.35),
+    0 6px 12px rgb(0 0 0 / 0.45);
+  font-family: "Great Vibes", cursive;
+  font-size: 1.12rem;
+  letter-spacing: -0.02em;
+  color: #f7dc8e;
+}
+
+/* Footer */
+.pm-footer {
+  background:
+    radial-gradient(circle at 1px 1px, rgb(243 207 115 / 0.09) 1px, transparent 1.7px) 0 0 / 18px 18px,
+    linear-gradient(180deg, #3e0610, #2a030b);
+  border-top: 1px solid rgb(226 181 83 / 0.6);
+  box-shadow: inset 0 4px 0 #2a030b, inset 0 5px 0 rgb(226 181 83 / 0.35);
+  color: #f6e7c8;
+}
+
+/* ── 3. Phones ───────────────────────────────────────────────────────────── */
+/* Portrait phones: the maroon temple wall behind the events and the gallery uses its
+   portrait picture (the landscape 2× one was being downloaded and decoded there too). */
+@media (max-width: 899px) and (max-aspect-ratio: 1/1) {
+  .ev-cloth,
+  .gb-wall {
+    background-image:
+      radial-gradient(ellipse at 50% 50%, rgba(30, 2, 7, 0.2), rgba(20, 2, 5, 0.52) 95%),
+      url("/media/temple-events-bg@2x.webp");
+  }
+}
+/* Touch screens: no soft shadows painted with filters on the venue arches (they repaint while scrolling) */
+@media (pointer: coarse) {
+  .temple-corridor-arch,
+  .temple-corridor-arch:hover,
+  .wishing-lovebirds-art,
+  .corridor-ribbon-img,
+  .temple-rsvp-plaque-svg {
+    filter: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .op-float,
+  .op-star,
+  .op-pulse {
+    animation: none;
+  }
+}

@@ -7,12 +7,64 @@ import { waLink } from "@/lib/format";
 
 export type Specialization = "Family" | "Friend" | "Relative" | "Other";
 
-const SPECIALIZATIONS: { id: Specialization; label: string; icon: string }[] = [
-  { id: "Family", label: "Family", icon: "💼" },
-  { id: "Friend", label: "Friend", icon: "👥" },
-  { id: "Relative", label: "Relative", icon: "❤️" },
-  { id: "Other", label: "Other", icon: "⭐" },
+const SPECIALIZATIONS: { id: Specialization; label: string }[] = [
+  { id: "Family", label: "Family" },
+  { id: "Friend", label: "Friend" },
+  { id: "Relative", label: "Relative" },
+  { id: "Other", label: "Other" },
 ];
+
+/** Small gold line icons (in place of emoji, which look different on every phone). */
+function SpecIcon({ id }: { id: Specialization | "guest" | "calendar" }) {
+  const common = { width: 15, height: 15, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true };
+  switch (id) {
+    case "Family":
+      return (
+        <svg {...common}>
+          <path d="M3 11 12 4l9 7" />
+          <path d="M5 10v10h14V10" />
+          <path d="M10 20v-5h4v5" />
+        </svg>
+      );
+    case "Friend":
+      return (
+        <svg {...common}>
+          <circle cx="9" cy="8" r="3.2" />
+          <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
+          <circle cx="17" cy="9" r="2.6" />
+          <path d="M16 14.2c2.8.2 5 2.6 5 5.8" />
+        </svg>
+      );
+    case "Relative":
+      return (
+        <svg {...common}>
+          <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
+        </svg>
+      );
+    case "Other":
+      return (
+        <svg {...common}>
+          <path d="M12 3c1.6 3 1.6 6 0 9-1.6-3-1.6-6 0-9Z" />
+          <path d="M12 12c-3-1.8-6-1.8-8.5 0 2.5 2.6 5.5 2.6 8.5 0Zm0 0c3-1.8 6-1.8 8.5 0-2.5 2.6-5.5 2.6-8.5 0Z" />
+          <path d="M6 18h12" />
+        </svg>
+      );
+    case "guest":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="8" r="3.6" />
+          <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="5" width="17" height="15" rx="2" />
+          <path d="M3.5 10h17M8 3v4M16 3v4" />
+        </svg>
+      );
+  }
+}
 
 /** Downloads a standard .ics iCalendar event */
 function downloadIcsEvent(title: string, description: string, location: string, startDate: Date, endDate: Date) {
@@ -139,11 +191,11 @@ export function InteractiveRsvp() {
     <section className="temple-rsvp-scene" id="rsvp" aria-label="Wedding RSVP">
       {/* Floating Petals for Atmosphere */}
       <div className="temple-petals-layer" aria-hidden="true">
-        <span className="ambient-petal p1">🌸</span>
-        <span className="ambient-petal p2">🌼</span>
-        <span className="ambient-petal p3">🌸</span>
-        <span className="ambient-petal p4">🌼</span>
-        <span className="ambient-petal p5">🌸</span>
+        <span className="ambient-petal p1" />
+        <span className="ambient-petal p2" />
+        <span className="ambient-petal p3" />
+        <span className="ambient-petal p4" />
+        <span className="ambient-petal p5" />
       </div>
 
       {/* Central RSVP Console Container */}
@@ -235,7 +287,7 @@ export function InteractiveRsvp() {
             <div className="temple-name-capsule">
               <span className="temple-capsule-label">Guest Name</span>
               <div className="temple-capsule-row">
-                <span className="temple-user-icon" aria-hidden="true">👤</span>
+                <span className="temple-user-icon" aria-hidden="true"><SpecIcon id="guest" /></span>
                 {isEditingName ? (
                   <div className="temple-edit-wrap">
                     <input
@@ -272,7 +324,7 @@ export function InteractiveRsvp() {
 
             {/* Specialization / Relationship Selector */}
             <div className="temple-spec-section">
-              <label className="temple-spec-label">Your Specialization</label>
+              <label className="temple-spec-label">You are joining as</label>
               <div className="temple-spec-pills" role="radiogroup" aria-label="Select your relationship">
                 {SPECIALIZATIONS.map((spec) => {
                   const isSelected = specialization === spec.id;
@@ -285,7 +337,7 @@ export function InteractiveRsvp() {
                       onClick={() => setSpecialization(spec.id)}
                       className={`temple-spec-pill ${isSelected ? "selected" : ""}`}
                     >
-                      <span className="spec-icon">{spec.icon}</span>
+                      <span className="spec-icon"><SpecIcon id={spec.id} /></span>
                       <span className="spec-label">{spec.label}</span>
                     </button>
                   );
@@ -397,7 +449,7 @@ export function InteractiveRsvp() {
 
             {/* Joyful Confirmation Message */}
             <p className="temple-delight-msg">
-              We&apos;re delighted to have you with us! <span className="text-red-500">❤️</span>
+              We&apos;re delighted to have you with us! <span className="text-[#e8a0a0]">&hearts;</span>
             </p>
             <p className="temple-blessing-quote">
               &ldquo;Your presence will make our celebration even more special.&rdquo;
@@ -418,7 +470,7 @@ export function InteractiveRsvp() {
                 className="temple-cal-btn"
                 title="Download .ics calendar event"
               >
-                <span className="cal-icon" aria-hidden="true">📅</span>
+                <span className="cal-icon" aria-hidden="true"><SpecIcon id="calendar" /></span>
                 <span>Add to Calendar</span>
                 <span className="btn-arrow" aria-hidden="true">&rsaquo;</span>
               </button>

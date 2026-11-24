@@ -261,7 +261,10 @@ export function CoupleScene() {
       if (!autoScrolled) {
         autoScrolled = true;
         const fam = document.getElementById("family");
-        if (fam) {
+        // only a gentle nudge forward while the guest is still at the couple scene —
+        // never pull them back up after a fast swipe past it (that felt like a jump/lag on phones)
+        const top = fam?.getBoundingClientRect().top ?? -1;
+        if (fam && top > 0 && top < window.innerHeight * 1.5) {
           fam.scrollIntoView({ behavior: "smooth" });
         }
       }

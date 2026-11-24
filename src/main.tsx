@@ -15,6 +15,7 @@ import "@fontsource/cormorant-garamond/400-italic.css";
 import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
 import "./styles/index.css";
+import "./styles/premium.css";
 import weddingConfig from "@/config/wedding.config";
 import { WeddingProvider } from "@/context/WeddingContext";
 import { ThemeProvider } from "@/context/ThemeProvider";

@@ -52,6 +52,6 @@ export const SCENES: Record<SectionId, SceneEntry> = {
   travelStay: { Component: TravelScene, enter: "flow", z: 60 }, // the venue
   contact: { Component: sheet(Contact), enter: "flow", z: 55 },
   thankYou: { Component: ThankYouScene, enter: "flow", z: 80 }, // thank you, save the date, replay
-  loveNote: { Component: sheet(LoveNote), enter: "flow", z: 90 },
+  loveNote: { Component: LoveNote, enter: "flow", z: 90 }, // the letter on maroon silk (its own background)
   closing: { Component: ClosingScene, enter: "flow", z: 92 },
 };

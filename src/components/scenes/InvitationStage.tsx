@@ -8,6 +8,8 @@ import { Countdown } from "@/components/ui/Countdown";
 import { mapsUrl } from "@/lib/format";
 import { TempleHeroScene } from "./TempleHeroScene";
 
+const TOUCH = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
 /** The temple mandapam: tiled roof on two pillars over a carved plinth with steps in the middle
  *  (1192×742, cropped; its flat blue background keyed out and its colours matched to the hero
  *  with scripts/match-hero-colours.mjs). */
@@ -150,10 +152,12 @@ export function ArchScene() {
         start: "top 90%",
         once: true,
         onEnter: (batch) => {
+          // phones: no blur (blurring many text lines at once is what made scrolling stutter there)
+          const soft = !TOUCH;
           gsap.fromTo(
             batch,
-            { opacity: 0, y: 18, filter: "blur(5px)" },
-            { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.9, stagger: 0.12, ease: "power2.out" },
+            { opacity: 0, y: 18, ...(soft && { filter: "blur(5px)" }) },
+            { opacity: 1, y: 0, ...(soft && { filter: "blur(0px)", clearProps: "filter" }), duration: 0.9, stagger: 0.12, ease: "power2.out" },
           );
         },
       });

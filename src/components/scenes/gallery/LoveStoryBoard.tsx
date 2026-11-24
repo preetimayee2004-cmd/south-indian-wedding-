@@ -333,6 +333,9 @@ function restPlane(r: BoardRefs, raw: Raw, p: number) {
   }
 }
 
+/** Phones: the board follows the finger closely (a long catch-up feels like lag there). */
+const TOUCH = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+
 const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
 
 export function LoveStoryScene() {
@@ -348,12 +351,23 @@ export function LoveStoryScene() {
     let facing: 1 | -1 = 1;
     let turn = 1;
     let first = true;
+    let lastP = -1;
+    let lastRaw: Raw | null = null;
+    let lastVh = 0;
+    let scene: Element | null = null;
+    let settled = false;
     const tick = (_t: number, dtMs: number) => {
       const R = r.current;
       const raw = fly.current.raw;
       if (!raw || !R.plane) return;
-      const scene = R.board?.closest(".scene");
+      scene ??= R.board?.closest(".scene") ?? null;
       if (scene && !scene.classList.contains("is-live")) return;
+      // nothing moved (no scroll, no turn in progress): skip the frame — keeps phones cool
+      const vhNow = window.innerHeight;
+      if (!first && settled && turn >= 1 && fly.current.dir === facing && fly.current.p === lastP && raw === lastRaw && vhNow === lastVh) return;
+      lastP = fly.current.p;
+      lastRaw = raw;
+      lastVh = vhNow;
       const dt = Math.min(0.05, dtMs / 1000);
       const q = onPath(raw, fly.current.p);
       if (fly.current.dir !== facing && turn >= 1) {
@@ -379,6 +393,7 @@ export function LoveStoryScene() {
       } else {
         shown += Math.max(-7, Math.min(7, turnTo(shown, target)));
       }
+      settled = Math.abs(turnTo(shown, target)) < 0.3;
       R.plane.style.transform = `translate(${q.x.toFixed(1)}px, ${q.y.toFixed(1)}px) translate(-50%, -50%) rotate(${shown.toFixed(2)}deg)`;
       if (R.planeBody) R.planeBody.style.transform = `translateY(${lift.toFixed(1)}px) scaleY(${bank.toFixed(3)})`;
       if (R.mask) R.mask.style.strokeDashoffset = `${1 - fly.current.p}`;
@@ -452,7 +467,7 @@ export function LoveStoryScene() {
       id="gallery"
       labelledBy="gallery-heading"
       className="gb-wall relative overflow-hidden"
-      scrub={1.8}
+      scrub={TOUCH ? 0.6 : 1.8}
       build={build}
     >
       <div className="gb-viewport">
