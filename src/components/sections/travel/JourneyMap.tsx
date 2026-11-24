@@ -73,10 +73,10 @@ export function JourneyMap({ stops, reduced }: { stops: JourneyStop[]; place?: s
       if (!w) return;
       const narrow = w < 620;
       const step = 74;
-      const h = narrow ? 78 + (n - 1) * step + 40 : 200;
+      const h = narrow ? 64 + (n - 1) * step + 50 : 200;
       const pts: Pt[] = stops.map((_, i) =>
         narrow
-          ? { x: w * (i % 2 ? 0.62 : 0.38), y: 82 + i * step }
+          ? { x: w * (i % 2 ? 0.3 : 0.18), y: 64 + i * step }
           : { x: w * (0.1 + (0.8 * i) / Math.max(1, n - 1)), y: i % 2 ? 82 : 118 },
       );
       setGeo((g) => (g && g.w === w && g.h === h ? g : { w, h, pts, d: routePath(pts, narrow), narrow }));
@@ -127,13 +127,13 @@ export function JourneyMap({ stops, reduced }: { stops: JourneyStop[]; place?: s
               {stops.map((s, i) => {
                 const p = geo.pts[i];
                 // phones: the text sits on the open side of the medallion; wide: above / below it
-                const side = geo.narrow ? (i % 2 ? "right" : "left") : "below";
+                const side = geo.narrow ? "right" : "below";
                 return (
                   <li key={s.text} className={`jm-stop jm-stop--${side} ${s.end ? "jm-stop--end" : ""}`} style={{ left: p.x, top: p.y }}>
                     <span className="jm-medal" aria-hidden>
                       {s.icon}
                     </span>
-                    <span className="jm-copy" style={geo.narrow ? { width: Math.max(110, (i % 2 ? geo.w - p.x : p.x) - 44) } : undefined}>
+                    <span className="jm-copy" style={geo.narrow ? { width: geo.w - p.x - 48 } : undefined}>
                       <span className="jm-text">{s.text}</span>
                       {s.label && <span className="jm-label">{s.label}</span>}
                     </span>

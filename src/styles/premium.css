@@ -2463,3 +2463,170 @@
   font-size: 0.78rem;
   color: #8a5d1f;
 }
+/* phones: one column of stops down the left, name and distance side by side on the right */
+.jm-map.is-narrow .jm-stop--right .jm-copy {
+  left: 34px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+/* ── The invitation card, richer: inner gold frame, a faint lattice, a mandala behind the
+      names, parents side by side, a classic three-part date, maroon countdown tiles ── */
+.iv-card-inner {
+  background-image:
+    repeating-linear-gradient(45deg, rgb(201 162 77 / 0.07) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(-45deg, rgb(201 162 77 / 0.07) 0 1px, transparent 1px 22px);
+}
+/* the hosts: two families side by side on a wide card, stacked on a narrow one */
+.gn-parents {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
+  width: 100%;
+  margin-bottom: 0.7em;
+}
+.gn-par {
+  font: 700 clamp(16px, 4.3cqw, 25px)/1.35 "Cormorant Garamond", Georgia, serif;
+  color: #5a1a10;
+}
+.gn-par-and {
+  font: 400 clamp(20px, 5.4cqw, 32px)/1.1 "Great Vibes", cursive;
+  color: #b8862f;
+}
+@container (min-width: 440px) {
+  .gn-parents {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.8em;
+  }
+  .gn-par:first-child { text-align: right; }
+  .gn-par:last-child { text-align: left; }
+}
+
+/* a faint gold mandala glowing behind the couple's names */
+.gn-names {
+  position: relative;
+}
+.gn-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1; /* above the card's ivory (the frame layer), under the names that follow it */
+  width: min(118%, 92cqw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background:
+    radial-gradient(circle, rgb(255 236 190 / 0.55) 0 30%, transparent 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'%3E%3Cg fill='none' stroke='%23c9a24d' stroke-opacity='.42'%3E%3Ccircle r='96'/%3E%3Ccircle r='90' stroke-dasharray='2 4'/%3E%3Ccircle r='62'/%3E%3Ccircle r='40' stroke-dasharray='1 3'/%3E%3C/g%3E%3Cg fill='%23c9a24d' fill-opacity='.16'%3E%3Cpath id='p' d='M0-90C10-76 10-64 0-56C-10-64-10-76 0-90Z'/%3E%3Cuse href='%23p' transform='rotate(22.5)'/%3E%3Cuse href='%23p' transform='rotate(45)'/%3E%3Cuse href='%23p' transform='rotate(67.5)'/%3E%3Cuse href='%23p' transform='rotate(90)'/%3E%3Cuse href='%23p' transform='rotate(112.5)'/%3E%3Cuse href='%23p' transform='rotate(135)'/%3E%3Cuse href='%23p' transform='rotate(157.5)'/%3E%3Cuse href='%23p' transform='rotate(180)'/%3E%3Cuse href='%23p' transform='rotate(202.5)'/%3E%3Cuse href='%23p' transform='rotate(225)'/%3E%3Cuse href='%23p' transform='rotate(247.5)'/%3E%3Cuse href='%23p' transform='rotate(270)'/%3E%3Cuse href='%23p' transform='rotate(292.5)'/%3E%3Cuse href='%23p' transform='rotate(315)'/%3E%3Cuse href='%23p' transform='rotate(337.5)'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+/* flourishes either side of the ampersand */
+.gn-amp {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+.gn-amp::before,
+.gn-amp::after {
+  content: "";
+  width: clamp(28px, 10cqw, 70px);
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, #c9a24d);
+}
+.gn-amp::after {
+  background: linear-gradient(90deg, #c9a24d, transparent);
+}
+
+/* the date the way printed invitations set it: MONDAY | 15 FEBRUARY | 2027 */
+.gn-date3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  width: min(100%, 24em);
+  margin-top: 0.7em;
+  padding: 0.45em 0;
+  border-top: 1.5px solid rgb(201 162 77 / 0.85);
+  border-bottom: 1.5px solid rgb(201 162 77 / 0.85);
+}
+.gn-d-side {
+  font: 700 clamp(12px, 3.6cqw, 20px)/1.2 "Cinzel", Georgia, serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #6b1f2a;
+}
+.gn-d-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 clamp(10px, 3.4cqw, 24px);
+  border-left: 1.5px solid rgb(201 162 77 / 0.85);
+  border-right: 1.5px solid rgb(201 162 77 / 0.85);
+}
+.gn-d-mid b {
+  font: 700 clamp(40px, 14cqw, 86px)/1 "Cinzel", Georgia, serif;
+  background: linear-gradient(180deg, #a8243f, #7a1530 55%, #5a0f20);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gn-d-mid small {
+  margin-top: 0.15em;
+  font: 700 clamp(11px, 3.2cqw, 17px)/1 "Cinzel", Georgia, serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #a9761f;
+}
+.gn-muh {
+  display: inline-block;
+  margin-top: 0.9em !important;
+  padding: 0.4em 1.2em;
+  border: 1px solid #d4a54a;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a1c2f, #5e0d1a);
+  box-shadow: inset 0 0 0 2px #5e0d1a, inset 0 0 0 3px rgb(232 197 107 / 0.45);
+  font: italic 600 clamp(14px, 3.9cqw, 22px)/1.3 "Cormorant Garamond", Georgia, serif;
+  color: #f3cf73;
+}
+
+/* the countdown as maroon temple tiles with gold numbers */
+.iv-card-inner .gn-tiles div {
+  border: 1.5px solid #d4a54a;
+  background: linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
+  box-shadow: inset 0 0 0 3px #5e0d1a, inset 0 0 0 4px rgb(232 197 107 / 0.5), 0 10px 18px -8px rgb(90 15 30 / 0.55);
+}
+.iv-card-inner .gn-tiles b {
+  color: #f3cf73;
+}
+.iv-card-inner .gn-tiles span {
+  color: #ead7b4;
+}
+
+/* the destination: a small temple tower, a gold button, a script closing line */
+.gn-temple {
+  width: clamp(34px, 10cqw, 52px);
+  height: auto;
+  margin-bottom: 0.35em;
+}
+.iv-card-inner .gn-btn {
+  color: #4a0d16;
+  background: linear-gradient(180deg, #fbe39c 0%, #e2b553 55%, #c99a3d 100%);
+  box-shadow: 0 8px 16px -6px rgb(120 70 10 / 0.5), inset 0 0 0 1px #fff0bf;
+}
+.iv-card-inner .gn-end {
+  font: 400 clamp(30px, 9cqw, 60px)/1.15 "Great Vibes", cursive;
+  color: #7a1530;
+}
+
+/* phones: no permanent layers or filters on the dozens of revealed lines (memory, smoothness) */
+@media (pointer: coarse) {
+  .iv-card-inner [data-line] {
+    will-change: auto;
+  }
+  .gn-n {
+    filter: none;
+  }
+}

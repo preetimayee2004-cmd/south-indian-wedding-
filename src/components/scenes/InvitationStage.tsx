@@ -18,6 +18,7 @@ const ARCH_W = 1192;
 const ARCH_H = 742;
 /** The brass lamps, lotus bowls and steps that stand in front (x 348–848, y 511–742 of the art). */
 const FRONT = { src: "/media/invite-arch-front.webp", left: 348 / ARCH_W, width: 500 / ARCH_W, ratio: "1000 / 462" };
+const FRONT_TOP = 511;
 /** Rows of the art: the roof, lintel and capitals end at SLICE_TOP; the plain fluted stretch of
  *  the pillars that can be drawn taller runs to SLICE_END. */
 const SLICE_TOP = 416;
@@ -114,7 +115,14 @@ export function ArchScene() {
       const k = W / ARCH_W;
       const Hn = ARCH_H * k;
       const room = (OPEN.bottom - OPEN.top) * k;
-      const extra = Math.max(0, $.col!.offsetHeight - room);
+      // the lamps and steps in front cover the foot of the opening (from art row 511):
+      // pad the letter by that much, so its last lines are never hidden behind them
+      $.col!.style.paddingBottom = `${Math.round((OPEN.bottom - FRONT_TOP) * k + 8)}px`;
+      // measure the letter's own content (it grows once the web fonts arrive), not its frame
+      const inner = $.col!.querySelector<HTMLElement>(".iv-card-inner");
+      const cs = getComputedStyle($.col!);
+      const need = inner ? inner.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : $.col!.offsetHeight;
+      const extra = Math.max(0, need - room);
       const slice = (SLICE_END - SLICE_TOP) * k;
       const f = (slice + extra) / slice;
       $.box!.style.height = `${Hn + extra}px`;
@@ -134,6 +142,8 @@ export function ArchScene() {
     const ro = new ResizeObserver(fit);
     ro.observe($.col!);
     ro.observe($.box!);
+    const inner = $.col!.querySelector<HTMLElement>(".iv-card-inner");
+    if (inner) ro.observe(inner);
     return () => ro.disconnect();
   }, []);
 
@@ -282,13 +292,14 @@ export function ArchScene() {
                       With the blessings of our elders, we warmly invite you to the wedding celebrations of
                     </p>
                     {parents(first.parents) && (
-                      <p data-line className="gn-family">
-                        {parents(first.parents)}
-                        <span className="gn-together">together with</span>
-                        {parents(second.parents)}
-                      </p>
+                      <div data-line className="gn-parents">
+                        <p className="gn-par">{parents(first.parents)}</p>
+                        <span className="gn-par-and">together with</span>
+                        <p className="gn-par">{parents(second.parents)}</p>
+                      </div>
                     )}
                     <h2 id="invite-heading" className="gn-names">
+                      <span aria-hidden className="gn-halo" />
                       <span data-line className="gn-n" data-fit=".iv-card-inner">
                         {first.name}
                       </span>
@@ -307,14 +318,17 @@ export function ArchScene() {
 
                   {/* Block 3: Date & Muhurtham */}
                   <div className="gn-blk">
-                    <p data-line className="gn-cdh">{date.weekday}</p>
-                    <div data-line className="iv-date-pill">
-                      <span className="iv-date-pill-text">
-                        {date.day} {date.month.toUpperCase()} {date.year}
+                    <p data-line className="gn-cdh">Save the Date</p>
+                    <div data-line className="gn-date3">
+                      <span className="gn-d-side">{date.weekday}</span>
+                      <span className="gn-d-mid">
+                        <b>{date.day}</b>
+                        <small>{date.month}</small>
                       </span>
+                      <span className="gn-d-side">{date.year}</span>
                     </div>
                     {wedding.muhurthamLabel && (
-                      <p data-line className="gn-cdn">
+                      <p data-line className="gn-muh">
                         Auspicious Muhurtham · {wedding.muhurthamLabel}
                       </p>
                     )}
@@ -335,6 +349,11 @@ export function ArchScene() {
 
                   {/* Block 5: The Destination */}
                   <div className="gn-blk">
+                    <svg data-line viewBox="0 0 48 48" className="gn-temple" aria-hidden>
+                      <path d="M24 4v4M19 9h10l2 6H17l2-6ZM15 15h18l2 7H13l2-7ZM11 22h26l2 8H9l2-8ZM7 30h34v12H7Z" fill="none" stroke="#b8862f" strokeWidth="1.6" strokeLinejoin="round" />
+                      <path d="M20 42v-6a4 4 0 0 1 8 0v6" fill="none" stroke="#b8862f" strokeWidth="1.6" />
+                      <circle cx="24" cy="3.5" r="1.6" fill="#c2273d" />
+                    </svg>
                     <p data-line className="gn-vh">The Destination</p>
                     <p data-line className="gn-vn">{venue.name}</p>
                     <p data-line className="gn-va">{venue.address ?? wedding.city}</p>
