@@ -4,7 +4,6 @@ import { fetchWishes, addWish, subscribeWishes, validateWish, WISH_LIMITS, type 
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
-import { ParrotFlightAnimation } from "./wishes/ParrotFlightAnimation";
 import { burstHearts } from "@/lib/hearts";
 
 /** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
@@ -54,7 +53,6 @@ export function WishingWall() {
   const [guestName, setGuestName] = useState("");
   const [guestMessage, setGuestMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showParrotFlight, setShowParrotFlight] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -86,7 +84,6 @@ export function WishingWall() {
     setIsSubmitting(true);
     setValidationError(null);
     try {
-      setShowParrotFlight(true);
       if (sendBtnRef.current) burstHearts(sendBtnRef.current, { puff: true });
       const createdWish = await addWish(weddingId, cleanName, guestMessage);
       setNewlyAddedId(createdWish.id);
@@ -202,7 +199,6 @@ export function WishingWall() {
           </button>
         </div>
 
-        <ParrotFlightAnimation active={showParrotFlight} onComplete={() => setShowParrotFlight(false)} />
         <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </Container>
     </section>
