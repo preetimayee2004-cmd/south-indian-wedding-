@@ -2739,38 +2739,36 @@
 .ww-heart--rose { color: #e4607b; }
 
 /* ── Kolam RSVP ───────────────────────────────────────────────────────────
-   An ivory card inside a large rice-flour kolam on maroon silk; the kolam draws in
-   part by part as the guest moves through the steps (only transform/opacity/dashoffset move). */
+   One screen: the heading, a rice-flour kolam with "Accept Invitation" at its heart, and after
+   accepting a thank-you line with Add to Calendar. Only transform/opacity/dashoffset animate. */
 .kr-section {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
   overflow: hidden;
-  padding: clamp(2.6rem, 7vw, 4.5rem) 16px clamp(2.6rem, 7vw, 4.5rem);
+  padding: clamp(2rem, 5svh, 3.5rem) 16px;
   text-align: center;
 }
-.kr-head { position: relative; z-index: 2; }
-.kr-head .pm-script-title { font-size: clamp(2.5rem, 11vw, 4rem); margin-top: 4px; }
-.kr-deadline { margin-top: 6px; font-style: italic; font-size: 0.95rem; color: #f1dfbd; }
+.kr-head { position: relative; z-index: 2; max-width: 34rem; }
+.kr-dear { margin-top: 6px; font-family: "Great Vibes", cursive; font-size: 1.7rem; line-height: 1.1; color: #f3cf73; }
+.kr-title.pm-script-title { margin-top: 4px; font-size: clamp(2.1rem, 9vw, 3.4rem); line-height: 1.1; }
+.kr-deadline { margin-top: 8px; font-style: italic; font-size: 0.95rem; color: #f1dfbd; }
 .kr-stage {
   position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
-  margin-top: 1.25rem;
-}
-.kr-kolam {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 0;
-  width: min(150vw, 40rem);
+  width: min(86vw, 420px, 48svh);
   aspect-ratio: 1;
-  translate: -50% -50%;
-  opacity: 0.35;
-  pointer-events: none;
+  margin-top: clamp(0.75rem, 2.5svh, 1.5rem);
 }
 @media (min-width: 768px) {
-  .kr-stage { min-height: min(46rem, 90vw); }
-  .kr-kolam { width: min(46rem, 90vw); opacity: 1; }
+  .kr-stage { width: min(520px, 48svh); }
 }
+.kr-kolam { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .kr-dot { fill: #e2b553; }
 .kr-line {
   fill: none;
@@ -2778,190 +2776,44 @@
   stroke-width: 0.07;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 1;
+  stroke-dasharray: 1 2; /* a long gap: no round-cap dot shows while a line is still empty */
   stroke-dashoffset: 1;
 }
-.kr-card-wrap {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 26rem;
-  margin-top: 46px;
-  perspective: 900px;
-}
-.kr-crest {
-  position: absolute;
-  top: -50px;
-  left: 50%;
-  z-index: 3;
-  width: 92px;
-  translate: -50% 0;
-  overflow: visible;
-  pointer-events: none;
-}
-.kr-crest-flame { fill: #ff9a28; }
-.kr-card {
-  position: relative;
-  padding: 30px 20px 18px;
-  border: 1px solid #d4a54a;
-  border-radius: 12px;
-  background: linear-gradient(180deg, #fffaf0 0%, #f4e4c0 100%);
-  outline: 1px solid rgb(232 197 107 / 0.6);
-  outline-offset: 4px;
-  box-shadow: 0 22px 44px -18px rgb(12 0 3 / 0.75);
-  color: #3d1c14;
-  text-align: center;
-}
-.kr-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.kr-dots li {
-  width: 8px;
-  height: 8px;
-  border: 1px solid #b8862f;
-  border-radius: 50%;
-  transition: transform 0.3s ease, background-color 0.3s ease;
-}
-.kr-dots li.is-done { background: #e2b553; }
-.kr-dots li.is-now { background: #8a1b2c; border-color: #8a1b2c; transform: scale(1.3); }
-.kr-body { min-height: 12.5rem; }
-.kr-step { border: 0; margin: 0; padding: 0; min-width: 0; }
-.kr-legend {
-  width: 100%;
-  padding: 0;
-  font-family: "Great Vibes", cursive;
-  font-size: 2.05rem;
-  line-height: 1.15;
-  color: #8a1b2c;
-  outline: none;
-}
-.kr-hint { margin-top: 2px; font-style: italic; font-size: 0.9rem; color: #6b4a3a; }
-.kr-sub { margin: 16px 0 8px; font-style: italic; font-size: 0.95rem; color: #5c3a2b; }
-.kr-input {
-  width: 100%;
-  margin-top: 14px;
-  padding: 12px 14px;
-  border: 1px solid #d4a54a;
-  border-radius: 8px;
-  background: #fffdf6;
-  color: #3d1c14;
-  font-size: 1.05rem;
-  text-align: center;
-}
-.kr-input:focus { outline: 2px solid #c99a3d; outline-offset: 1px; }
-.kr-textarea { resize: none; text-align: left; line-height: 1.45; }
-.kr-counter { margin-top: 4px; text-align: right; font-size: 0.78rem; color: #7a5a48; }
-.kr-attend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
-.kr-choice {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 8px 12px;
-  border: 1px solid rgb(212 165 74 / 0.6);
-  border-radius: 10px;
-  background: #fffaf0;
-  color: #5c1a24;
-  font-size: 0.92rem;
-  font-weight: 600;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-}
-.kr-choice .kr-deepam { width: 46px; height: 50px; }
-.kr-choice.is-on { background: #fbecc4; border-color: #b8862f; box-shadow: inset 0 0 0 2px #e2b553; }
-.kr-choice:active, .kr-chip:active, .kr-lamp:active { transform: scale(0.96); }
-.kr-lamps { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-top: 16px; }
-.kr-lamp { width: 46px; height: 52px; padding: 2px; border-radius: 8px; }
-.kr-lamp[aria-checked="true"] { box-shadow: inset 0 -2px 0 #b8862f; }
-.kr-lamp .kr-deepam { width: 100%; height: 100%; }
-.kr-count { margin-top: 10px; font-family: "Great Vibes", cursive; font-size: 1.7rem; color: #8a1b2c; }
-.kr-deepam { display: block; overflow: visible; }
-.kr-deepam-flame {
-  fill: #ff9a28;
-  opacity: 0;
-  transform: scaleY(0);
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-}
-.kr-deepam-glow { opacity: 0; }
-.kr-deepam.is-lit .kr-deepam-flame { opacity: 1; transform: none; }
-.kr-deepam.is-lit .kr-deepam-glow { opacity: 1; }
-.kr-deepam.kr-anim .kr-deepam-flame,
-.kr-deepam.kr-anim .kr-deepam-glow { transition: transform 0.3s ease-out, opacity 0.3s ease-out; }
-.kr-deepam.kr-anim.is-lit .kr-deepam-flame,
-.kr-deepam.kr-anim.is-lit .kr-deepam-glow { transition-delay: var(--d, 0s); }
-.kr-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
-.kr-chip {
-  padding: 7px 15px;
-  border: 1px solid rgb(184 134 47 / 0.7);
-  border-radius: 999px;
-  background: #fffaf0;
-  color: #5c1a24;
-  font-size: 0.9rem;
-  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-}
-.kr-chip.is-on { background: linear-gradient(180deg, #fbe39c, #e2b553); border-color: #b8862f; color: #4a0d16; font-weight: 600; }
-.kr-choice:focus-visible, .kr-chip:focus-visible, .kr-lamp:focus-visible { outline: 2px solid #8a1b2c; outline-offset: 2px; }
-.kr-error { margin-top: 10px; font-size: 0.9rem; color: #8a1b2c; }
-.kr-retry { margin-left: 8px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.kr-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 18px; }
-.kr-nav--pass { justify-content: center; flex-wrap: wrap; }
-.kr-card .pm-btn--ghost { color: #6a0f1f; background: transparent; border-color: #c99a3d; }
-.kr-card .pm-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.kr-back:disabled { visibility: hidden; }
-
-/* the Guest Pass: a golden palm leaf with two holes and a cord, sealed with a kumkum thumbprint */
-.kr-card--pass {
-  padding: 26px 30px 20px;
-  border-color: #b8862f;
-  border-radius: 46px / 34px;
-  background:
-    repeating-linear-gradient(180deg, rgb(120 80 30 / 0.1) 0 1px, transparent 1px 5px),
-    linear-gradient(180deg, #f6e4b5 0%, #ecd197 55%, #ddb878 100%);
-}
-.kr-pass { position: relative; }
-.kr-hole {
-  position: absolute;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  margin-top: -6px;
-  border-radius: 50%;
-  background: #4c0813;
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 0 0 2px rgb(150 100 40 / 0.5);
-}
-.kr-hole::after {
+/* the border is there from the start, a little softer until the kolam is finished */
+.kr-part--first .kr-line { stroke-opacity: 0.7; }
+.kr-flame { fill: #ff9a28; }
+.kr-accept { position: relative; z-index: 2; padding: 13px 26px; font-size: 0.72rem; }
+.kr-accept::before {
   content: "";
   position: absolute;
-  top: 5px;
-  width: 30px;
-  height: 2px;
-  border-radius: 2px;
-  background: repeating-linear-gradient(90deg, #8a1b2c 0 4px, #c14a3a 4px 7px);
+  inset: -18px -26px;
+  z-index: -1;
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgb(255 217 138 / 0.45), transparent);
+  pointer-events: none;
 }
-.kr-hole--l { left: -14px; }
-.kr-hole--l::after { right: 6px; }
-.kr-hole--r { right: -14px; }
-.kr-hole--r::after { left: 6px; }
-.kr-pass-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: #8a5d1f; }
-.kr-pass-name { margin-top: 4px; font-family: "Great Vibes", cursive; font-size: 2.3rem; line-height: 1.1; color: #8a1b2c; }
-.kr-pass-line { margin-top: 4px; font-style: italic; font-size: 1rem; color: #3d1c14; }
-.kr-pass-small { margin-top: 3px; font-size: 0.86rem; color: #5c3a2b; }
-.kr-pass-rule { display: block; width: 60%; height: 1px; margin: 12px auto 8px; background: linear-gradient(90deg, transparent, #b8862f, transparent); }
-.kr-pass-couple { font-family: "Great Vibes", cursive; font-size: 1.6rem; line-height: 1.1; color: #6a0f1f; }
-.kr-pass-lamp { width: 58px; height: 64px; margin: 0 auto 4px; }
-.kr-seal { position: absolute; right: -8px; top: -6px; width: 44px; rotate: -8deg; }
-.kr-thumb { display: block; width: 100%; height: auto; }
-.kr-falls { position: absolute; inset: 0; z-index: 4; overflow: hidden; pointer-events: none; }
-.kr-fall {
-  position: absolute;
-  top: 0;
-  width: 10px;
+.kr-after { position: relative; z-index: 2; margin-top: clamp(0.75rem, 2.5svh, 1.5rem); }
+.kr-thanks { margin-bottom: 14px; font-family: "Great Vibes", cursive; font-size: clamp(1.6rem, 6.5vw, 2.2rem); line-height: 1.2; color: #f3cf73; }
+
+/* falling flowers: marigold (orange and yellow), mallipoo (jasmine) and rose petals */
+.kr-flower { position: absolute; top: 0; z-index: 5; pointer-events: none; }
+.kr-flower--marigold,
+.kr-flower--marigold-yellow {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #c4520f 0 18%, #f08a1c 22% 62%, #f6a63a 66%);
+}
+.kr-flower--marigold-yellow { background: radial-gradient(circle, #b5770c 0 18%, #f3c12e 22% 62%, #f7d65c 66%); }
+.kr-flower--mallipoo {
+  width: 7px;
   height: 13px;
-  border-radius: 80% 0 80% 0;
-  background: #f7c3cc;
-  opacity: 0;
+  border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+  background: linear-gradient(180deg, #fffdf6, #efe6cf);
 }
-.kr-fall--marigold { background: #f39a1e; }
+.kr-flower--rose {
+  width: 11px;
+  height: 14px;
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #e86a84, #b83252);
+}

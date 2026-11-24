@@ -46,22 +46,6 @@ export function validateRsvp(r: RsvpInput, maxGuests: number): string | null {
   return null;
 }
 
-/**
- * Joining-as and ceremonies ride at the start of the message (the rsvps table has no columns
- * for them): "[Friend · Muhurtham, Reception] blessing".
- */
-export function withDetails(joiningAs: string, ceremonies: string[], blessing: string): string {
-  const tag = `[${joiningAs} · ${ceremonies.join(", ") || "—"}] `;
-  return (tag + blessing.trim()).trim();
-}
-
-export function splitDetails(message = ""): { joiningAs?: string; ceremonies: string[]; blessing: string } {
-  const m = /^\[([^\]·]+?) · ([^\]]*)\]\s?/.exec(message);
-  if (!m) return { ceremonies: [], blessing: message };
-  const list = m[2].trim() === "—" ? [] : m[2].split(",").map((x) => x.trim()).filter(Boolean);
-  return { joiningAs: m[1].trim(), ceremonies: list, blessing: message.slice(m[0].length) };
-}
-
 /** No backend set up yet: keep the answer on this device so the guest still gets their pass. */
 export function saveLocalRsvp(weddingId: string, r: RsvpInput): SavedRsvp {
   const saved: SavedRsvp = { name: r.name.trim(), attending: r.attending, guests: r.attending ? r.guests : 0, message: r.message?.trim() || undefined, at: new Date().toISOString() };
