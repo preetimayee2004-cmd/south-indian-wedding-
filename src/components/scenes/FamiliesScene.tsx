@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 
 /** Traditional hanging wall lantern with swaying animation */
@@ -83,7 +83,7 @@ function Kuthuvilakku() {
   );
 }
 
-/** One family: the photo in the golden arch, then a carved ivory name board. */
+/** One family: the photo in the golden arch, then the names underneath (as before). */
 function FamilyCard({ side, who, photo, archRef }: { side: Side; who: "Bride" | "Groom"; photo: string; archRef: (el: HTMLDivElement | null) => void }) {
   const father = side.members.find((m) => /father/i.test(m.relation) && !/grand/i.test(m.relation));
   const mother = side.members.find((m) => /mother/i.test(m.relation) && !/grand/i.test(m.relation));
@@ -100,46 +100,49 @@ function FamilyCard({ side, who, photo, archRef }: { side: Side; who: "Bride" | 
         </picture>
       </div>
 
-      <div className="fm-board">
-        <span className="fm-board-lotus" aria-hidden>
-          <svg viewBox="-20 -14 40 24">
-            <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
-            <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
-            <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
-          </svg>
-        </span>
-        <p className="fm-badge">{side.title}</p>
-        {side.message && <p className="fm-message">&ldquo;{side.message}&rdquo;</p>}
-        <div className="fm-parents">
+      {/* Decorative Names & Details Underneath (as before) */}
+      <div className="fam-details">
+        <div className="fam-badge-wrap">
+          <span className="fam-badge">{side.title}</span>
+        </div>
+
+        <div className="fam-names-block">
           {father && (
-            <p className="fm-parent">
-              <span className="fm-parent-name">{father.name}</span>
-              <span className="fm-parent-role">Father of the {who}</span>
-            </p>
+            <div className="fam-parent">
+              <h3 className="fam-name">{father.name}</h3>
+              <p className="fam-role">Father of the {who}</p>
+            </div>
           )}
+
           {father && mother && (
-            <span className="fm-amp" aria-hidden>
-              &amp;
-            </span>
+            <div className="fam-amp" aria-hidden="true">
+              <span className="fam-amp-line" />
+              <span className="fam-amp-symbol">&amp;</span>
+              <span className="fam-amp-line" />
+            </div>
           )}
+
           {mother && (
-            <p className="fm-parent">
-              <span className="fm-parent-name">{mother.name}</span>
-              <span className="fm-parent-role">Mother of the {who}</span>
-            </p>
+            <div className="fam-parent">
+              <h3 className="fam-name">{mother.name}</h3>
+              <p className="fam-role">Mother of the {who}</p>
+            </div>
           )}
         </div>
+
         {others.length > 0 && (
-          <>
-            <p className="fm-with">with love from</p>
-            <ul className="fm-kin">
-              {others.map((m) => (
-                <li key={m.name} className="fm-kin-chip">
-                  {m.name} <small>{m.relation}</small>
-                </li>
+          <div className="fam-sub-family">
+            <p className="fam-kin">
+              {others.map((m, i) => (
+                <Fragment key={m.name}>
+                  {i > 0 && <span className="fam-dot">·</span>}
+                  <span>
+                    {m.name} <small>({m.relation})</small>
+                  </span>
+                </Fragment>
               ))}
-            </ul>
-          </>
+            </p>
+          </div>
         )}
       </div>
     </article>

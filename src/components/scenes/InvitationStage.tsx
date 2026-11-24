@@ -119,9 +119,18 @@ export function ArchScene() {
       // pad the letter by that much, so its last lines are never hidden behind them
       $.col!.style.paddingBottom = `${Math.round((OPEN.bottom - FRONT_TOP) * k + 8)}px`;
       // measure the letter's own content (it grows once the web fonts arrive), not its frame
+      // (.iv-card-inner is stretched to the letter's full height by min-height: 100%, so measure it
+      // with that switched off for a moment — else the pillars could only ever grow, never shrink back)
       const inner = $.col!.querySelector<HTMLElement>(".iv-card-inner");
       const cs = getComputedStyle($.col!);
-      const need = inner ? inner.offsetHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : $.col!.offsetHeight;
+      let content = $.col!.offsetHeight;
+      if (inner) {
+        const prev = inner.style.minHeight;
+        inner.style.minHeight = "0px";
+        content = inner.offsetHeight;
+        inner.style.minHeight = prev;
+      }
+      const need = inner ? content + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) : content;
       const extra = Math.max(0, need - room);
       const slice = (SLICE_END - SLICE_TOP) * k;
       const f = (slice + extra) / slice;
