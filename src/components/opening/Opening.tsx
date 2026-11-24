@@ -135,8 +135,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const { couple, wedding, opening, loveStory } = useWedding();
   const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
   const { guestName } = useGuest();
-  const { start: startMusic, toggle: toggleSound, playSfx, hasSound, hasMusic, muted, playing } = useAudio();
-  const soundOn = hasMusic ? playing : !muted;
+  const { start: startMusic, toggle: toggleSong, playSfx, hasMusic, playing } = useAudio();
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
 
@@ -307,18 +306,18 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
         <span key={i} aria-hidden className="op-star" style={{ left: `${l}%`, top: `${t}%`, width: s, height: s, animationDelay: `${d}s` }} />
       ))}
 
-      {/* top right: sound on/off and skip */}
+      {/* top right: the song on/off and skip (sound effects play either way) */}
       <div ref={ctrls} className="op-ctrls">
-        {hasSound && (
+        {hasMusic && (
           <button
             type="button"
-            onClick={toggleSound}
-            aria-pressed={soundOn}
-            aria-label={soundOn ? "Turn sound off" : "Play music"}
-            title={soundOn ? "Sound off" : "Play music"}
+            onClick={toggleSong}
+            aria-pressed={playing}
+            aria-label={playing ? "Pause the song" : "Play the song"}
+            title={playing ? "Pause song" : "Play song"}
             className="op-ctrl op-ctrl--sound"
           >
-            <SoundIcon on={soundOn} />
+            <SoundIcon on={playing} />
           </button>
         )}
         <button type="button" onClick={skip} className="op-ctrl op-ctrl--skip" aria-label="Skip the envelope and open the invitation">

@@ -16,18 +16,17 @@ export interface SfxOptions {
 }
 
 interface AudioState {
-  /** A music track is configured. */
+  /** A music track is configured (the song button is hidden otherwise — no dead buttons). */
   hasMusic: boolean;
-  /** Music or any sound effect is configured (the sound button is hidden otherwise — no dead buttons). */
-  hasSound: boolean;
-  /** The guest switched sound off (remembered between visits). */
+  /** The guest switched the song off (remembered between visits). Effects keep playing. */
   muted: boolean;
   /** Music is playing right now. */
   playing: boolean;
   /** Call from inside a user gesture (tap / click / key). Never autoplays. */
   start: () => void;
-  /** Sound on/off — music and effects together. Call from a user gesture. */
+  /** Song on/off. Call from a user gesture. Sound effects are not affected. */
   toggle: () => void;
+  /** Sound effects always play (once the guest has tapped anything), whether the song is on or off. */
   playSfx: (name: Sfx, opts?: SfxOptions) => void;
 }
 
@@ -143,7 +142,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   // Warm the effects up shortly after load, so the very first tap already has them.
   useEffect(() => {
-    if (!hasSfx || mutedRef.current) return;
+    if (!hasSfx) return;
     // after the page has settled (Safari has no requestIdleCallback, so a plain timer)
     const id = window.setTimeout(loadSfx, 1500);
     return () => window.clearTimeout(id);
@@ -216,7 +215,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (!a) return;
     fadeTo(0, FADE_OUT);
     window.setTimeout(() => {
-      if (mutedRef.current) a.pause();
+      if (mutedRef.current) a.pause(); // unless the song was switched back on meanwhile
     }, FADE_OUT * 1000);
     setPlaying(false);
   }, [fadeTo]);
@@ -231,8 +230,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   const toggle = useCallback(() => {
     unlock();
     started.current = true;
-    const soundOn = !mutedRef.current && (playing || !audio.music);
-    if (soundOn) {
+    if (!audio.music) return;
+    if (playing) {
       mutedRef.current = true;
       setMuted(true);
       writeMuted(true);
@@ -246,14 +245,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   }, [audio.music, pause, play, playing, unlock]);
 
   const playSfx = useCallback((name: Sfx, opts: SfxOptions = {}) => {
-    if (opts.gesture && !mutedRef.current) unlock();
-    if (mutedRef.current || !unlocked.current) return;
+    if (opts.gesture) unlock();
+    if (!unlocked.current) return; // browsers allow sound only after the guest's first tap
     const c = ctx.current;
     const out = fxGain.current;
     if (!c || !out || c.state === "closed") return;
     const asked = performance.now();
     const fire = (b: AudioBuffer) => {
-      if (mutedRef.current) return;
       const late = (performance.now() - asked) / 1000;
       if (late > 0.45) return; // too late to still match the moment
       if (c.state !== "running") void c.resume().catch(() => undefined);
@@ -274,6 +272,19 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (ready) fire(ready);
     else void pending.current.get(name)?.then((b) => b && fire(b));
   }, [unlock]);
+
+  // Effects are automatic: the guest's first tap or key press anywhere wakes the audio up
+  // (browsers allow no sound before that). This never starts the song.
+  useEffect(() => {
+    if (!hasSfx) return;
+    const evs = ["pointerdown", "touchend", "keydown"] as const;
+    const wake = () => {
+      unlock();
+      if (ctx.current?.state === "running") evs.forEach((e) => window.removeEventListener(e, wake, true));
+    };
+    evs.forEach((e) => window.addEventListener(e, wake, { capture: true, passive: true }));
+    return () => evs.forEach((e) => window.removeEventListener(e, wake, true));
+  }, [hasSfx, unlock]);
 
   // Be polite: pause when the tab is hidden, resume when it returns.
   useEffect(() => {
@@ -300,8 +311,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AudioState>(
-    () => ({ hasMusic: Boolean(audio.music), hasSound: Boolean(audio.music) || hasSfx, muted, playing, start, toggle, playSfx }),
-    [audio.music, hasSfx, muted, playing, start, toggle, playSfx],
+    () => ({ hasMusic: Boolean(audio.music), muted, playing, start, toggle, playSfx }),
+    [audio.music, muted, playing, start, toggle, playSfx],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
