@@ -430,16 +430,14 @@
   }
 }
 
-/* Thank You: the couple in a gold-rimmed arch, the date on a framed ivory plaque */
-.ty-arch {
-  border-radius: 999px 999px 10px 10px;
-  overflow: hidden;
-  background: #fffdfa; /* the painting's own paper colour, so its edge never shows */
-  border: 3px solid #d9ab4d;
-  box-shadow:
-    0 0 0 5px #4c0813,
-    0 0 0 6.5px rgb(226 181 83 / 0.8),
-    0 22px 40px -10px rgb(0 0 0 / 0.6);
+/* Thank You: the couple and the temple straight on the silk (cut-out painting, no frame),
+   a soft gold glow behind them; the date on a framed ivory plaque */
+.ty-arch::before {
+  content: "";
+  position: absolute;
+  inset: 18% -12% -4%;
+  background: radial-gradient(50% 55% at 50% 62%, rgb(243 207 115 / 0.26), rgb(243 207 115 / 0.08) 55%, transparent 75%);
+  pointer-events: none;
 }
 .ty-date {
   position: relative;

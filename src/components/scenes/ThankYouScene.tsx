@@ -58,11 +58,11 @@ export function ThankYouScene() {
           <p className="pm-lede mt-1">{thankYou.message}</p>
         </div>
 
-        {/* the couple facing the temple, in a gold-rimmed arch */}
-        <div className="ty-arch relative mt-3 w-full max-w-[19.5rem] min-h-0 flex-1">
+        {/* the couple facing the temple, standing straight on the silk (no frame), a soft gold glow behind */}
+        <div className="ty-arch relative mt-3 w-full max-w-[26rem] min-h-0 flex-1">
           <div ref={pic} data-layer className="absolute inset-0">
             <img
-              src="/media/thank-you-temple.webp"
+              src="/media/thank-you-temple-cut.webp"
               alt={`${first.name} and ${second.name} facing the sacred temple`}
               loading="lazy"
               decoding="async"
@@ -73,7 +73,7 @@ export function ThankYouScene() {
         </div>
 
         {/* save the date: the day, add to calendar, replay the invitation */}
-        <div ref={words} className="relative z-10 -mt-8 w-full">
+        <div ref={words} className="relative z-10 -mt-4 w-full">
           <div className="ty-date mx-auto max-w-[20rem]">
             <p className="ty-date-label">Save the Date</p>
             <p className="ty-date-num">{saveDate}</p>
