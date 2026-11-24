@@ -147,6 +147,13 @@ export function FindYourWay() {
           <p className="fw-sub">Everything you need to be part of our celebrations.</p>
         </header>
 
+        {/* the maroon silk stage, framed in gold, that holds every card */}
+        <div className="fw-stage">
+          <span aria-hidden className="fw-stage-frame" />
+          {(["tl", "tr", "bl", "br"] as const).map((c) => (
+            <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`fw-stage-corner fw-corner--${c}`} />
+          ))}
+
         {/* the venue */}
         <article className="fw-card fw-venue" data-rise>
           <Corners />
@@ -243,16 +250,18 @@ export function FindYourWay() {
                   <span className="fw-initial" aria-hidden>
                     {c.name.trim().charAt(0).toUpperCase()}
                   </span>
-                  <span className="fw-contact-name">{c.name}</span>
-                  {c.role && <span className="fw-contact-role">{c.role}</span>}
+                  <span className="fw-contact-who">
+                    <span className="fw-contact-name">{c.name}</span>
+                    {c.role && <span className="fw-contact-role">{c.role}</span>}
+                  </span>
                   {c.phone && (
                     <span className="fw-contact-actions">
-                      <a className="fw-mini" href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${c.name}`}>
-                        <PhoneIcon /> Call
+                      <a className="fw-icon-btn" href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${c.name}`}>
+                        <PhoneIcon />
                       </a>
                       {c.whatsapp && (
-                        <a className="fw-mini" href={`https://wa.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${c.name}`}>
-                          <ChatIcon /> WhatsApp
+                        <a className="fw-icon-btn fw-icon-btn--wa" href={`https://wa.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${c.name}`}>
+                          <ChatIcon />
                         </a>
                       )}
                     </span>
@@ -262,6 +271,7 @@ export function FindYourWay() {
             </ul>
           </div>
         )}
+        </div>
 
         {/* closing ribbon */}
         <div className="fw-ribbon-wrap" data-rise>
