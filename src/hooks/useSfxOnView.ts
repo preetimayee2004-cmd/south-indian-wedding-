@@ -3,21 +3,23 @@ import { useAudio, type Sfx, type SfxOptions } from "@/context/AudioContext";
 
 /**
  * Play a sound effect once, the first time an element comes into view.
- * Silent when the guest has sound off or hasn't tapped anything yet.
+ * `target` is a ref, or a selector (e.g. "#couple") for an element this component renders.
+ * Default: fires when the element's top passes ~70% of the screen height.
+ * Silent until the guest has tapped something (browsers allow no sound before that).
  */
 export function useSfxOnView(
-  ref: RefObject<Element | null>,
+  target: RefObject<Element | null> | string,
   sounds: [Sfx, SfxOptions?][],
   {
-    threshold = 0.35,
-    rootMargin = "0px 0px -15% 0px",
+    threshold = 0,
+    rootMargin = "0px 0px -30% 0px",
     enabled = true,
   }: { threshold?: number; rootMargin?: string; enabled?: boolean } = {},
 ) {
   const { playSfx } = useAudio();
   const key = JSON.stringify(sounds);
   useEffect(() => {
-    const el = ref.current;
+    const el = typeof target === "string" ? document.querySelector(target) : target.current;
     if (!enabled || !el || typeof IntersectionObserver === "undefined") return;
     const list = JSON.parse(key) as [Sfx, SfxOptions?][];
     const io = new IntersectionObserver(
@@ -30,5 +32,5 @@ export function useSfxOnView(
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [ref, key, playSfx, threshold, rootMargin, enabled]);
+  }, [target, key, playSfx, threshold, rootMargin, enabled]);
 }

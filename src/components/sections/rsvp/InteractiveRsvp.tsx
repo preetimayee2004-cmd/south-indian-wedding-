@@ -150,7 +150,7 @@ export function InteractiveRsvp() {
   };
 
   const handleAccept = (e?: React.MouseEvent) => {
-    // a small tap as the RSVP is sent, and a temple bell once it is confirmed
+    // a small tap as the RSVP is sent, and a rubber stamp once it is confirmed
     playSfx("tap", { gesture: true });
     // Multi-wave explosion of celebratory hearts
     burstHearts(e?.currentTarget as HTMLElement, { count: 85 });
@@ -169,7 +169,7 @@ export function InteractiveRsvp() {
 
     if (reduced) {
       setStage("stage2");
-      playSfx("bell", { delay: 0.25 });
+      playSfx("stamp", { delay: 0.25 });
       return;
     }
 
@@ -177,7 +177,7 @@ export function InteractiveRsvp() {
 
     animTimerRef.current = window.setTimeout(() => {
       setStage("stage2");
-      playSfx("bell");
+      playSfx("stamp");
     }, 1600);
   };
 

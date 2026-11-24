@@ -66,7 +66,7 @@ export function RsvpForm({ weddingId, maxGuests, deadlineLabel, initial, reduced
     try {
       const saved = await submitRsvp(weddingId, input);
       setGuestName(saved.name);
-      playSfx("bell");
+      playSfx("stamp");
       onSaved(saved);
     } catch (err) {
       setError(friendlyError(err));

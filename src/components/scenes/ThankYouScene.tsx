@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { GoldCorners, GoldDivider } from "@/components/ui/GoldDivider";
@@ -33,6 +34,8 @@ export function ThankYouScene() {
   const head = useRef<HTMLDivElement>(null);
   const words = useRef<HTMLDivElement>(null);
   const petals = useRef<(HTMLDivElement | null)[]>([]);
+  // akshathai: blessing rice and petals showered, as the petals fall
+  useSfxOnView("#thankYou", [["akshathai", { volume: 0.9 }]], { rootMargin: "0px 0px -40% 0px" });
 
   const build: Build = (tl) => {
     tl.fromTo(pic.current, { scale: 1 }, { scale: 0.92, duration: 2, ease: "none" }, 0)

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { gsap } from "@/lib/gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
@@ -114,6 +115,8 @@ export function EventsSlider() {
   const [touched, setTouched] = useState(false);
   const root = useRef<HTMLElement>(null);
   const door = useRef<HTMLDivElement>(null);
+  // gatti melam: a thavil flourish as the temple doorway comes up
+  useSfxOnView(door, [["thavil", { volume: 0.6 }]], { threshold: 0.35, rootMargin: "0px" });
   const stopped = useRef(false);
   const visible = useRef(false);
   const timer = useRef(0);

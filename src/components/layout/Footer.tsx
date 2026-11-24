@@ -27,8 +27,8 @@ export function Footer() {
   const { playSfx } = useAudio();
   const root = useRef<HTMLElement>(null);
   const scene = useRef<HTMLDivElement>(null);
-  // reduced motion: no rise-in, but the finale still gets its sparkle
-  useSfxOnView(scene, [["shimmer", { volume: 0.8 }]], { enabled: reduced });
+  // reduced motion: no walk-in, but the elephants are still heard
+  useSfxOnView(scene, [["elephant", { volume: 0.75 }], ["trumpet", { volume: 0.5, delay: 1.3 }]], { enabled: reduced });
   const [shared, setShared] = useState<"idle" | "copied" | "fail">("idle");
 
   const date = new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, day: "numeric", month: "long", year: "numeric" }).format(new Date(wedding.dateISO));
@@ -57,11 +57,13 @@ export function Footer() {
     if (!el || reduced) return;
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ scrollTrigger: { trigger: el.querySelector(".fn-scene"), start: "top 85%", once: true } });
-      tl.from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" })
+      // two temple elephants walk in — heavy steps, neck bells clanking
+      tl.call(() => playSfx("elephant", { volume: 0.75 }), undefined, 0)
+        .from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" }, 0)
         .from(".fn-ele--r", { autoAlpha: 0, x: 30, duration: 1, ease: "power2.out" }, "<")
         .from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, "-=0.5")
-        // a sparkle of tiny bells as the couple's medallion rises between the elephants
-        .call(() => playSfx("shimmer", { volume: 0.85 }), undefined, "<")
+        // and one of them trumpets as the couple's medallion rises between them
+        .call(() => playSfx("trumpet", { volume: 0.5 }), undefined, "<")
         .fromTo(".fn-glow", { autoAlpha: 0.4, scale: 0.9 }, { autoAlpha: 1, scale: 1.06, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
     }, el);
     return () => ctx.revert();

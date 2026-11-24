@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Lightbox } from "@/components/sections/gallery/Lightbox";
@@ -339,6 +340,8 @@ const TOUCH = typeof window !== "undefined" && window.matchMedia("(pointer: coar
 const turnTo = (a: number, b: number) => ((((b - a) % 360) + 540) % 360) - 180;
 
 export function LoveStoryScene() {
+  // the paper plane takes off over the photos
+  useSfxOnView("#gallery", [["plane", { volume: 0.9 }]], { rootMargin: "0px 0px -45% 0px" });
   const story = useStory();
   const PHOTOS = story.photos;
   const r = useRef<BoardRefs>(emptyRefs(story.photos.length));
@@ -486,6 +489,7 @@ export function LoveStoryScene() {
 }
 
 export function LoveStoryStill() {
+  useSfxOnView("#gallery", [["plane", { volume: 0.9 }]], { rootMargin: "0px 0px -45% 0px" });
   const story = useStory();
   const PHOTOS = story.photos;
   const r = useRef<BoardRefs>(emptyRefs(story.photos.length));

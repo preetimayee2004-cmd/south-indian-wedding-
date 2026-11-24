@@ -52,7 +52,7 @@ export function WishComposer({ weddingId, onSent, disabled }: { weddingId: strin
     try {
       const saved = await addWish(weddingId, name, message);
       onSent(saved);
-      playSfx("bell");
+      playSfx("pin");
       setStatus({ kind: "sent", name: saved.name });
       setMessage("");
       setWait(Math.ceil(cooldownLeft() / 1000));

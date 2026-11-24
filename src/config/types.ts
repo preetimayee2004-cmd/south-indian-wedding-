@@ -32,7 +32,9 @@ export interface StoryMilestone {
 }
 
 /** Short sound effects the invitation can play (each optional — a missing one is silent). */
-export type SfxName = "seal" | "shimmer" | "rustle" | "slide" | "rise" | "bell" | "tink" | "tap" | "diya" | "door" | "thread";
+export type SfxName =
+  | "seal" | "rustle" | "slide" | "whoosh" | "bell" | "tap" | "tick" | "thavil" | "kolusu" | "diya" | "plane"
+  | "stamp" | "pin" | "conch" | "akshathai" | "unfold" | "elephant" | "trumpet";
 
 export type EventTheme = "nalangu" | "mehendi" | "sangeet" | "muhurtham" | "reception";
 

@@ -196,9 +196,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       gsap.to(root.current, { autoAlpha: 0, duration: 0.5, onComplete: finish });
       return;
     }
-    // the seal cracks with a little burst of gold sparkle
+    // the seal cracks
     playSfx("seal");
-    playSfx("shimmer", { delay: 0.03, volume: 0.8 });
     gsap.killTweensOf(hint.current);
     // the seal cracks into two pieces and the flap opens; then the
     // hero itself — temple, names and sky — grows smoothly out of the card to fill the screen,
@@ -265,10 +264,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .to(card.current, { yPercent: -62, duration: 1.5, ease: "power2.out" }, 0.78)
       // …and grows into the hero
       .add(grow, 2.4)
-      // sounds, each on its moment: the flap lifts, the card slides out, rises into the sky, a temple bell welcomes
+      // sounds, each on its moment: the flap lifts, the card slides out, air as it grows into the sky, a temple bell welcomes
       .call(() => playSfx("rustle"), undefined, 0.24)
       .call(() => playSfx("slide", { volume: 0.85 }), undefined, 0.8)
-      .call(() => playSfx("rise", { volume: 0.9 }), undefined, 2.3)
+      .call(() => playSfx("whoosh", { volume: 0.9 }), undefined, 2.35)
       .call(() => playSfx("bell", { volume: 0.75 }), undefined, 3.75);
   }, [busy, reduced, wakeAudio, playSfx, reveal, finish]);
 

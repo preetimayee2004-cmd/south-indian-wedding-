@@ -90,7 +90,7 @@ export function WishingWall() {
       const createdWish = await addWish(weddingId, cleanName, guestMessage);
       setNewlyAddedId(createdWish.id);
       setWishes((prev) => [createdWish, ...prev.filter((w) => w.id !== createdWish.id)]);
-      playSfx("bell"); // the wish is pinned to the wall
+      playSfx("pin"); // the wish is pinned to the wall
       setGuestMessage("");
       setGuestName("");
     } catch (err) {

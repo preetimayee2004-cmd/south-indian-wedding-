@@ -249,17 +249,27 @@ const weddingConfig: WeddingConfig = {
     music: "/audio/music.mp3",
     volume: 0.35,
     sfxVolume: 0.7,
-    // Little sounds tied to the animations (all generated, royalty-free). Remove any you don't want.
+    // Real-world South Indian wedding sounds, one or two for each section (generated, royalty-free).
+    // Remove any line to silence that sound.
     sfx: {
-      seal: "/audio/sfx/seal.mp3", // the seal cracks
-      shimmer: "/audio/sfx/shimmer.mp3", // gold sparks / the finale
-      rustle: "/audio/sfx/rustle.mp3", // the envelope flap lifts
-      slide: "/audio/sfx/slide.mp3", // the card slides out
-      rise: "/audio/sfx/rise.mp3", // the card grows into the sky
-      bell: "/audio/sfx/bell.mp3", // temple bell: welcome, contact bells, RSVP, wishes
-      tink: "/audio/sfx/tink.mp3", // countdown tiles
+      seal: "/audio/sfx/seal.mp3", // opening: the seal cracks
+      rustle: "/audio/sfx/rustle.mp3", // opening: the silk flap lifts
+      slide: "/audio/sfx/slide.mp3", // opening: the card slides out
+      whoosh: "/audio/sfx/whoosh.mp3", // opening: the card grows into the sky
+      bell: "/audio/sfx/bell.mp3", // hero temple bell; venue contact bells
       tap: "/audio/sfx/tap.mp3", // small taps
-      diya: "/audio/sfx/diya.mp3", // the family lamp
+      tick: "/audio/sfx/tick.mp3", // countdown: an old wall clock
+      thavil: "/audio/sfx/thavil.mp3", // events: a gatti melam thavil flourish
+      kolusu: "/audio/sfx/kolusu.mp3", // couple: footsteps with anklets
+      diya: "/audio/sfx/diya.mp3", // family: a match lights the lamp
+      plane: "/audio/sfx/plane.mp3", // love story: the paper plane
+      stamp: "/audio/sfx/stamp.mp3", // RSVP confirmed
+      pin: "/audio/sfx/pin.mp3", // a wish pinned to the wall
+      conch: "/audio/sfx/conch.mp3", // venue: the shankh
+      akshathai: "/audio/sfx/akshathai.mp3", // thank you: blessing rice showered
+      unfold: "/audio/sfx/unfold.mp3", // love note: the letter opens
+      elephant: "/audio/sfx/elephant.mp3", // finale: temple elephants walk in, neck bells
+      trumpet: "/audio/sfx/trumpet.mp3", // finale: an elephant trumpets
     },
   },
 

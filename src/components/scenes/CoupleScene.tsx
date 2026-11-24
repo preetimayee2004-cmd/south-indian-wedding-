@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type MutableRefObject } from "react";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Petal, rand } from "@/components/scene/Decor";
@@ -160,6 +161,8 @@ function CoupleRoom({
  * (CSS couple-idle, outside the scrub).
  */
 export function CoupleScene() {
+  // footsteps and the bride's anklets (kolusu) as the two walk in
+  useSfxOnView("#couple", [["kolusu", { volume: 0.9 }]], { rootMargin: "0px 0px -12% 0px" });
   const refs = {
     stage: useRef<HTMLDivElement>(null),
     bg: useRef<HTMLDivElement>(null),

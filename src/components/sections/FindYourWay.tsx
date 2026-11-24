@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { useAudio } from "@/context/AudioContext";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { JourneyMap } from "./travel/JourneyMap";
@@ -161,6 +162,8 @@ function dateLine(iso: string, timeZone: string, muhurtham?: string) {
 export function FindYourWay() {
   const { venue, wedding, travelNotes = [], stay = [], contacts } = useWedding();
   const { playSfx } = useAudio();
+  // the shankh is blown as the mandap comes into view
+  useSfxOnView(".fw-hero-art", [["conch", { volume: 0.5 }]], { threshold: 0.5, rootMargin: "0px" });
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
