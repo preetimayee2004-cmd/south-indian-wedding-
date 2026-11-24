@@ -110,6 +110,11 @@ function Bell() {
   );
 }
 
+/* gold stars twinkling in the dark around the content: [left %, top %, size px, delay s] */
+const STARS: [number, number, number, number][] = [
+  [6, 18, 9, 0], [93, 22, 11, 1.2], [4, 41, 7, 2.1], [95, 47, 8, 0.7], [7, 63, 10, 1.7], [92, 70, 7, 2.6], [5, 86, 8, 0.4], [94, 90, 10, 1.9],
+];
+
 /** Phones lay the journey out top to bottom (the path then draws downwards). */
 const TOUCH_NARROW = () => window.matchMedia("(max-width: 680px)").matches;
 
@@ -180,10 +185,32 @@ export function FindYourWay() {
 
   return (
     <section ref={root} id="travelStay" aria-labelledby="fw-heading" className="fw-section">
-      {/* gold frame down the whole section, filigree in the top corners */}
+      {/* the temple dressing: a gopuram frieze along the top, marigold strings and brass
+          lamps hanging from it, a gold frame down the sides, gold stars in the dark */}
+      <span aria-hidden className="fw-frieze" />
       <span aria-hidden className="fw-frame" />
       <img src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className="fw-sec-corner fw-corner--tl" />
       <img src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className="fw-sec-corner fw-corner--tr" />
+      {(["l1", "l2", "r1", "r2"] as const).map((k) => (
+        <span key={k} aria-hidden className={`fw-strand fw-strand--${k}`} />
+      ))}
+      {(["l", "r"] as const).map((side) => (
+        <span key={side} aria-hidden className={`fw-deepam fw-deepam--${side}`}>
+          <span className="fw-deepam-chain" />
+          <svg viewBox="-22 -48 44 64">
+            <path className="ic-oil-flame" d="M0-44C4-37 4-31 0-27-4-31-4-37 0-44Z" />
+            <path d="M-12-26 0-46 12-26" fill="none" stroke="#b8893e" strokeWidth=".9" />
+            <path d="M-17-26C-17-17-9-12 0-12S17-17 17-26Z" fill="#c8961e" stroke="#7a5418" strokeWidth=".9" />
+            <ellipse cy="-26" rx="17" ry="3.8" fill="#e9c46a" stroke="#7a5418" strokeWidth=".8" />
+            <path d="M-7-12H7L4-4H-4Z" fill="#b8862e" stroke="#7a5418" strokeWidth=".7" />
+            <path d="M0-4 0 6" stroke="#b8893e" strokeWidth="1.2" />
+            <circle cy="9" r="3" fill="#c8961e" stroke="#7a5418" strokeWidth=".7" />
+          </svg>
+        </span>
+      ))}
+      {STARS.map(([l, t, z, d], i) => (
+        <span key={i} aria-hidden className="fw-star" style={{ left: `${l}%`, top: `${t}%`, width: z, height: z, animationDelay: `${d}s` }} />
+      ))}
 
       <Container className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center">
         {/* 1 · heading */}

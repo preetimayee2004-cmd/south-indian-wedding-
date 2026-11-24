@@ -900,21 +900,45 @@
 
 /* ── Our Venue & Travel, dark: heading → mandap → venue → travel → contact ── */
 .fw-section {
+  --frieze: clamp(46px, 5vw, 66px);
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: clamp(64px, 8vw, 104px) 16px clamp(56px, 7vw, 96px);
+  padding: calc(var(--frieze) + clamp(70px, 8vw, 110px)) 16px clamp(56px, 7vw, 96px);
   background-color: #2b040c;
+  /* the same maroon damask with gold gopuram line art as the events, gallery and family,
+     darkened for this section, with a warm glow where the mandap stands */
   background-image:
-    radial-gradient(ellipse 70% 38% at 50% 22%, rgb(150 32 52 / 0.45), transparent 72%),
-    radial-gradient(circle at 1px 1px, rgb(243 207 115 / 0.1) 1px, transparent 1.7px),
-    linear-gradient(180deg, #3d0611 0%, #2b040c 45%, #220309 100%);
-  background-size: auto, 18px 18px, auto;
+    radial-gradient(ellipse 60% 30% at 50% 24%, rgb(170 40 60 / 0.4), transparent 72%),
+    linear-gradient(180deg, rgb(26 2 7 / 0.5) 0%, rgb(30 3 8 / 0.3) 28%, rgb(30 3 8 / 0.58) 50%, rgb(28 2 7 / 0.6) 80%, rgb(22 2 6 / 0.5) 100%),
+    url("/media/temple-events-bg@2x.webp");
+  background-size: auto, auto, cover;
+  background-position: center, center, center bottom;
+  background-repeat: no-repeat;
   color: #f6e7c8;
+}
+/* the gopuram frieze along the top edge, gold rules and a row of gold beads under it */
+.fw-frieze {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: calc(var(--frieze) + 12px);
+  background:
+    radial-gradient(circle, #f3cf73 2.2px, #8a5d1f 2.7px 3.2px, transparent 3.6px) 0 calc(100% - 1px) / 16px 10px repeat-x,
+    linear-gradient(#e8c56b, #e8c56b) 0 var(--frieze) / 100% 2px no-repeat,
+    linear-gradient(#4c0813, #4c0813) 0 calc(var(--frieze) + 2px) / 100% 2px no-repeat,
+    url("/media/temple-facade.webp") center top / auto var(--frieze) repeat-x;
+  box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.8);
+  pointer-events: none;
 }
 .fw-frame {
   position: absolute;
-  inset: 14px;
+  top: calc(var(--frieze) + 22px);
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
   border: 1px solid rgb(226 181 83 / 0.55);
   border-radius: 4px;
   outline: 1px solid rgb(226 181 83 / 0.25);
@@ -923,14 +947,90 @@
 }
 .fw-sec-corner {
   position: absolute;
+  z-index: 1;
   width: clamp(64px, 11vw, 130px);
   height: auto;
   pointer-events: none;
   user-select: none;
   opacity: 0.95;
 }
-.fw-sec-corner.fw-corner--tl { top: 6px; left: 6px; }
-.fw-sec-corner.fw-corner--tr { top: 6px; right: 6px; transform: scaleX(-1); }
+.fw-sec-corner.fw-corner--tl { top: calc(var(--frieze) + 14px); left: 6px; }
+.fw-sec-corner.fw-corner--tr { top: calc(var(--frieze) + 14px); right: 6px; transform: scaleX(-1); }
+/* marigold strings hanging from the frieze */
+.fw-strand {
+  position: absolute;
+  top: calc(var(--frieze) + 8px);
+  z-index: 2;
+  width: clamp(18px, 1.8vw, 26px);
+  height: var(--len, 220px);
+  background: url("/media/marigold-tile.webp") top center / 100% auto repeat-y;
+  transform-origin: 50% 0;
+  animation: ic-sway 5s ease-in-out infinite;
+  pointer-events: none;
+}
+.fw-strand::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 56 / 114;
+  background: url("/media/marigold-tip.webp") top center / 100% auto no-repeat;
+}
+.fw-strand--l1 { left: max(22px, 3%); --len: clamp(150px, 20vw, 290px); }
+.fw-strand--l2 { left: calc(max(22px, 3%) + clamp(22px, 2.4vw, 34px)); --len: clamp(90px, 12vw, 180px); animation-delay: -1.4s; }
+.fw-strand--r1 { right: max(22px, 3%); --len: clamp(150px, 20vw, 290px); animation-delay: -2.5s; }
+.fw-strand--r2 { right: calc(max(22px, 3%) + clamp(22px, 2.4vw, 34px)); --len: clamp(90px, 12vw, 180px); animation-delay: -3.6s; }
+/* brass oil lamps hanging on chains */
+.fw-deepam {
+  position: absolute;
+  top: calc(var(--frieze) + 8px);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: clamp(28px, 3.4vw, 46px);
+  transform-origin: 50% 0;
+  animation: ic-sway 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+.fw-deepam--l { left: clamp(84px, 13%, 220px); }
+.fw-deepam--r { right: clamp(84px, 13%, 220px); animation-delay: -2.2s; }
+.fw-deepam-chain {
+  display: block;
+  width: 2px;
+  height: clamp(40px, 7vw, 100px);
+  background: repeating-linear-gradient(#e8c56b 0 4px, transparent 4px 6px);
+}
+.fw-deepam svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: -2px;
+  overflow: visible;
+}
+/* gold stars twinkling in the margins */
+.fw-star {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(135deg, #fff7d6, #f3cf73 60%, #c99a45);
+  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  animation: op-twinkle 3.4s ease-in-out infinite;
+}
+@media (max-width: 680px) {
+  .fw-strand--l2,
+  .fw-strand--r2 {
+    display: none;
+  }
+  .fw-strand--l1 { left: 14px; --len: 120px; }
+  .fw-strand--r1 { right: 14px; --len: 120px; }
+  .fw-deepam { width: 24px; }
+  .fw-deepam--l { left: 52px; }
+  .fw-deepam--r { right: 52px; }
+  .fw-deepam-chain { height: 34px; }
+  .fw-sec-corner { width: 54px; }
+}
 
 /* 1 · heading */
 .fw-head {
@@ -1480,7 +1580,10 @@
     padding-right: 12px;
   }
   .fw-frame {
-    inset: 7px;
+    top: calc(var(--frieze) + 16px);
+    left: 7px;
+    right: 7px;
+    bottom: 7px;
     outline: none;
   }
   .fw-address {
