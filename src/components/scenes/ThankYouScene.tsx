@@ -51,8 +51,8 @@ export function ThankYouScene() {
         <div ref={head}>
           <p className="pm-eyebrow">॥ शुभमस्तु ॥</p>
           <h2 id="thanks-heading" className="pm-script-title mt-1">Thank You</h2>
-          <p className="pm-lede mt-1">{thankYou.message}</p>
           <GoldDivider className="mt-2" />
+          <p className="pm-lede mt-1">{thankYou.message}</p>
         </div>
 
         {/* the couple facing the temple, in a gold-rimmed arch */}

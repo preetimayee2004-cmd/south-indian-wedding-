@@ -7,7 +7,7 @@ export interface Wish {
   created_at: string;
 }
 
-export const WISH_LIMITS = { name: 60, message: 280, minMessage: 8, minWords: 2 } as const;
+export const WISH_LIMITS = { name: 60, message: 280 } as const;
 const COLUMNS = "id,name,message,created_at";
 const COOLDOWN_KEY = "wedding:lastWish";
 const LOCAL_WISHES_PREFIX = "wedding:wishes:";
@@ -45,32 +45,10 @@ function saveLocalWish(weddingId: string, wish: Wish) {
 const BLOCKED = /\b(fuck|shit|bitch|bastard|cunt|dick|asshole|porn|casino|viagra|crypto)\b/i;
 const LINK = /(https?:\/\/|www\.|\.(com|net|org|in|xyz|ru)\b)/i;
 
-/**
- * A message that isn't really a blessing: too short, a single word, or random-looking
- * characters (no spaces, or words that are mostly a jumble of mixed letters and digits,
- * like "dhWJU46I"). Used to refuse such a wish and to hide old ones that slipped in.
- */
-export function isJunkWish(message: string): boolean {
-  const m = message.trim();
-  if (m.length < WISH_LIMITS.minMessage) return true;
-  const words = m.split(/\s+/).filter((w) => /\p{L}/u.test(w));
-  if (words.length < WISH_LIMITS.minWords) return true;
-  // a word that mixes letters and digits, or jumps from lower to upper case more than once
-  const jumbled = (w: string) => {
-    const t = w.replace(/[^\p{L}\p{N}]/gu, "");
-    if (t.length < 4) return false;
-    if (/\p{L}/u.test(t) && /\p{N}/u.test(t)) return true;
-    return (t.match(/\p{Ll}\p{Lu}/gu) ?? []).length >= 2;
-  };
-  const bad = words.filter(jumbled).length;
-  return bad / words.length > 0.5;
-}
-
 export function validateWish(name: string, message: string): string | null {
   const n = name.trim();
   const m = message.trim();
-  if (!n) return "Please add your name.";
-  if (isJunkWish(m)) return "Please write a few words of blessing.";
+  if (!m) return "Please write your blessing.";
   if (n.length > WISH_LIMITS.name || m.length > WISH_LIMITS.message) return "That's a little too long.";
   if (LINK.test(m) || LINK.test(n)) return "Links can't be included in a blessing.";
   if (BLOCKED.test(m) || BLOCKED.test(n)) return "Please keep it kind — this wall is for blessings.";
@@ -95,7 +73,7 @@ function markSent() {
 
 export async function fetchWishes(weddingId: string, limit = 60): Promise<Wish[]> {
   if (!backendReady) {
-    return getLocalWishes(weddingId).filter((w) => !isJunkWish(w.message)).slice(0, limit);
+    return getLocalWishes(weddingId).slice(0, limit);
   }
   try {
     const supabase = await getSupabase();
@@ -106,10 +84,10 @@ export async function fetchWishes(weddingId: string, limit = 60): Promise<Wish[]
       .order("created_at", { ascending: false })
       .limit(limit);
     if (error) throw error;
-    return (data as Wish[]).filter((w) => !isJunkWish(w.message));
+    return (data as Wish[]);
   } catch (err) {
     console.warn("Falling back to local wishes:", err);
-    return getLocalWishes(weddingId).filter((w) => !isJunkWish(w.message)).slice(0, limit);
+    return getLocalWishes(weddingId).slice(0, limit);
   }
 }
 
@@ -160,7 +138,7 @@ export function subscribeWishes(weddingId: string, onInsert: (w: Wish) => void):
           { event: "INSERT", schema: "public", table: "wishes", filter: `wedding_id=eq.${weddingId}` },
           (payload) => {
             const row = payload.new as Wish & { hidden?: boolean };
-            if (!row.hidden && !isJunkWish(row.message)) onInsert({ id: row.id, name: row.name, message: row.message, created_at: row.created_at });
+            if (!row.hidden) onInsert({ id: row.id, name: row.name, message: row.message, created_at: row.created_at });
           },
         )
         .subscribe();

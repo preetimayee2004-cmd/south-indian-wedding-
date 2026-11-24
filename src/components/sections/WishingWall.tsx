@@ -75,7 +75,7 @@ export function WishingWall() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanName = guestName.trim() || "Well-Wisher";
+    const cleanName = guestName.trim() || "Well-wisher";
     const problem = validateWish(cleanName, guestMessage);
     if (problem) {
       setValidationError(problem);
@@ -119,8 +119,8 @@ export function WishingWall() {
           <h2 id="wishing-wall-heading" className="wishing-title-text">
             Wishing Wall
           </h2>
-          <p className="wishing-subtitle-text mt-1.5 md:mt-2">Leave a little love and a blessing for our new beginning.</p>
           <GoldDivider className="mt-3" />
+          <p className="wishing-subtitle-text mt-2">Leave a little love and a blessing for our new beginning.</p>
           {count > 0 && (
             <p className="ww-count" aria-live="polite">
               {count} {count === 1 ? "blessing" : "blessings"} so far

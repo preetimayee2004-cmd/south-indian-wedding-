@@ -911,7 +911,7 @@
      darkened, with a warm glow where the mandap stands */
   background-image:
     radial-gradient(ellipse 60% 30% at 50% 24%, rgb(170 40 60 / 0.4), transparent 72%),
-    linear-gradient(180deg, rgb(26 2 7 / 0.5) 0%, rgb(30 3 8 / 0.3) 28%, rgb(30 3 8 / 0.58) 50%, rgb(28 2 7 / 0.6) 80%, rgb(22 2 6 / 0.5) 100%),
+    linear-gradient(180deg, rgb(26 2 7 / 0.5) 0%, rgb(30 3 8 / 0.32) 28%, rgb(30 3 8 / 0.62) 45%, rgb(28 2 7 / 0.62) 85%, rgb(22 2 6 / 0.52) 100%),
     url("/media/temple-events-bg-blur.webp");
   background-size: auto, auto, cover;
   background-position: center, center, center bottom;
@@ -1655,4 +1655,188 @@
     font-size: 1.22rem;
     white-space: nowrap;
   }
+}
+
+/* ── The closing sections, dressed like the Venue: dark damask, gold frame, hanging lamps ── */
+.td-host {
+  --frieze: 0px; /* the Venue's frame/corner/deepam/strand pieces, without its frieze on top */
+}
+.td-bg,
+.pm-silk {
+  background-color: #2b040c;
+  background-image:
+    radial-gradient(ellipse 70% 40% at 50% 22%, rgb(170 40 60 / 0.38), transparent 72%),
+    linear-gradient(180deg, rgb(26 2 7 / 0.55) 0%, rgb(30 3 8 / 0.5) 40%, rgb(28 2 7 / 0.62) 75%, rgb(22 2 6 / 0.66) 100%),
+    url("/media/temple-events-bg-blur.webp");
+  background-size: auto, auto, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+  color: #f6e7c8;
+}
+.td-sub {
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.5vw, 1.12rem);
+  color: #ead7b4;
+}
+
+/* one consistent divider between the sections after Family: a gold rule with a row of gold beads */
+.sec:is([data-section="gallery"], [data-section="rsvp"], [data-section="wishingWall"], [data-section="travelStay"], [data-section="thankYou"], [data-section="loveNote"], [data-section="contact"]) > .section-separator,
+.fn-finale::before {
+  height: 14px;
+  background:
+    radial-gradient(circle, #f3cf73 2.2px, #8a5d1f 2.7px 3.2px, transparent 3.6px) 0 50% / 16px 14px repeat-x,
+    linear-gradient(#e8c56b, #e8c56b) 0 0 / 100% 1.5px no-repeat,
+    linear-gradient(#e8c56b, #e8c56b) 0 100% / 100% 1.5px no-repeat,
+    linear-gradient(#3a0610, #2b040c);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.35);
+}
+.fn-finale::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+}
+
+/* Love Note: a warm glow behind the letter, two small deepams hanging above it */
+.ln-wrap {
+  isolation: isolate;
+}
+.ln-glow {
+  position: absolute;
+  inset: -18% -30%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(243 196 110 / 0.32), rgb(243 196 110 / 0.1) 55%, transparent);
+  pointer-events: none;
+}
+.fw-deepam.ln-deepam {
+  top: auto;
+  bottom: calc(100% - 4px);
+  width: clamp(24px, 3vw, 34px);
+}
+.ln-deepam .fw-deepam-chain {
+  height: clamp(34px, 5vw, 54px);
+}
+.ln-deepam--l { left: 14%; }
+.ln-deepam--r { right: 14%; left: auto; animation-delay: -2.2s; }
+
+/* The closing finale */
+.fn-title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(3.4rem, 9vw, 5.6rem);
+  line-height: 1.05;
+  padding: 0 0.1em;
+  background: linear-gradient(180deg, #fff1c4 0%, #f3cf73 45%, #c99a45 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #f3cf73;
+}
+.fn-scene {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(4px, 2vw, 24px);
+  max-width: 620px;
+  margin: clamp(18px, 3vw, 30px) auto 0;
+  padding-bottom: 6px;
+}
+.fn-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90%;
+  aspect-ratio: 1.6;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(243 196 110 / 0.34), rgb(243 196 110 / 0.12) 55%, transparent);
+  pointer-events: none;
+}
+.fn-ele {
+  position: relative;
+  width: min(38%, 230px);
+  height: auto;
+  user-select: none;
+}
+.fn-ele--r {
+  transform: scaleX(-1);
+}
+.fn-medal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  align-self: center;
+  width: clamp(70px, 12vw, 108px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #8a1c2f, #6a0f1f 60%, #3e0610);
+  box-shadow: 0 0 0 3px #d4a54a, 0 0 0 5px #6a0f1f, 0 0 0 6.5px #f3cf73, 0 8px 22px rgb(0 0 0 / 0.45);
+}
+.fn-medal::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgb(243 207 115 / 0.55);
+  border-radius: 50%;
+}
+.fn-medal-text {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  line-height: 1;
+  color: #f3cf73;
+  white-space: nowrap;
+}
+.fn-amp {
+  font-size: 0.75em;
+  color: #fff1c4;
+}
+.fn-floor {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e8c56b 18%, #f3cf73 50%, #e8c56b 82%, transparent);
+}
+.fn-names {
+  margin-top: clamp(18px, 3vw, 28px);
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(2.1rem, 5vw, 3rem);
+  line-height: 1.1;
+  color: #fffaf0;
+}
+.fn-date {
+  margin-top: 8px;
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 600;
+  font-size: clamp(0.72rem, 1.2vw, 0.85rem);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #e8c56b;
+}
+@media (max-width: 480px) {
+  .fn-scene {
+    gap: 2px;
+  }
+  .fn-ele {
+    width: 38%;
+  }
+  .fn-medal {
+    width: 72px;
+  }
+  .fn-medal-text {
+    font-size: 1.1rem;
+  }
+}
+
+/* very narrow phones: the venue's lamps hang a little higher, clear of the eyebrow */
+@media (max-width: 400px) {
+  .fw-section .fw-deepam-chain { height: 16px; }
 }
