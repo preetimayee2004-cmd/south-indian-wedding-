@@ -906,12 +906,13 @@
   overflow: hidden;
   padding: calc(var(--frieze) + clamp(70px, 8vw, 110px)) 16px clamp(56px, 7vw, 96px);
   background-color: #2b040c;
-  /* the same maroon damask with gold gopuram line art as the events, gallery and family,
-     darkened for this section, with a warm glow where the mandap stands */
+  /* the same maroon damask with gold gopuram line art as the events, gallery and family —
+     softly blurred (baked into temple-events-bg-blur.webp, so no CSS filter cost) and
+     darkened, with a warm glow where the mandap stands */
   background-image:
     radial-gradient(ellipse 60% 30% at 50% 24%, rgb(170 40 60 / 0.4), transparent 72%),
     linear-gradient(180deg, rgb(26 2 7 / 0.5) 0%, rgb(30 3 8 / 0.3) 28%, rgb(30 3 8 / 0.58) 50%, rgb(28 2 7 / 0.6) 80%, rgb(22 2 6 / 0.5) 100%),
-    url("/media/temple-events-bg@2x.webp");
+    url("/media/temple-events-bg-blur.webp");
   background-size: auto, auto, cover;
   background-position: center, center, center bottom;
   background-repeat: no-repeat;
