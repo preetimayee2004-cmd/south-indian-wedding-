@@ -123,7 +123,7 @@ function Seal({ initials }: { initials: string }) {
 }
 
 /**
- * The first thing a guest sees: a hanging marigold toran, "Welcome to <city>"
+ * The first thing a guest sees: "Welcome to <city>"
  * on the hero's cobalt sky and a maroon Kanjeevaram-silk envelope with gold zari
  * edges and a gold-foil seal, addressed to the guest. Tap → gold sparks burst,
  * the seal cracks into two, the flap swings open on its gold-lined back, the card
@@ -165,11 +165,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
     onDone();
   }, [onDone]);
 
-  // Entrance: the toran drops in, the envelope drifts down and settles; the hint breathes.
+  // Entrance: the envelope drifts down and settles; the hint breathes.
   useLayoutEffect(() => {
     if (reduced) return;
     const ctx = gsap.context(() => {
-      gsap.from(".op-toran", { yPercent: -60, autoAlpha: 0, duration: 1.2, ease: "power3.out" });
       gsap.from(env.current, { y: -50, rotate: -4, autoAlpha: 0, duration: 1.1, ease: "power3.out", delay: 0.15 });
       gsap.from(".open-fade", { autoAlpha: 0, y: 10, duration: 0.8, stagger: 0.12, delay: 0.5 });
       gsap.to(hint.current, { opacity: 0.6, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.4 });
@@ -203,7 +202,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       sec.style.zIndex = "200"; // above this overlay while it grows
-      gsap.to([env.current, ".op-toran", ".op-shadow"], { autoAlpha: 0, duration: 0.5, ease: "power1.out" });
+      gsap.to([env.current, ".op-shadow"], { autoAlpha: 0, duration: 0.5, ease: "power1.out" });
       gsap.fromTo(
         el,
         { x: r.left, y: r.top, scaleX: r.width / vw, scaleY: r.height / vh, transformOrigin: "0 0", borderRadius: 10, autoAlpha: 1 },
@@ -268,8 +267,6 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       <EnvelopeDefs />
       {/* soft vignette and a warm glow behind the envelope */}
       <div aria-hidden className="op-vignette" />
-      {/* the marigold and mango-leaf toran over the doorway */}
-      <img src="/media/toran.webp" alt="" aria-hidden className="op-toran" draggable={false} />
       {/* gold stars twinkling in the sky */}
       {STARS.map(([l, t, s, d], i) => (
         <span key={i} aria-hidden className="op-star" style={{ left: `${l}%`, top: `${t}%`, width: s, height: s, animationDelay: `${d}s` }} />
