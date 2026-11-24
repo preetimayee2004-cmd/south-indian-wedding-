@@ -5265,4 +5265,407 @@ body {
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   GRAND SOUTH INDIAN TEMPLE ARCH VENUE SECTION
+   Traditional Mandap Frame (Image: venue-temple-frame.webp)
+   ═══════════════════════════════════════════════════════════════ */
+
+.venue-temple-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(48px, 7vh, 80px) 16px;
+  background-color: #f7ecd3;
+  background-image: radial-gradient(circle at 50% 30%, #fff7e6 0%, #faecd4 45%, #f2dcba 100%);
+  color: #3a1f16;
+  overflow: hidden;
+}
+
+.venue-section-main-title {
+  font-family: Cinzel, Cormorant Garamond, "EB Garamond", Georgia, serif;
+  font-size: clamp(1.75rem, 3.8vw, 2.5rem);
+  font-weight: 800;
+  color: #5c181f;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.venue-section-subtitle {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  color: #6b4433;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.venue-arch-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.venue-arch-frame-card {
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 580px;
+  aspect-ratio: 682 / 1024;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 14px 44px rgba(110, 45, 15, 0.25), 0 2px 10px rgba(0, 0, 0, 0.08);
+  background-color: #fcf4e2;
+}
+
+.venue-arch-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  user-select: none;
+  display: block;
+}
+
+.venue-arch-center-content {
+  position: absolute;
+  top: 17%;
+  bottom: 27%;
+  left: 17.5%;
+  right: 17.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  padding: 0 6px;
+}
+
+.venue-sanskrit-tag {
+  font-family: "Noto Serif Devanagari", "EB Garamond", serif;
+  font-size: clamp(0.72rem, 2.7cqi, 0.98rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #7c1a22;
+  margin: 0 0 2px 0;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.venue-eyebrow-text {
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: clamp(0.6rem, 2.2cqi, 0.82rem);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #945f22;
+  margin: 0 0 clamp(2px, 0.8cqi, 6px) 0;
+}
+
+.venue-motif-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #c69538;
+  font-size: clamp(0.65rem, 2cqi, 0.85rem);
+  margin: 0 0 clamp(3px, 1cqi, 8px) 0;
+  line-height: 1;
+}
+
+.venue-mandap-title {
+  font-family: Cinzel, Cormorant Garamond, "Playfair Display", Georgia, serif;
+  font-size: clamp(1.2rem, 4.5cqi, 2rem);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.18;
+  color: #591019;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 240, 200, 0.5);
+}
+
+.venue-location-block {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  margin-top: clamp(6px, 1.8cqi, 14px);
+  max-width: 90%;
+}
+
+.venue-pin-icon {
+  width: clamp(12px, 3.2cqi, 16px);
+  height: clamp(12px, 3.2cqi, 16px);
+  color: #7c1a22;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.venue-address-lines {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(0.78rem, 2.5cqi, 1.02rem);
+  line-height: 1.38;
+  color: #4a2818;
+  font-weight: 500;
+  margin: 0;
+}
+
+.venue-cta-wrap {
+  margin-top: clamp(8px, 2.4cqi, 18px);
+}
+
+.venue-directions-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: clamp(6px, 1.8cqi, 10px) clamp(14px, 3.6cqi, 22px);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #7c1a22 0%, #520f16 100%);
+  border: 1px solid #d4a347;
+  color: #fff8ea;
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: clamp(0.7rem, 2.2cqi, 0.88rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(90, 16, 24, 0.28);
+  transition: all 0.25s ease;
+}
+
+.venue-directions-btn:hover {
+  background: linear-gradient(135deg, #8f222b 0%, #63141c 100%);
+  border-color: #ffd78a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(90, 16, 24, 0.38);
+  color: #ffffff;
+}
+
+.venue-btn-arrow {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.venue-transit-chips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.4cqi, 8px);
+  flex-wrap: wrap;
+  margin-top: clamp(8px, 2cqi, 16px);
+}
+
+.transit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: clamp(2px, 0.8cqi, 4px) clamp(8px, 1.8cqi, 12px);
+  background: rgba(255, 252, 244, 0.92);
+  border: 1px solid rgba(198, 149, 56, 0.55);
+  border-radius: 9999px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: clamp(0.65rem, 1.8cqi, 0.82rem);
+  font-weight: 600;
+  color: #5c241a;
+  box-shadow: 0 1px 4px rgba(140, 90, 30, 0.08);
+}
+
+/* Accommodations & Contacts Panel */
+.venue-extra-info-wrap {
+  width: 100%;
+}
+
+.venue-details-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 18px;
+  background: rgba(255, 250, 240, 0.9);
+  border: 1px solid rgba(198, 149, 56, 0.5);
+  border-radius: 8px;
+  color: #6a1a24;
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(100, 40, 10, 0.08);
+  transition: all 0.2s ease;
+}
+
+.venue-details-toggle-btn:hover {
+  background: #fffdf7;
+  border-color: #d4a347;
+  color: #7c1a22;
+  box-shadow: 0 4px 14px rgba(100, 40, 10, 0.14);
+}
+
+.venue-toggle-chevron {
+  font-size: 0.75rem;
+  color: #b8860b;
+}
+
+.venue-expanded-panel {
+  background: rgba(255, 252, 246, 0.96);
+  border: 1px solid rgba(198, 149, 56, 0.55);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 10px;
+  box-shadow: 0 8px 24px rgba(100, 40, 10, 0.12);
+  animation: venueFadeIn 0.25s ease-out;
+}
+
+@keyframes venueFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.venue-panel-group-title {
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #7c1a22;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
+}
+
+.venue-stays-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.venue-stay-chip-card {
+  background: #fff9ed;
+  border: 1px solid rgba(198, 149, 56, 0.35);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.stay-name {
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-weight: 700;
+  color: #5c181f;
+  font-size: 0.85rem;
+}
+
+.stay-distance {
+  font-family: "EB Garamond", serif;
+  font-size: 0.78rem;
+  color: #8a5d24;
+  font-weight: 600;
+}
+
+.stay-note {
+  font-family: "EB Garamond", serif;
+  font-size: 0.75rem;
+  color: #5c382a;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+.venue-contacts-compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.venue-contact-compact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: #fff9ed;
+  border: 1px solid rgba(198, 149, 56, 0.3);
+  border-radius: 8px;
+}
+
+.contact-info {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.contact-name {
+  font-family: Cinzel, Cormorant Garamond, serif;
+  font-weight: 700;
+  color: #5c181f;
+  font-size: 0.85rem;
+}
+
+.contact-role {
+  font-family: "EB Garamond", serif;
+  font-size: 0.78rem;
+  color: #8a5d24;
+}
+
+.contact-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.contact-action-pill.call {
+  background: #7c1a22;
+  color: #ffffff;
+}
+
+.contact-action-pill.call:hover {
+  background: #94222c;
+}
+
+.contact-action-pill.wa {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.contact-action-pill.wa:hover {
+  background: #1ebc57;
+}
+
+@media (max-width: 480px) {
+  .venue-arch-frame-card {
+    max-width: 95vw;
+    border-radius: 8px;
+  }
+
+  .venue-contact-compact-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+
 

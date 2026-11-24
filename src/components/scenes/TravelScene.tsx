@@ -1,9 +1,9 @@
-import { FindYourWay } from "@/components/sections/FindYourWay";
+import { VenueTempleSection } from "@/components/sections/VenueTempleSection";
 
 /**
- * Scene for Venue, Travel, Accommodations & Contact.
- * Unified "Find Your Way to Us" three connected temple arches.
+ * Scene for Venue & Travel.
+ * Features the grand temple arch illustration with Meenakshi Mahal details.
  */
 export function TravelScene() {
-  return <FindYourWay />;
+  return <VenueTempleSection />;
 }
