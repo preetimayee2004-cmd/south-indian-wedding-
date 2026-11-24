@@ -911,7 +911,7 @@
      darkened, with a warm glow where the mandap stands */
   background-image:
     radial-gradient(ellipse 60% 30% at 50% 24%, rgb(170 40 60 / 0.4), transparent 72%),
-    linear-gradient(180deg, rgb(26 2 7 / 0.5) 0%, rgb(30 3 8 / 0.32) 28%, rgb(30 3 8 / 0.62) 45%, rgb(28 2 7 / 0.62) 85%, rgb(22 2 6 / 0.52) 100%),
+    linear-gradient(180deg, rgb(26 2 7 / 0.55) 0%, rgb(30 3 8 / 0.38) 26%, rgb(30 3 8 / 0.72) 42%, rgb(28 2 7 / 0.72) 85%, rgb(22 2 6 / 0.6) 100%),
     url("/media/temple-events-bg-blur.webp");
   background-size: auto, auto, cover;
   background-position: center, center, center bottom;
@@ -1839,4 +1839,627 @@
 /* very narrow phones: the venue's lamps hang a little higher, clear of the eyebrow */
 @media (max-width: 400px) {
   .fw-section .fw-deepam-chain { height: 16px; }
+}
+
+/* ── Travel as a parchment journey map (JourneyMap.tsx) ─────────────────── */
+.jm-card {
+  position: relative;
+  width: min(100%, 820px);
+  margin-top: 22px;
+  padding: 10px;
+  border: 1px solid #d4a54a;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #6a0f1f, #4c0813);
+  box-shadow: 0 0 0 4px rgb(212 165 74 / 0.25), 0 30px 60px -24px rgb(0 0 0 / 0.85);
+}
+.jm-corner {
+  position: absolute;
+  z-index: 3;
+  width: clamp(44px, 6vw, 64px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+.jm-corner--tl { top: 4px; left: 4px; }
+.jm-corner--tr { top: 4px; right: 4px; transform: scaleX(-1); }
+.jm-corner--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
+.jm-corner--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
+/* the map itself: aged parchment, a survey grid, contour rings, a dotted neat-line */
+.jm-map {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background:
+    repeating-radial-gradient(circle at 18% 78%, transparent 0 22px, rgb(138 93 31 / 0.09) 22px 23px),
+    repeating-radial-gradient(circle at 84% 22%, transparent 0 26px, rgb(138 93 31 / 0.08) 26px 27px),
+    linear-gradient(rgb(138 93 31 / 0.07) 1px, transparent 1px) 0 0 / 46px 46px,
+    linear-gradient(90deg, rgb(138 93 31 / 0.07) 1px, transparent 1px) 0 0 / 46px 46px,
+    radial-gradient(ellipse at 50% 45%, #fbf0d4 0%, #f3e0b4 60%, #e2c287 100%);
+  box-shadow: inset 0 0 40px rgb(120 70 20 / 0.35), inset 0 0 0 1px rgb(138 93 31 / 0.5);
+  color: #3d1c14;
+}
+.jm-map::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1.5px dashed rgb(138 93 31 / 0.45);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.jm-cartouche {
+  position: absolute;
+  top: 22px;
+  left: 24px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 13px 6px;
+  border: 1px solid rgb(142 20 38 / 0.5);
+  border-radius: 4px;
+  background: rgb(251 240 212 / 0.85);
+  box-shadow: 3px 3px 0 rgb(142 20 38 / 0.18);
+}
+.jm-place {
+  font-family: "Great Vibes", cursive;
+  font-size: 1.55rem;
+  line-height: 1;
+  color: #8e1426;
+}
+.jm-nick {
+  margin-top: 2px;
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 700;
+  font-size: 0.56rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #8a5d1f;
+}
+.jm-compass {
+  position: absolute;
+  bottom: 20px;
+  right: 24px;
+  z-index: 1;
+  width: 64px;
+  height: 64px;
+  opacity: 0.9;
+}
+/* the route: a soft gold road that draws itself in, with maroon footsteps on it */
+.jm-route {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+.jm-route path {
+  fill: none;
+  stroke-linecap: round;
+}
+.jm-route-shadow {
+  stroke: rgb(138 93 31 / 0.12);
+  stroke-width: 14;
+}
+.jm-route-draw {
+  stroke: #e2b553;
+  stroke-width: 5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+.jm-route-dots {
+  stroke: #8e1426;
+  stroke-width: 3.2;
+  stroke-dasharray: 0.1 11;
+}
+/* the stops */
+.jm-stops {
+  position: absolute;
+  inset: 0;
+  list-style: none;
+}
+.jm-stop {
+  --medal: 54px;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.jm-medal {
+  position: absolute;
+  left: calc(var(--medal) / -2);
+  top: calc(var(--medal) / -2);
+  display: grid;
+  place-items: center;
+  width: var(--medal);
+  height: var(--medal);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9a2236, #6a0f1f 60%, #3e0610);
+  box-shadow:
+    0 0 0 2px #e8c56b,
+    0 0 0 6px #f6e7c2,
+    0 0 0 7.5px #b8862f,
+    0 10px 18px -6px rgb(60 20 0 / 0.6);
+  color: #f3cf73;
+}
+.jm-medal svg {
+  width: 23px;
+  height: 23px;
+}
+.jm-stop--end .jm-medal {
+  --medal: 64px;
+  background: radial-gradient(circle at 35% 30%, #fff1bd, #e2b553 55%, #b8862f);
+  color: #5e0d1a;
+  box-shadow:
+    0 0 0 2px #fff0bf,
+    0 0 0 6px #f6e7c2,
+    0 0 0 7.5px #8e1426,
+    0 0 26px 8px rgb(226 181 83 / 0.45);
+}
+.jm-stop--end .jm-medal {
+  left: -32px;
+  top: -32px;
+}
+.jm-stop--end .jm-medal svg {
+  width: 27px;
+  height: 27px;
+}
+/* a little red flag planted on the destination */
+.jm-stop--end::before {
+  content: "";
+  position: absolute;
+  left: 34px;
+  top: -42px;
+  width: 2px;
+  height: 30px;
+  background: #5a3a24;
+}
+.jm-stop--end::after {
+  content: "";
+  position: absolute;
+  left: 36px;
+  top: -42px;
+  width: 18px;
+  height: 12px;
+  background: #c2273d;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.jm-copy {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 176px;
+  text-align: center;
+}
+.jm-stop--below .jm-copy {
+  left: -88px;
+  top: 40px;
+}
+.jm-stop--above .jm-copy {
+  left: -88px;
+  bottom: 40px;
+}
+.jm-label {
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 700;
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8e1426;
+}
+.jm-text {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.32;
+  color: #3d1c14;
+}
+.jm-stop--end .jm-text {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #6a0f1f;
+}
+.jm-stop--end.jm-stop--below .jm-copy { top: 46px; }
+.jm-stop--end.jm-stop--above .jm-copy { bottom: 46px; }
+/* phones: the route snakes down, the words sit on the open side of each stop */
+.jm-map.is-narrow .jm-cartouche {
+  top: 18px;
+  left: 18px;
+  padding: 3px 10px 5px;
+}
+.jm-map.is-narrow .jm-place {
+  font-size: 1.3rem;
+}
+.jm-map.is-narrow .jm-compass {
+  top: 16px;
+  bottom: auto;
+  right: 16px;
+  width: 46px;
+  height: 46px;
+}
+.jm-map.is-narrow .jm-stop {
+  --medal: 46px;
+}
+.jm-map.is-narrow .jm-medal svg {
+  width: 20px;
+  height: 20px;
+}
+.jm-map.is-narrow .jm-stop--end .jm-medal {
+  --medal: 54px;
+  left: -27px;
+  top: -27px;
+}
+.jm-map.is-narrow .jm-copy {
+  top: 0;
+  width: min(54vw, 210px);
+  transform: translateY(-50%);
+}
+.jm-stop--right .jm-copy {
+  left: 36px;
+  text-align: left;
+}
+.jm-stop--left .jm-copy {
+  right: 36px;
+  text-align: right;
+}
+.jm-map.is-narrow .jm-text {
+  font-size: 0.9rem;
+}
+/* compact journey: icon, short name, distance — nothing more */
+.jm-card {
+  width: min(100%, 760px);
+  margin-top: 18px;
+  padding: 8px;
+}
+.jm-stop {
+  --medal: 48px;
+}
+.jm-medal svg {
+  width: 21px;
+  height: 21px;
+}
+.jm-stop--end .jm-medal {
+  --medal: 58px;
+  left: -29px;
+  top: -29px;
+}
+.jm-stop--end .jm-medal svg {
+  width: 25px;
+  height: 25px;
+}
+.jm-stop--end::before {
+  left: 28px;
+  top: -38px;
+  height: 26px;
+}
+.jm-stop--end::after {
+  left: 30px;
+  top: -38px;
+  width: 16px;
+  height: 11px;
+}
+.jm-copy {
+  width: 150px;
+  gap: 4px;
+  align-items: center;
+}
+.jm-stop--below .jm-copy {
+  left: -75px;
+  top: 34px;
+}
+.jm-stop--end.jm-stop--below .jm-copy {
+  top: 40px;
+}
+.jm-text {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  color: #5a1a10;
+}
+.jm-stop--end .jm-text {
+  font-size: 0.86rem;
+  color: #8e1426;
+}
+.jm-label {
+  padding: 1px 9px;
+  border: 1px solid rgb(142 20 38 / 0.55);
+  border-radius: 999px;
+  background: rgb(251 240 212 / 0.9);
+  font-family: "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #8e1426;
+}
+.jm-compass {
+  bottom: 14px;
+  right: 18px;
+  width: 46px;
+  height: 46px;
+}
+.jm-map.is-narrow .jm-compass {
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+}
+.jm-map.is-narrow .jm-stop {
+  --medal: 42px;
+}
+.jm-map.is-narrow .jm-medal svg {
+  width: 18px;
+  height: 18px;
+}
+.jm-map.is-narrow .jm-stop--end .jm-medal {
+  --medal: 50px;
+  left: -25px;
+  top: -25px;
+}
+.jm-map.is-narrow .jm-copy {
+  align-items: flex-start;
+}
+.jm-map.is-narrow .jm-stop--left .jm-copy {
+  right: 32px;
+  align-items: flex-end;
+}
+.jm-map.is-narrow .jm-stop--right .jm-copy {
+  left: 32px;
+}
+/* the venue section is shorter overall: tighter gaps between its blocks */
+.fw-block {
+  margin-top: clamp(36px, 5vw, 60px);
+}
+
+/* ── Meet the Families: two arches joined by a garland, a kuthuvilakku between them ── */
+.fm-stage {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 26px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+@media (min-width: 900px) {
+  .fm-stage {
+    grid-template-columns: minmax(0, 1fr) minmax(170px, 220px) minmax(0, 1fr);
+    align-items: start;
+    gap: 0;
+  }
+  .fm-side--bride { grid-column: 1; grid-row: 1; }
+  .fm-side--groom { grid-column: 3; grid-row: 1; }
+  .fm-bond-row { grid-column: 2; grid-row: 1; }
+}
+.fm-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+}
+/* the garland: marigold (orange, yellow) and jasmine beads on a thread */
+.fm-garland {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  overflow: visible;
+  pointer-events: none;
+}
+.fm-garland path {
+  fill: none;
+  stroke-linecap: round;
+}
+.fm-g-thread { stroke: #6b4a1c; stroke-width: 1.5; }
+.fm-g-marigold { stroke: #f08a12; stroke-width: 13; stroke-dasharray: 0 13; }
+.fm-g-yellow { stroke: #f6b532; stroke-width: 10; stroke-dasharray: 0 13; stroke-dashoffset: 6.5; }
+.fm-g-jasmine { stroke: #fff6e6; stroke-width: 5; stroke-dasharray: 0 26; stroke-dashoffset: 3; }
+/* the brass lamp between the arches, standing on their baseline */
+.fm-lamp {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  aspect-ratio: 80 / 270;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.fm-lamp-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.fm-lamp .ic-oil-flame {
+  animation: ic-flicker 1.6s ease-in-out infinite;
+}
+.fm-caption {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  width: 200px;
+  transform: translateX(-50%);
+  font-family: "Great Vibes", cursive;
+  font-size: 1.55rem;
+  line-height: 1.1;
+  text-align: center;
+  color: #f3cf73;
+  text-shadow: 0 2px 8px rgb(0 0 0 / 0.5);
+}
+/* the couple's medallion, hanging from the lowest point of the garland */
+.fm-bond {
+  position: absolute;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.fm-bond > * {
+  transform-origin: 50% 0;
+}
+.fm-bond-chain {
+  display: block;
+  width: 2px;
+  height: 14px;
+  background: repeating-linear-gradient(180deg, #e8c56b 0 4px, #8a5d1f 4px 6px);
+}
+.fm-medallion {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #9a2236, #6a0f1f 60%, #3e0610);
+  box-shadow:
+    0 0 0 3px #e8c56b,
+    0 0 0 6px #6a0f1f,
+    0 0 0 7.5px #e8c56b,
+    0 12px 22px -6px rgb(0 0 0 / 0.7);
+  font-family: "Great Vibes", cursive;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  color: #f3cf73;
+  white-space: nowrap;
+  animation: fm-sway 5s ease-in-out infinite;
+}
+@keyframes fm-sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+/* phones: the medallion sits between the two families, with gold rules either side */
+.fm-bond-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.fm-bond-row .fm-bond {
+  position: static;
+  transform: none;
+}
+.fm-bond-row .fm-bond-chain {
+  height: 34px;
+}
+.fm-bond-row .fm-medallion {
+  animation: none;
+}
+.fm-bond-text {
+  margin-top: 10px;
+  font-family: "Great Vibes", cursive;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  color: #f3cf73;
+  text-align: center;
+}
+/* the carved ivory name board under each arch */
+.fm-board {
+  position: relative;
+  width: min(100%, 360px);
+  margin-top: 26px;
+  padding: 30px 22px 22px;
+  border: 1px solid #d4a54a;
+  border-radius: 120px 120px 16px 16px / 56px 56px 16px 16px;
+  background: linear-gradient(180deg, #fffaf0 0%, #f4e4c0 100%);
+  box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px rgb(212 165 74 / 0.6), 0 22px 40px -18px rgb(0 0 0 / 0.8);
+  text-align: center;
+  color: #3d1c14;
+}
+.fm-board-lotus {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 30px;
+  border-radius: 50% 50% 8px 8px;
+  background: #4c0813;
+  box-shadow: 0 0 0 1px #d4a54a;
+  transform: translateX(-50%);
+}
+.fm-board-lotus svg {
+  width: 30px;
+  height: 20px;
+}
+.fm-badge {
+  display: inline-block;
+  padding: 5px 16px;
+  border: 1px solid #d4a54a;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a1c2f, #5e0d1a);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f3cf73;
+}
+.fm-message {
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: #5a3a24;
+}
+.fm-parents {
+  margin-top: 12px;
+}
+.fm-parent {
+  display: flex;
+  flex-direction: column;
+}
+.fm-parent-name {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.06rem;
+  color: #6a0f1f;
+}
+.fm-parent-role {
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.86rem;
+  color: #8a5d1f;
+}
+.fm-amp {
+  display: block;
+  margin: 2px 0;
+  font-family: "Great Vibes", cursive;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: #b8862f;
+}
+.fm-with {
+  margin-top: 14px;
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8a5d1f;
+}
+.fm-kin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+  list-style: none;
+}
+.fm-kin-chip {
+  padding: 3px 11px;
+  border: 1px solid rgb(212 165 74 / 0.7);
+  border-radius: 999px;
+  background: #fff7e2;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.88rem;
+  color: #3d1c14;
+}
+.fm-kin-chip small {
+  margin-left: 3px;
+  font-style: italic;
+  font-size: 0.78rem;
+  color: #8a5d1f;
 }

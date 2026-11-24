@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 
 /** Traditional hanging wall lantern with swaying animation */
@@ -37,10 +38,162 @@ function HangingLamp({ side }: { side: "left" | "right" }) {
   );
 }
 
+type Side = NonNullable<NonNullable<ReturnType<typeof useWedding>["family"]>["bride"]>;
+
+/** A tall brass kuthuvilakku: five wicks burning on the oil bowl, a peacock finial on top. */
+function Kuthuvilakku() {
+  const wicks = [-22, -11, 0, 11, 22];
+  return (
+    <svg viewBox="-40 -30 80 270" className="fm-lamp-svg" aria-hidden>
+      <defs>
+        <linearGradient id="fm-brass" x1="0" x2="1">
+          <stop offset="0" stopColor="#7a5216" />
+          <stop offset="0.35" stopColor="#f3d27a" />
+          <stop offset="0.62" stopColor="#c8952f" />
+          <stop offset="1" stopColor="#6e4a14" />
+        </linearGradient>
+        <radialGradient id="fm-glow">
+          <stop offset="0" stopColor="#ffd98a" stopOpacity="0.55" />
+          <stop offset="1" stopColor="#ffb347" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="0" cy="40" rx="46" ry="34" fill="url(#fm-glow)" />
+      {/* peacock finial */}
+      <path d="M0-26c5 4 6 10 2 14l5 6H-7l5-6c-4-4-3-10 2-14Z" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.8" />
+      <path d="M0-12v18" stroke="#b8862f" strokeWidth="3" />
+      {/* the oil bowl with its five wicks */}
+      <path d="M-34 44c4 12 18 18 34 18s30-6 34-18Z" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.9" />
+      <ellipse cy="44" rx="34" ry="6" fill="#f3d27a" stroke="#6e4a14" strokeWidth="0.9" />
+      {wicks.map((x) => (
+        <g key={x} transform={`translate(${x} ${44 - Math.abs(x) * 0.15})`}>
+          <path d="M0-4c1.4-1 2.4.6 0 4-2.4-3.4-1.4-5 0-4Z" fill="#5a3a24" />
+          <path className="ic-oil-flame" d="M0-20C4-13 4-8 0-4-4-8-4-13 0-20Z" />
+        </g>
+      ))}
+      {/* stem with knobs */}
+      <path d="M-4 62h8v120h-8Z" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.8" />
+      {[78, 110, 142].map((y) => (
+        <ellipse key={y} cy={y} rx="11" ry="5" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.8" />
+      ))}
+      {/* the wide foot */}
+      <path d="M-8 182h16l18 30H-26Z" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.8" />
+      <ellipse cy="214" rx="34" ry="7" fill="url(#fm-brass)" stroke="#6e4a14" strokeWidth="0.9" />
+      <ellipse cy="226" rx="26" ry="4" fill="#000" opacity="0.35" />
+    </svg>
+  );
+}
+
+/** One family: the photo in the golden arch, then a carved ivory name board. */
+function FamilyCard({ side, who, photo, archRef }: { side: Side; who: "Bride" | "Groom"; photo: string; archRef: (el: HTMLDivElement | null) => void }) {
+  const father = side.members.find((m) => /father/i.test(m.relation) && !/grand/i.test(m.relation));
+  const mother = side.members.find((m) => /mother/i.test(m.relation) && !/grand/i.test(m.relation));
+  const others = side.members.filter((m) => m !== father && m !== mother);
+  return (
+    <article className={`fm-side fm-side--${who.toLowerCase()}`}>
+      <div ref={archRef} className="fam-arch-wrap">
+        <div className="fam-photo-frame">
+          <img src={photo} alt={side.title} className="fam-photo" loading="lazy" decoding="async" />
+        </div>
+        <picture>
+          <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
+          <img src="/media/family-arch-frame.png" alt="" aria-hidden="true" className="fam-arch-img" width={463} height={672} draggable={false} />
+        </picture>
+      </div>
+
+      <div className="fm-board">
+        <span className="fm-board-lotus" aria-hidden>
+          <svg viewBox="-20 -14 40 24">
+            <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
+            <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
+            <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
+          </svg>
+        </span>
+        <p className="fm-badge">{side.title}</p>
+        {side.message && <p className="fm-message">&ldquo;{side.message}&rdquo;</p>}
+        <div className="fm-parents">
+          {father && (
+            <p className="fm-parent">
+              <span className="fm-parent-name">{father.name}</span>
+              <span className="fm-parent-role">Father of the {who}</span>
+            </p>
+          )}
+          {father && mother && (
+            <span className="fm-amp" aria-hidden>
+              &amp;
+            </span>
+          )}
+          {mother && (
+            <p className="fm-parent">
+              <span className="fm-parent-name">{mother.name}</span>
+              <span className="fm-parent-role">Mother of the {who}</span>
+            </p>
+          )}
+        </div>
+        {others.length > 0 && (
+          <>
+            <p className="fm-with">with love from</p>
+            <ul className="fm-kin">
+              {others.map((m) => (
+                <li key={m.name} className="fm-kin-chip">
+                  {m.name} <small>{m.relation}</small>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    </article>
+  );
+}
+
+type Garland = { w: number; h: number; d: string; low: { x: number; y: number }; lampTop: number; lampH: number; captionTop: number };
+
 export function FamiliesScene() {
-  const { family } = useWedding();
+  const { family, couple } = useWedding();
   const bride = family?.bride;
   const groom = family?.groom;
+  const stage = useRef<HTMLDivElement>(null);
+  const arches = useRef<{ bride: HTMLDivElement | null; groom: HTMLDivElement | null }>({ bride: null, groom: null });
+  const [g, setG] = useState<Garland | null>(null);
+  const initials = `${couple.bride.name[0]} & ${couple.groom.name[0]}`;
+
+  // the garland is drawn between the two arches wherever they actually stand (wide screens)
+  useLayoutEffect(() => {
+    const el = stage.current;
+    if (!el) return;
+    const calc = () => {
+      const b = arches.current.bride;
+      const gr = arches.current.groom;
+      const box = el.getBoundingClientRect();
+      if (!b || !gr || window.innerWidth < 900) return setG((prev) => (prev ? null : prev));
+      const br = b.getBoundingClientRect();
+      const grr = gr.getBoundingClientRect();
+      const y = br.top - box.top + br.height * 0.2;
+      const x1 = br.right - box.left - br.width * 0.1;
+      const x2 = grr.left - box.left + grr.width * 0.1;
+      const sag = Math.min(88, (x2 - x1) * 0.26);
+      const mid = (x1 + x2) / 2;
+      const d = `M${x1.toFixed(1)} ${y.toFixed(1)} Q${mid.toFixed(1)} ${(y + sag * 2).toFixed(1)} ${x2.toFixed(1)} ${y.toFixed(1)}`;
+      const archBottom = br.bottom - box.top;
+      const lampH = Math.min(190, br.height * 0.38);
+      const next = { w: box.width, h: box.height, d, low: { x: mid, y: y + sag }, lampTop: archBottom - lampH, lampH, captionTop: archBottom + 18 };
+      setG((prev) => (prev && prev.d === next.d && prev.h === next.h && prev.w === next.w ? prev : next));
+    };
+    calc();
+    const ro = new ResizeObserver(calc);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const bond = (
+    <div className="fm-bond" style={g ? { left: g.low.x, top: g.low.y } : undefined}>
+      <span className="fm-bond-chain" aria-hidden />
+      <span className="fm-medallion" aria-hidden>
+        <span>{initials}</span>
+      </span>
+      {!g && <p className="fm-bond-text">Two families, one sacred bond</p>}
+    </div>
+  );
 
   return (
     <section className="pg5" id="family" aria-labelledby="p5title">
@@ -53,7 +206,6 @@ export function FamiliesScene() {
       <HangingLamp side="left" />
       <HangingLamp side="right" />
 
-      {/* Header Plaque on deep maroon/brown background */}
       <header className="p5-head">
         <p className="p5-hi" lang="hi">॥ परिवार से मिलिए ॥</p>
         <h2 className="p5-title" id="p5title">
@@ -72,150 +224,34 @@ export function FamiliesScene() {
         </div>
       </header>
 
-      {/* The Two Temple Arch Frames Showcase */}
-      <div className="fam-showcase">
-        {/* Bride's Family */}
-        {bride && (
-          <article className="fam-card">
-            <div className="fam-arch-wrap">
-              {/* Photo inside arch cutout */}
-              <div className="fam-photo-frame">
-                <img
-                  src="/media/bride-family.jpg"
-                  alt="The Bride's Family"
-                  className="fam-photo"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              {/* Ornate Golden Filigree Arch Frame Overlay */}
-              <picture>
-                <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
-                <img
-                  src="/media/family-arch-frame.png"
-                  alt=""
-                  aria-hidden="true"
-                  className="fam-arch-img"
-                  width={463}
-                  height={672}
-                  draggable={false}
-                />
-              </picture>
-            </div>
-
-            {/* Decorative Names & Details Underneath */}
-            <div className="fam-details">
-              <div className="fam-badge-wrap">
-                <span className="fam-badge">The Bride&apos;s Family</span>
-              </div>
-
-              <div className="fam-names-block">
-                <div className="fam-parent">
-                  <h3 className="fam-name">Shri Sundaram</h3>
-                  <p className="fam-role">Father of the Bride</p>
-                </div>
-
-                <div className="fam-amp" aria-hidden="true">
-                  <span className="fam-amp-line" />
-                  <span className="fam-amp-symbol">&amp;</span>
-                  <span className="fam-amp-line" />
-                </div>
-
-                <div className="fam-parent">
-                  <h3 className="fam-name">Smt. Lakshmi Sundaram</h3>
-                  <p className="fam-role">Mother of the Bride</p>
-                </div>
-              </div>
-
-              <div className="fam-sub-family">
-                <p className="fam-kin">
-                  <span>Ravi Sundaram <small>(Brother)</small></span>
-                  <span className="fam-dot">·</span>
-                  <span>Smt. Janaki <small>(Grandmother)</small></span>
-                </p>
-              </div>
-            </div>
-          </article>
-        )}
-
-        {/* Center Divider */}
-        <div className="fam-center-divider" aria-hidden="true">
-          <span className="fam-v-line" />
-          <svg viewBox="-20 -14 40 24" className="fam-v-lotus">
-            <path d="M0 8Q-6 0 0-12Q6 0 0 8Z" fill="#e8b04a" />
-            <path d="M0 8Q-13 3-15-6Q-5-5 0 8Z" fill="#d9972e" />
-            <path d="M0 8Q13 3 15-6Q5-5 0 8Z" fill="#d9972e" />
+      {/* the two families, joined by a marigold-and-jasmine garland with the couple's medallion,
+          a brass kuthuvilakku burning between them */}
+      <div ref={stage} className={`fm-stage ${g ? "is-wide" : ""}`}>
+        {g && (
+          <svg className="fm-garland" width={g.w} height={g.h} viewBox={`0 0 ${g.w} ${g.h}`} aria-hidden>
+            <path d={g.d} className="fm-g-thread" />
+            <path d={g.d} className="fm-g-marigold" />
+            <path d={g.d} className="fm-g-yellow" />
+            <path d={g.d} className="fm-g-jasmine" />
           </svg>
-          <span className="fam-v-line" />
-        </div>
-
-        {/* Groom's Family */}
-        {groom && (
-          <article className="fam-card">
-            <div className="fam-arch-wrap">
-              {/* Photo inside arch cutout */}
-              <div className="fam-photo-frame">
-                <img
-                  src="/media/groom-family.jpg"
-                  alt="The Groom's Family"
-                  className="fam-photo"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-              {/* Ornate Golden Filigree Arch Frame Overlay */}
-              <picture>
-                <source srcSet="/media/family-arch-frame.webp" type="image/webp" />
-                <img
-                  src="/media/family-arch-frame.png"
-                  alt=""
-                  aria-hidden="true"
-                  className="fam-arch-img"
-                  width={463}
-                  height={672}
-                  draggable={false}
-                />
-              </picture>
-            </div>
-
-            {/* Decorative Names & Details Underneath */}
-            <div className="fam-details">
-              <div className="fam-badge-wrap">
-                <span className="fam-badge">The Groom&apos;s Family</span>
-              </div>
-
-              <div className="fam-names-block">
-                <div className="fam-parent">
-                  <h3 className="fam-name">Shri Raghavan</h3>
-                  <p className="fam-role">Father of the Groom</p>
-                </div>
-
-                <div className="fam-amp" aria-hidden="true">
-                  <span className="fam-amp-line" />
-                  <span className="fam-amp-symbol">&amp;</span>
-                  <span className="fam-amp-line" />
-                </div>
-
-                <div className="fam-parent">
-                  <h3 className="fam-name">Smt. Kamala Raghavan</h3>
-                  <p className="fam-role">Mother of the Groom</p>
-                </div>
-              </div>
-
-              <div className="fam-sub-family">
-                <p className="fam-kin">
-                  <span>Divya Raghavan <small>(Sister)</small></span>
-                  <span className="fam-dot">·</span>
-                  <span>Shri Venkataraman <small>(Grandfather)</small></span>
-                </p>
-              </div>
-            </div>
-          </article>
         )}
-      </div>
+        {g && (
+          <div className="fm-lamp" style={{ top: g.lampTop, height: g.lampH }}>
+            <Kuthuvilakku />
+          </div>
+        )}
+        {g && (
+          <p className="fm-caption" style={{ top: g.captionTop }}>
+            Two families,
+            <br />
+            one sacred bond
+          </p>
+        )}
 
-      {/* Sleek metallic double gold stripe separator at the bottom */}
-      
+        {bride && <FamilyCard side={bride} who="Bride" photo="/media/bride-family.jpg" archRef={(el) => void (arches.current.bride = el)} />}
+        {g ? bond : <div className="fm-bond-row">{bond}</div>}
+        {groom && <FamilyCard side={groom} who="Groom" photo="/media/groom-family.jpg" archRef={(el) => void (arches.current.groom = el)} />}
+      </div>
     </section>
   );
 }

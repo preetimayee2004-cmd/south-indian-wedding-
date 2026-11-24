@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent 
 import { useWedding } from "@/context/WeddingContext";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
+import { JourneyMap } from "./travel/JourneyMap";
 import { directionsUrl } from "@/lib/format";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
@@ -76,6 +77,22 @@ function travelIcon(text: string) {
   return <CarIcon />;
 }
 
+/** A travel note boiled down to a short name and its distance: "Airport · 12 km". */
+function shortNote(note: string): { label: string; text: string } {
+  const t = note.toLowerCase();
+  const name = /airport|flight/.test(t)
+    ? "Airport"
+    : /railway|station|junction|train/.test(t)
+      ? "Railway Station"
+      : /\bbus\b/.test(t)
+        ? "Bus Stand"
+        : /parking|valet/.test(t)
+          ? "Parking"
+          : note.split(/[—;,.]/)[0].trim();
+  const dist = note.match(/\d+(?:\.\d+)?\s?(?:km|m)\b/i)?.[0] ?? (/parking|valet/.test(t) ? "At the venue" : "");
+  return { label: dist, text: name };
+}
+
 /** The end of the journey: a small temple tower. */
 function TempleIcon() {
   return (
@@ -114,9 +131,6 @@ function Bell() {
 const STARS: [number, number, number, number][] = [
   [6, 18, 9, 0], [93, 22, 11, 1.2], [4, 41, 7, 2.1], [95, 47, 8, 0.7], [7, 63, 10, 1.7], [92, 70, 7, 2.6], [5, 86, 8, 0.4], [94, 90, 10, 1.9],
 ];
-
-/** Phones lay the journey out top to bottom (the path then draws downwards). */
-const TOUCH_NARROW = () => window.matchMedia("(max-width: 680px)").matches;
 
 /** Ring a bell: restart its swing. */
 function ring(e: MouseEvent<HTMLButtonElement>) {
@@ -170,15 +184,6 @@ export function FindYourWay() {
         ease: "power2.out",
         scrollTrigger: { trigger: el, start: "top 70%", once: true },
       });
-      gsap.utils.toArray<HTMLElement>(".fw-journey", el).forEach((j) =>
-        gsap.from(j.querySelector(".fw-journey-line"), {
-          scaleX: TOUCH_NARROW() ? 1 : 0,
-          scaleY: TOUCH_NARROW() ? 0 : 1,
-          duration: 1.6,
-          ease: "power2.inOut",
-          scrollTrigger: { trigger: j, start: "top 80%", once: true },
-        }),
-      );
     }, el);
     return () => ctx.revert();
   }, [reduced]);
@@ -259,33 +264,15 @@ export function FindYourWay() {
           <div className="fw-block" data-rise>
             <h3 className="fw-block-title">Travel</h3>
             <GoldDivider className="mt-2" />
-            <p className="fw-block-sub">Your journey to us, stop by stop.</p>
-            <ol className="fw-journey" style={{ ["--n" as string]: travelNotes.length + 1 } as CSSProperties}>
-              <span aria-hidden className="fw-journey-line" />
-              {travelNotes.map((note, i) => (
-                <li key={note} className="fw-stop">
-                  <span className="fw-stop-medal" aria-hidden>
-                    {travelIcon(note)}
-                  </span>
-                  <span className="fw-stop-copy">
-                    <span className="fw-stop-num">Stop {String(i + 1).padStart(2, "0")}</span>
-                    <span className="fw-stop-text">{note}</span>
-                  </span>
-                </li>
-              ))}
-              <li className="fw-stop fw-stop--end">
-                <span className="fw-stop-medal" aria-hidden>
-                  <TempleIcon />
-                </span>
-                <span className="fw-stop-copy">
-                  <span className="fw-stop-num">You&rsquo;ve arrived</span>
-                  <span className="fw-stop-text fw-stop-text--end">{venue.name}</span>
-                </span>
-              </li>
-            </ol>
-            <a className="fw-btn fw-btn--ghost mt-7" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
-              Plan your route ›
-            </a>
+                        <JourneyMap
+              place={wedding.city.split(",")[0]}
+              nickname={wedding.cityNickname}
+              reduced={reduced}
+              stops={[
+                ...travelNotes.map((note) => ({ ...shortNote(note), icon: travelIcon(note) })),
+                { label: "", text: venue.name, icon: <TempleIcon />, end: true },
+              ]}
+            />
           </div>
         )}
 
