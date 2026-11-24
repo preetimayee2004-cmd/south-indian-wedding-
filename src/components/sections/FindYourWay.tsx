@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
-import { directionsUrl, mapEmbedUrl } from "@/lib/format";
+import { directionsUrl } from "@/lib/format";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
 
@@ -95,15 +95,15 @@ function dateLine(iso: string, timeZone: string, muhurtham?: string) {
 }
 
 /**
- * Our Venue & Travel: a featured venue card (an arched window with the venue — the map loads
- * only when asked for), Getting There and Where to Stay, the family to call, and a closing
- * ribbon — all on the cream temple corridor, every detail from wedding.config.ts.
+ * Our Venue & Travel, on dark maroon silk, read top to bottom: the heading, the mandap
+ * illustration glowing under it, the venue (name, address, date, directions), how to get
+ * there (with where to stay), the family to call, and a gold closing ribbon. Every detail
+ * comes from wedding.config.ts.
  */
 export function FindYourWay() {
   const { venue, wedding, travelNotes = [], stay = [], contacts } = useWedding();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
-  const [showMap, setShowMap] = useState(false);
   const [copied, setCopied] = useState(false);
   const query = venue.mapsQuery || `${venue.name}, ${venue.address}`;
 
@@ -136,8 +136,13 @@ export function FindYourWay() {
 
   return (
     <section ref={root} id="travelStay" aria-labelledby="fw-heading" className="fw-section">
+      {/* gold frame down the whole section, filigree in the top corners */}
+      <span aria-hidden className="fw-frame" />
+      <img src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className="fw-sec-corner fw-corner--tl" />
+      <img src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className="fw-sec-corner fw-corner--tr" />
+
       <Container className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center">
-        {/* heading */}
+        {/* 1 · heading */}
         <header className="fw-head" data-rise>
           <p className="fw-eyebrow">॥ Find your way to us ॥</p>
           <h2 id="fw-heading" className="fw-title">
@@ -147,103 +152,94 @@ export function FindYourWay() {
           <p className="fw-sub">Everything you need to be part of our celebrations.</p>
         </header>
 
-        {/* the maroon silk stage, framed in gold, that holds every card */}
-        <div className="fw-stage">
-          <span aria-hidden className="fw-stage-frame" />
-          {(["tl", "tr", "bl", "br"] as const).map((c) => (
-            <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`fw-stage-corner fw-corner--${c}`} />
-          ))}
+        {/* 2 · the mandap, glowing under the heading */}
+        <figure className="fw-hero" data-rise>
+          <span aria-hidden className="fw-hero-glow" />
+          <img src="/media/mandap-venue-clean.webp" alt={`An illustration of the mandap at ${venue.name}`} className="fw-hero-art" loading="lazy" decoding="async" draggable={false} />
+          <span aria-hidden className="fw-hero-floor" />
+        </figure>
 
-        {/* the venue */}
-        <article className="fw-card fw-venue" data-rise>
-          <Corners />
-          <div className="fw-window">
-            <div className="fw-window-inner">
-              {showMap ? (
-                <iframe title={`Map showing ${venue.name}`} src={mapEmbedUrl(query)} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="fw-map" allowFullScreen />
-              ) : (
-                <>
-                  <img src="/media/mandap-venue.webp" alt={`An illustration of ${venue.name}`} className="fw-venue-art" loading="lazy" decoding="async" draggable={false} />
-                  <button type="button" className="fw-btn fw-btn--ghost fw-map-btn" onClick={() => setShowMap(true)}>
-                    <PinIcon className="h-3.5 w-3.5" /> View on map
-                  </button>
-                </>
+        {/* 3 · about the venue: name, location, date, buttons */}
+        <div className="fw-about" data-rise>
+          <p className="fw-kicker">The venue</p>
+          <h3 className="fw-venue-name">{venue.name}</h3>
+          <p className="fw-address">
+            <span className="fw-pin" aria-hidden>
+              <PinIcon />
+            </span>
+            <span>{venue.address}</span>
+          </p>
+          <p className="fw-date">{dateLine(wedding.dateISO, wedding.timeZone, wedding.muhurthamLabel)}</p>
+          <div className="fw-actions">
+            <a className="fw-btn fw-btn--solid" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+              <PinIcon className="h-4 w-4" /> Get Directions
+            </a>
+            <button type="button" className="fw-btn fw-btn--ghost" onClick={copy}>
+              {copied ? "Copied ✓" : "Copy Address"}
+            </button>
+            <span role="status" aria-live="polite" className="sr-only">
+              {copied ? "Address copied" : ""}
+            </span>
+          </div>
+        </div>
+
+        {/* 4 · travel: getting there, and where to stay */}
+        {(travelNotes.length > 0 || stay.length > 0) && (
+          <div className="fw-block" data-rise>
+            <h3 className="fw-block-title">Travel</h3>
+            <GoldDivider className="mt-2" />
+            <div className="fw-pair">
+              {travelNotes.length > 0 && (
+                <article className="fw-card fw-list-card">
+                  <Corners />
+                  <h4 className="fw-card-title">Getting There</h4>
+                  <ul className="fw-list">
+                    {travelNotes.map((note) => (
+                      <li key={note} className="fw-travel-row">
+                        <span className="fw-medal" aria-hidden>
+                          {travelIcon(note)}
+                        </span>
+                        <span className="fw-travel-text">{note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a className="fw-btn fw-btn--ghost fw-card-cta" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+                    Plan your route
+                  </a>
+                </article>
+              )}
+              {stay.length > 0 && (
+                <article className="fw-card fw-list-card">
+                  <Corners />
+                  <h4 className="fw-card-title">Where to Stay</h4>
+                  <ul className="fw-list">
+                    {stay.map((s) => (
+                      <li key={s.name} className="fw-stay-row">
+                        <div className="fw-stay-top">
+                          <span className="fw-stay-name">{s.name}</span>
+                          {s.distance && <span className="fw-pill">{s.distance}</span>}
+                        </div>
+                        {s.note && <p className="fw-stay-note">{s.note}</p>}
+                        {s.url && (
+                          <a className="fw-link" href={s.url} target="_blank" rel="noopener noreferrer">
+                            View ›
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
               )}
             </div>
           </div>
-          <div className="fw-venue-text">
-            <p className="fw-kicker">The venue</p>
-            <h3 className="fw-venue-name">{venue.name}</h3>
-            <p className="fw-address">
-              <span className="fw-pin" aria-hidden>
-                <PinIcon />
-              </span>
-              <span>{venue.address}</span>
-            </p>
-            <p className="fw-date">{dateLine(wedding.dateISO, wedding.timeZone, wedding.muhurthamLabel)}</p>
-            <div className="fw-actions">
-              <a className="fw-btn fw-btn--solid" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
-                Get Directions
-              </a>
-              <button type="button" className="fw-btn fw-btn--ghost" onClick={copy}>
-                {copied ? "Copied ✓" : "Copy Address"}
-              </button>
-              <span role="status" aria-live="polite" className="sr-only">
-                {copied ? "Address copied" : ""}
-              </span>
-            </div>
-          </div>
-        </article>
+        )}
 
-        {/* getting there + where to stay */}
-        <div className="fw-pair">
-          {travelNotes.length > 0 && (
-            <article className="fw-card fw-list-card" data-rise>
-              <Corners />
-              <h3 className="fw-card-title">Getting There</h3>
-              <ul className="fw-list">
-                {travelNotes.map((note) => (
-                  <li key={note} className="fw-travel-row">
-                    <span className="fw-medal" aria-hidden>
-                      {travelIcon(note)}
-                    </span>
-                    <span className="fw-travel-text">{note}</span>
-                  </li>
-                ))}
-              </ul>
-              <a className="fw-btn fw-btn--ghost fw-card-cta" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
-                Plan your route
-              </a>
-            </article>
-          )}
-          {stay.length > 0 && (
-            <article className="fw-card fw-list-card" data-rise>
-              <Corners />
-              <h3 className="fw-card-title">Where to Stay</h3>
-              <ul className="fw-list">
-                {stay.map((s) => (
-                  <li key={s.name} className="fw-stay-row">
-                    <div className="fw-stay-top">
-                      <span className="fw-stay-name">{s.name}</span>
-                      {s.distance && <span className="fw-pill">{s.distance}</span>}
-                    </div>
-                    {s.note && <p className="fw-stay-note">{s.note}</p>}
-                    {s.url && (
-                      <a className="fw-link" href={s.url} target="_blank" rel="noopener noreferrer">
-                        View ›
-                      </a>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          )}
-        </div>
-
-        {/* need help? */}
+        {/* 5 · contact */}
         {contacts.length > 0 && (
-          <div className="fw-help" data-rise>
-            <h3 className="fw-help-title">Need help? Call us</h3>
+          <div className="fw-block" data-rise>
+            <h3 className="fw-block-title">Contact</h3>
+            <GoldDivider className="mt-2" />
+            <p className="fw-block-sub">Need help finding us? Call or WhatsApp the family.</p>
             <ul className="fw-contacts">
               {contacts.map((c) => (
                 <li key={c.name} className="fw-contact">
@@ -271,13 +267,12 @@ export function FindYourWay() {
             </ul>
           </div>
         )}
-        </div>
 
         {/* closing ribbon */}
         <div className="fw-ribbon-wrap" data-rise>
           <p className="fw-ribbon">We can&rsquo;t wait to celebrate with you!</p>
           <svg aria-hidden viewBox="0 0 24 22" className="fw-heart">
-            <path d="M12 20.5S2.5 14.6 2.5 8.2A4.7 4.7 0 0 1 12 5.6a4.7 4.7 0 0 1 9.5 2.6c0 6.4-9.5 12.3-9.5 12.3Z" fill="#d4a54a" stroke="#9a6b18" strokeWidth=".8" />
+            <path d="M12 20.5S2.5 14.6 2.5 8.2A4.7 4.7 0 0 1 12 5.6a4.7 4.7 0 0 1 9.5 2.6c0 6.4-9.5 12.3-9.5 12.3Z" fill="#e8c56b" stroke="#9a6b18" strokeWidth=".8" />
           </svg>
         </div>
       </Container>

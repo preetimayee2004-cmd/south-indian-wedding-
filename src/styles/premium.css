@@ -898,23 +898,41 @@
   }
 }
 
-/* ── Our Venue & Travel: featured venue card, travel + stay, contacts, ribbon ── */
-/* the corridor picture keeps its proportions at the top (its garland and bells stay clear of the
-   words: the heading starts below them) and fades into the same cream paper below */
+/* ── Our Venue & Travel, dark: heading → mandap → venue → travel → contact ── */
 .fw-section {
-  --fw-art-h: calc(100vw * 497 / 1024);
   position: relative;
   width: 100%;
-  overflow-x: clip;
-  padding: calc(var(--fw-art-h) * 0.36 + 18px) 16px clamp(48px, 7vw, 88px);
-  background-color: #fbe6b4;
+  overflow: hidden;
+  padding: clamp(64px, 8vw, 104px) 16px clamp(56px, 7vw, 96px);
+  background-color: #2b040c;
   background-image:
-    linear-gradient(180deg, rgb(251 230 180 / 0) 0, rgb(251 230 180 / 0) 55%, #fbe6b4 100%),
-    url("/media/temple-corridor-bg.webp");
-  background-size: 100% var(--fw-art-h), 100% var(--fw-art-h);
-  background-position: center top, center top;
-  background-repeat: no-repeat, no-repeat;
+    radial-gradient(ellipse 70% 38% at 50% 22%, rgb(150 32 52 / 0.45), transparent 72%),
+    radial-gradient(circle at 1px 1px, rgb(243 207 115 / 0.1) 1px, transparent 1.7px),
+    linear-gradient(180deg, #3d0611 0%, #2b040c 45%, #220309 100%);
+  background-size: auto, 18px 18px, auto;
+  color: #f6e7c8;
 }
+.fw-frame {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgb(226 181 83 / 0.55);
+  border-radius: 4px;
+  outline: 1px solid rgb(226 181 83 / 0.25);
+  outline-offset: 5px;
+  pointer-events: none;
+}
+.fw-sec-corner {
+  position: absolute;
+  width: clamp(64px, 11vw, 130px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.95;
+}
+.fw-sec-corner.fw-corner--tl { top: 6px; left: 6px; }
+.fw-sec-corner.fw-corner--tr { top: 6px; right: 6px; transform: scaleX(-1); }
+
+/* 1 · heading */
 .fw-head {
   display: flex;
   flex-direction: column;
@@ -925,34 +943,200 @@
   font-family: "Cormorant Garamond", "EB Garamond", serif;
   font-weight: 600;
   font-size: clamp(12px, 1.2vw, 15px);
-  letter-spacing: 0.24em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: #a8740f;
+  color: #e8c56b;
 }
 .fw-title {
-  margin-top: 6px;
+  margin-top: 8px;
   font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
   font-weight: 700;
-  font-size: clamp(1.7rem, 4.2vw, 2.7rem);
+  font-size: clamp(1.8rem, 4.4vw, 2.9rem);
   line-height: 1.15;
-  letter-spacing: 0.04em;
-  color: #6a0f1f;
+  letter-spacing: 0.05em;
+  background: linear-gradient(180deg, #fff1bd 10%, #e8c06a 55%, #b98a35 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .fw-sub {
   margin-top: 8px;
   font-family: "EB Garamond", Georgia, serif;
   font-style: italic;
   font-size: clamp(1rem, 1.5vw, 1.15rem);
-  color: #5a3a24;
+  color: #ead7b4;
 }
 
-/* the shared card: ivory, a gold double border, filigree corners */
+/* 2 · the mandap under the heading, with a warm glow and a gold floor line */
+.fw-hero {
+  position: relative;
+  width: min(86vw, 430px);
+  margin-top: clamp(18px, 3vw, 30px);
+}
+.fw-hero-glow {
+  position: absolute;
+  inset: 4% -14% 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 55%, rgb(255 205 120 / 0.38), rgb(200 120 40 / 0.12) 45%, transparent 70%);
+  pointer-events: none;
+}
+.fw-hero-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.fw-hero-floor {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: 1.5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e8c56b 20%, #e8c56b 80%, transparent);
+}
+
+/* 3 · about the venue */
+.fw-about {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 40rem;
+  margin-top: clamp(16px, 2.4vw, 26px);
+  text-align: center;
+}
+.fw-kicker {
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #e8c56b;
+}
+.fw-venue-name {
+  margin-top: 6px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.6vw, 2.4rem);
+  line-height: 1.15;
+  color: #fbecc6;
+  overflow-wrap: anywhere;
+}
+.fw-address {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.45;
+  color: #ead7b4;
+}
+.fw-pin {
+  flex: none;
+  margin-top: 3px;
+  color: #e8c56b;
+}
+.fw-date {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 7px 18px;
+  border: 1px solid rgb(232 197 107 / 0.8);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.18);
+  font-family: "EB Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 0.98rem;
+  line-height: 1.35;
+  color: #f3cf73;
+  text-wrap: balance;
+}
+.fw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+/* pill buttons */
+.fw-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 11px 24px;
+  border-radius: 999px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
+}
+.fw-btn:hover {
+  transform: translateY(-2px);
+}
+.fw-btn:active {
+  transform: scale(0.97);
+}
+/* on the dark ground: solid gold, and a gold outline */
+.fw-btn--solid {
+  border: 1px solid #fff0bf;
+  background: linear-gradient(180deg, #fbe39c 0%, #e2b553 55%, #c99a3d 100%);
+  box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.6), inset 0 1px 0 rgb(255 255 255 / 0.55);
+  color: #4a0d16;
+}
+.fw-btn--ghost {
+  border: 1.5px solid rgb(232 197 107 / 0.85);
+  color: #f3cf73;
+}
+.fw-btn--ghost:hover {
+  background: rgb(232 197 107 / 0.12);
+}
+/* inside the ivory cards the outline button is maroon */
+.fw-card .fw-btn--ghost {
+  border-color: #d4a54a;
+  color: #6a0f1f;
+}
+.fw-card .fw-btn--ghost:hover {
+  background: #6a0f1f;
+  color: #f3cf73;
+}
+
+/* 4 + 5 · titled blocks */
+.fw-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 960px);
+  margin-top: clamp(44px, 6vw, 72px);
+  text-align: center;
+}
+.fw-block-title {
+  font-family: "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: clamp(2.3rem, 4.6vw, 3rem);
+  line-height: 1;
+  color: #f3cf73;
+}
+.fw-block-sub {
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1.02rem;
+  color: #ead7b4;
+}
+
+/* the ivory cards: gold double border, filigree corners */
 .fw-card {
   position: relative;
   border: 1px solid #d4a54a;
   border-radius: 16px;
   background: linear-gradient(170deg, #fffdf6, #fbf1da 60%, #f6e6c4);
-  box-shadow: inset 0 0 0 5px #fffaf0, inset 0 0 0 6px rgb(212 165 74 / 0.7), 0 14px 30px rgb(92 40 12 / 0.14), 0 3px 8px rgb(92 40 12 / 0.08);
+  box-shadow: inset 0 0 0 5px #fffaf0, inset 0 0 0 6px rgb(212 165 74 / 0.7), 0 24px 44px -18px rgb(0 0 0 / 0.75);
+  text-align: left;
+  color: #3d1c14;
 }
 .fw-corner {
   position: absolute;
@@ -966,168 +1150,33 @@
 .fw-corner--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
 .fw-corner--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
 
-/* the featured venue card */
-.fw-venue {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  align-items: center;
-  gap: clamp(20px, 3.4vw, 44px);
-  width: min(100%, 960px);
-  margin-top: clamp(24px, 3.4vw, 40px);
-  padding: clamp(26px, 3.6vw, 44px);
-}
-.fw-window {
-  padding: 6px;
-  border: 2px solid #d4a54a;
-  border-radius: 999px 999px 12px 12px;
-  background: linear-gradient(180deg, #f3cf73, #d4a54a);
-}
-.fw-window-inner {
-  position: relative;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border-radius: 999px 999px 8px 8px;
-  box-shadow: inset 0 0 0 1px #fffaf0;
-  background: #f3e6c8;
-}
-.fw-venue-art,
-.fw-map {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-/* the whole mandap, standing under the arch on the cream (it has a transparent background) */
-.fw-venue-art {
-  inset: 14% 3% 6%;
-  width: 94%;
-  height: 80%;
-  object-fit: contain;
-  object-position: center bottom;
-}
-.fw-window-inner {
-  background: radial-gradient(ellipse at 50% 70%, #fffaf0, #f3e6c8 75%);
-}
-.fw-map {
-  filter: sepia(0.22) saturate(0.85);
-}
-.fw-map-btn {
-  position: absolute;
-  left: 50%;
-  bottom: 14px;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  background: rgb(255 250 240 / 0.92);
-}
-.fw-venue-text {
-  min-width: 0;
-}
-.fw-kicker {
-  font-family: "Cormorant Garamond", "EB Garamond", serif;
-  font-weight: 600;
-  font-size: 0.8rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: #a8740f;
-}
-.fw-venue-name {
-  margin-top: 6px;
-  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
-  font-weight: 700;
-  font-size: clamp(1.5rem, 3.2vw, 2.2rem);
-  line-height: 1.15;
-  color: #6a0f1f;
-  overflow-wrap: anywhere;
-}
-.fw-address {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  font-family: "EB Garamond", Georgia, serif;
-  font-size: 1.05rem;
-  line-height: 1.45;
-  color: #3d1c14;
-}
-.fw-pin {
-  flex: none;
-  margin-top: 3px;
-  color: #b8862e;
-}
-.fw-date {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 6px 14px;
-  border: 1px solid rgb(212 165 74 / 0.8);
-  border-radius: 999px;
-  background: rgb(255 250 240 / 0.7);
-  font-family: "EB Garamond", Georgia, serif;
-  font-size: 0.95rem;
-  line-height: 1.35;
-  color: #6a0f1f;
-}
-.fw-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 18px;
-}
-/* pill buttons */
-.fw-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 22px;
-  border-radius: 999px;
-  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
-  font-weight: 600;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition: transform 0.25s ease, background-color 0.25s ease, color 0.25s ease;
-}
-.fw-btn:hover {
-  transform: translateY(-2px);
-}
-.fw-map-btn:hover {
-  transform: translateX(-50%) translateY(-2px);
-}
-.fw-btn--solid {
-  border: 1.5px solid #d4a54a;
-  background: linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
-  box-shadow: inset 0 0 0 3px #6a0f1f, inset 0 0 0 4px rgb(232 197 107 / 0.5), 0 6px 14px rgb(76 8 19 / 0.22);
-  color: #f3cf73;
-}
-.fw-btn--ghost {
-  border: 1.5px solid #d4a54a;
-  color: #6a0f1f;
-}
-.fw-btn--ghost:hover {
-  background: #6a0f1f;
-  color: #f3cf73;
-}
-
-/* Getting There + Where to Stay */
 .fw-pair {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-  gap: clamp(18px, 2.4vw, 28px);
-  width: min(100%, 960px);
-  margin-top: clamp(20px, 2.8vw, 32px);
+  gap: clamp(16px, 2.4vw, 26px);
+  width: 100%;
+  margin-top: clamp(18px, 2.6vw, 28px);
 }
 .fw-list-card {
   display: flex;
   flex-direction: column;
-  padding: clamp(26px, 3vw, 36px) clamp(22px, 3vw, 34px);
+  padding: clamp(26px, 3vw, 36px) clamp(20px, 3vw, 34px);
 }
 .fw-card-title {
   text-align: center;
   font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
   font-weight: 700;
-  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  font-size: clamp(1.12rem, 1.8vw, 1.3rem);
   letter-spacing: 0.06em;
   color: #6a0f1f;
+}
+.fw-card-title::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 1px;
+  margin: 10px auto 0;
+  background: linear-gradient(90deg, transparent, #d4a54a, transparent);
 }
 .fw-list {
   display: flex;
@@ -1144,26 +1193,22 @@
   display: grid;
   place-items: center;
   flex: none;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border: 1.5px solid #d4a54a;
   border-radius: 50%;
-  background: #fffaf0;
-  color: #9a6b18;
+  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
+  color: #f3cf73;
 }
 .fw-travel-text {
   font-family: "EB Garamond", Georgia, serif;
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   line-height: 1.45;
   color: #3d1c14;
 }
 .fw-card-cta {
   align-self: center;
-  margin-top: auto;
-  padding-top: 10px;
-}
-.fw-list-card .fw-card-cta {
-  margin-top: 20px;
+  margin-top: 22px;
 }
 .fw-stay-row {
   padding-bottom: 12px;
@@ -1177,7 +1222,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
+  gap: 6px 10px;
 }
 .fw-stay-name {
   font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
@@ -1190,7 +1235,7 @@
   border-radius: 999px;
   background: linear-gradient(180deg, #f3cf73, #d4a54a);
   font-family: "EB Garamond", Georgia, serif;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: #4c0813;
 }
 .fw-stay-note {
@@ -1210,90 +1255,14 @@
   color: #9a6b18;
 }
 
-/* the maroon silk stage holding every card: gold double frame, filigree corners */
-.fw-stage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: min(100%, 1080px);
-  margin-top: clamp(22px, 3vw, 36px);
-  padding: clamp(30px, 4.4vw, 60px) clamp(14px, 4vw, 56px) clamp(30px, 4vw, 52px);
-  border-radius: 22px;
-  background-color: #4c0813;
-  background-image:
-    radial-gradient(ellipse 80% 45% at 50% 0%, rgb(160 34 54 / 0.55), transparent 75%),
-    radial-gradient(circle at 1px 1px, rgb(243 207 115 / 0.12) 1px, transparent 1.7px),
-    linear-gradient(180deg, #5d0c19 0%, #430711 100%);
-  background-size: auto, 18px 18px, auto;
-  box-shadow: 0 30px 60px -24px rgb(60 10 5 / 0.55), 0 0 0 1px rgb(212 165 74 / 0.9);
-}
-.fw-stage-frame {
-  position: absolute;
-  inset: 10px;
-  border: 1px solid rgb(226 181 83 / 0.7);
-  border-radius: 14px;
-  outline: 1px solid rgb(226 181 83 / 0.3);
-  outline-offset: 4px;
-  pointer-events: none;
-}
-.fw-stage-corner {
-  position: absolute;
-  width: clamp(54px, 8vw, 92px);
-  height: auto;
-  pointer-events: none;
-  user-select: none;
-}
-.fw-stage .fw-venue {
-  margin-top: 0;
-}
-.fw-stage .fw-card {
-  box-shadow: inset 0 0 0 5px #fffaf0, inset 0 0 0 6px rgb(212 165 74 / 0.7), 0 22px 40px -16px rgb(0 0 0 / 0.6);
-}
-/* a short gold rule under each card title */
-.fw-card-title::after {
-  content: "";
-  display: block;
-  width: 64px;
-  height: 1px;
-  margin: 10px auto 0;
-  background: linear-gradient(90deg, transparent, #d4a54a, transparent);
-}
-.fw-medal {
-  border-color: #d4a54a;
-  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
-  color: #f3cf73;
-}
-.fw-date {
-  border-color: #d4a54a;
-  background: linear-gradient(180deg, #fff7e2, #f6e4bb);
-  font-weight: 600;
-}
-
-/* need help? call us: one compact row per person */
-.fw-help {
-  width: min(100%, 960px);
-  margin-top: clamp(28px, 3.6vw, 44px);
-  text-align: center;
-}
-.fw-help-title {
-  font-family: "Great Vibes", cursive;
-  font-weight: 400;
-  font-size: clamp(2rem, 3.4vw, 2.5rem);
-  color: #f3cf73;
-}
+/* contact: one compact row per person */
 .fw-contacts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 12px;
+  width: 100%;
+  margin-top: 18px;
   text-align: left;
-}
-@media (max-width: 680px) {
-  .fw-contacts {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
 }
 .fw-contact {
   display: flex;
@@ -1304,7 +1273,7 @@
   border: 1px solid #d4a54a;
   border-radius: 14px;
   background: linear-gradient(170deg, #fffdf6, #f8ecd2);
-  box-shadow: inset 0 0 0 3px #fffaf0, inset 0 0 0 4px rgb(212 165 74 / 0.55), 0 12px 24px -12px rgb(0 0 0 / 0.55);
+  box-shadow: inset 0 0 0 3px #fffaf0, inset 0 0 0 4px rgb(212 165 74 / 0.55), 0 14px 26px -14px rgb(0 0 0 / 0.7);
 }
 .fw-initial {
   display: grid;
@@ -1332,7 +1301,6 @@
   font-size: 1.06rem;
   line-height: 1.2;
   color: #3d1c14;
-  overflow-wrap: anywhere;
 }
 .fw-contact-role {
   font-family: "EB Garamond", Georgia, serif;
@@ -1368,71 +1336,43 @@
   color: #6a0f1f;
 }
 
-/* the closing ribbon, drawn in CSS: maroon band, gold border and hairline, notched ends */
+/* the closing ribbon: gold band on the dark ground, notched ends, maroon script */
 .fw-ribbon-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: clamp(30px, 4vw, 48px);
+  margin-top: clamp(40px, 5vw, 60px);
 }
 .fw-ribbon {
-  position: relative;
-  padding: 12px clamp(40px, 6vw, 64px) 14px;
+  padding: 11px clamp(40px, 6vw, 64px) 13px;
   background:
-    linear-gradient(#f3cf73, #f3cf73) 0 4px / 100% 1px no-repeat,
-    linear-gradient(#f3cf73, #f3cf73) 0 calc(100% - 4px) / 100% 1px no-repeat,
-    linear-gradient(180deg, #8a1c2f, #6a0f1f 55%, #4c0813);
-  border-top: 2px solid #d4a54a;
-  border-bottom: 2px solid #d4a54a;
+    linear-gradient(#7a5216, #7a5216) 0 4px / 100% 1px no-repeat,
+    linear-gradient(#7a5216, #7a5216) 0 calc(100% - 4px) / 100% 1px no-repeat,
+    linear-gradient(180deg, #fbe39c 0%, #e2b553 55%, #c99a3d 100%);
   clip-path: polygon(0 0, 100% 0, calc(100% - 18px) 50%, 100% 100%, 0 100%, 18px 50%);
   font-family: "Great Vibes", cursive;
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   line-height: 1.2;
   text-align: center;
-  color: #f3cf73;
+  color: #5e0d1a;
 }
 .fw-heart {
   width: 22px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
-@media (max-width: 767px) {
-  .fw-venue {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .fw-window {
-    width: min(100%, 240px);
-    margin: 0 auto;
-  }
-  .fw-stage {
-    border-radius: 18px;
-  }
-  .fw-venue-text {
-    text-align: center;
-  }
-  .fw-address {
-    justify-content: center;
-    text-align: left;
-  }
-  .fw-actions {
-    justify-content: center;
-  }
-}
-/* phones: give the cards the width (narrow stage gutters), keep names on one line */
+
 @media (max-width: 680px) {
   .fw-section {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
   }
-  .fw-stage {
-    padding: 26px 10px 22px;
-  }
-  .fw-stage-frame {
-    inset: 5px;
-    border-radius: 14px;
+  .fw-frame {
+    inset: 7px;
     outline: none;
   }
-  .fw-stage-corner {
-    width: 46px;
+  .fw-contacts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
   }
   .fw-contact {
     gap: 10px;
@@ -1449,7 +1389,9 @@
   }
   .fw-contact-name {
     font-size: 1rem;
-    overflow-wrap: normal;
+  }
+  .fw-address {
+    text-align: left;
   }
   .fw-ribbon {
     padding: 10px 30px 12px;
