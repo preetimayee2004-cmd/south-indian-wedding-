@@ -5,6 +5,7 @@ import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
 import { burstHearts } from "@/lib/hearts";
+import { useAudio } from "@/context/AudioContext";
 
 /** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
 const ON_WALL = 12;
@@ -57,6 +58,7 @@ export function WishingWall() {
   const [newlyAddedId, setNewlyAddedId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
   const sendBtnRef = useRef<HTMLButtonElement>(null);
+  const { playSfx } = useAudio();
 
   useEffect(() => {
     let active = true;
@@ -88,6 +90,7 @@ export function WishingWall() {
       const createdWish = await addWish(weddingId, cleanName, guestMessage);
       setNewlyAddedId(createdWish.id);
       setWishes((prev) => [createdWish, ...prev.filter((w) => w.id !== createdWish.id)]);
+      playSfx("bell"); // the wish is pinned to the wall
       setGuestMessage("");
       setGuestName("");
     } catch (err) {

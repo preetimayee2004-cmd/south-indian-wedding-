@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { useGuest } from "@/context/GuestContext";
+import { useAudio } from "@/context/AudioContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { burstHearts } from "@/lib/hearts";
 import { waLink } from "@/lib/format";
@@ -114,6 +115,7 @@ export function InteractiveRsvp() {
   const { wedding, couple, contacts, venue } = useWedding();
   const { guestName, setGuestName } = useGuest();
   const reduced = usePrefersReducedMotion();
+  const { playSfx } = useAudio();
 
   const storageKey = `rsvp_${wedding.invitationLine.slice(0, 10)}`;
   // Always start at stage1 so every page refresh shows the Accept RSVP screen
@@ -148,6 +150,8 @@ export function InteractiveRsvp() {
   };
 
   const handleAccept = (e?: React.MouseEvent) => {
+    // a small tap as the RSVP is sent, and a temple bell once it is confirmed
+    playSfx("tap", { gesture: true });
     // Multi-wave explosion of celebratory hearts
     burstHearts(e?.currentTarget as HTMLElement, { count: 85 });
     setTimeout(() => {
@@ -165,6 +169,7 @@ export function InteractiveRsvp() {
 
     if (reduced) {
       setStage("stage2");
+      playSfx("bell", { delay: 0.25 });
       return;
     }
 
@@ -172,6 +177,7 @@ export function InteractiveRsvp() {
 
     animTimerRef.current = window.setTimeout(() => {
       setStage("stage2");
+      playSfx("bell");
     }, 1600);
   };
 
