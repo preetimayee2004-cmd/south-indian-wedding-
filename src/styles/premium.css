@@ -1109,8 +1109,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(100%, 960px);
-  margin-top: clamp(44px, 6vw, 72px);
+  width: min(100%, 980px);
+  margin-top: clamp(52px, 7vw, 84px);
   text-align: center;
 }
 .fw-block-title {
@@ -1124,194 +1124,307 @@
   margin-top: 8px;
   font-family: "EB Garamond", Georgia, serif;
   font-style: italic;
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   color: #ead7b4;
 }
 
-/* the ivory cards: gold double border, filigree corners */
-.fw-card {
+/* Travel: a golden path of stops (left to right; top to bottom on phones) */
+.fw-journey {
+  --medal: 68px;
   position: relative;
-  border: 1px solid #d4a54a;
-  border-radius: 16px;
-  background: linear-gradient(170deg, #fffdf6, #fbf1da 60%, #f6e6c4);
-  box-shadow: inset 0 0 0 5px #fffaf0, inset 0 0 0 6px rgb(212 165 74 / 0.7), 0 24px 44px -18px rgb(0 0 0 / 0.75);
-  text-align: left;
-  color: #3d1c14;
-}
-.fw-corner {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  pointer-events: none;
-  user-select: none;
-}
-.fw-corner--tl { top: 4px; left: 4px; }
-.fw-corner--tr { top: 4px; right: 4px; transform: scaleX(-1); }
-.fw-corner--bl { bottom: 4px; left: 4px; transform: scaleY(-1); }
-.fw-corner--br { bottom: 4px; right: 4px; transform: scale(-1, -1); }
-
-.fw-pair {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
-  gap: clamp(16px, 2.4vw, 26px);
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 18px;
   width: 100%;
-  margin-top: clamp(18px, 2.6vw, 28px);
+  margin-top: 30px;
+  list-style: none;
 }
-.fw-list-card {
+.fw-journey-line {
+  position: absolute;
+  top: calc(var(--medal) / 2 - 1px);
+  left: calc(100% / var(--n) / 2);
+  right: calc(100% / var(--n) / 2);
+  height: 2px;
+  background: repeating-linear-gradient(90deg, #e8c56b 0 10px, transparent 10px 18px);
+  transform-origin: left center;
+}
+.fw-stop {
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: clamp(26px, 3vw, 36px) clamp(20px, 3vw, 34px);
-}
-.fw-card-title {
-  text-align: center;
-  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
-  font-weight: 700;
-  font-size: clamp(1.12rem, 1.8vw, 1.3rem);
-  letter-spacing: 0.06em;
-  color: #6a0f1f;
-}
-.fw-card-title::after {
-  content: "";
-  display: block;
-  width: 64px;
-  height: 1px;
-  margin: 10px auto 0;
-  background: linear-gradient(90deg, transparent, #d4a54a, transparent);
-}
-.fw-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 16px;
-}
-.fw-travel-row {
-  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  text-align: center;
 }
-.fw-medal {
+.fw-stop-medal {
+  position: relative;
   display: grid;
   place-items: center;
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid #d4a54a;
+  width: var(--medal);
+  height: var(--medal);
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
+  background: radial-gradient(circle at 35% 30%, #9a2236, #6a0f1f 60%, #3e0610);
+  box-shadow:
+    0 0 0 2px #e8c56b,
+    0 0 0 6px #2b040c,
+    0 0 0 7px rgb(232 197 107 / 0.55),
+    0 10px 24px -6px rgb(0 0 0 / 0.7);
   color: #f3cf73;
 }
-.fw-travel-text {
+.fw-stop-medal svg {
+  width: 28px;
+  height: 28px;
+}
+.fw-stop--end .fw-stop-medal {
+  background: radial-gradient(circle at 35% 30%, #fff1bd, #e2b553 55%, #b8862f);
+  color: #5e0d1a;
+  box-shadow:
+    0 0 0 2px #fff0bf,
+    0 0 0 6px #2b040c,
+    0 0 0 7px rgb(232 197 107 / 0.7),
+    0 0 28px 6px rgb(243 207 115 / 0.35);
+}
+.fw-stop-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 15rem;
+}
+.fw-stop-num {
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #e8c56b;
+}
+.fw-stop-text {
   font-family: "EB Garamond", Georgia, serif;
   font-size: 1.04rem;
   line-height: 1.45;
-  color: #3d1c14;
+  color: #f6e7c8;
 }
-.fw-card-cta {
-  align-self: center;
-  margin-top: 22px;
+.fw-stop-text--end {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.08rem;
+  color: #f3cf73;
 }
-.fw-stay-row {
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgb(212 165 74 / 0.35);
+
+/* Where to stay: a palm-leaf (olai) manuscript between two rosewood boards, a red thread through it */
+.fw-olai {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 640px);
+  margin-top: 30px;
 }
-.fw-stay-row:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+.fw-olai-board {
+  display: block;
+  width: 104%;
+  height: 20px;
+  border-radius: 10px;
+  background:
+    linear-gradient(#e8c56b, #e8c56b) 0 50% / 100% 1px no-repeat,
+    linear-gradient(180deg, #6b3a1c, #4a240f 55%, #33180a);
+  box-shadow: inset 0 1px 0 rgb(255 220 170 / 0.25), 0 10px 18px -8px rgb(0 0 0 / 0.8);
 }
-.fw-stay-top {
+.fw-leaf {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 16px 13% 16px;
+  border-radius: 999px / 60%;
+  background:
+    repeating-linear-gradient(180deg, rgb(120 80 30 / 0.09) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #f6e4b5 0%, #ecd197 55%, #ddb878 100%);
+  box-shadow:
+    inset 0 0 0 1px rgb(150 100 40 / 0.45),
+    inset 0 -4px 8px rgb(120 70 20 / 0.18),
+    0 10px 20px -10px rgb(0 0 0 / 0.75);
+  rotate: var(--tilt, 0deg);
+  text-align: left;
+  transition: rotate 0.3s ease, translate 0.3s ease;
+}
+.fw-leaf:hover {
+  rotate: 0deg;
+  translate: 0 -2px;
+}
+.fw-leaf-hole {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #2b040c;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.6), 0 0 0 1.5px rgb(150 100 40 / 0.6);
+}
+.fw-leaf-hole--l { left: 6.5%; }
+.fw-leaf-hole--r { right: 6.5%; }
+.fw-olai-thread {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, #c2273d, #8e1426);
+  box-shadow: 0 0 0 0.5px rgb(60 0 10 / 0.5);
+  pointer-events: none;
+}
+.fw-olai-thread--l { left: calc(6.5% + 5px); }
+.fw-olai-thread--r { right: calc(6.5% + 5px); }
+.fw-leaf-top {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 10px;
+  gap: 6px 12px;
 }
-.fw-stay-name {
-  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
-  font-weight: 700;
-  font-size: 1rem;
-  color: #6a0f1f;
-}
-.fw-pill {
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #f3cf73, #d4a54a);
-  font-family: "EB Garamond", Georgia, serif;
-  font-size: 0.82rem;
-  color: #4c0813;
-}
-.fw-stay-note {
-  margin-top: 4px;
-  font-family: "EB Garamond", Georgia, serif;
-  font-style: italic;
-  font-size: 0.98rem;
-  color: #5a3a24;
-}
-.fw-link {
-  display: inline-block;
-  margin-top: 4px;
-  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #9a6b18;
-}
-
-/* contact: one compact row per person */
-.fw-contacts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  width: 100%;
-  margin-top: 18px;
-  text-align: left;
-}
-.fw-contact {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 12px 14px;
-  border: 1px solid #d4a54a;
-  border-radius: 14px;
-  background: linear-gradient(170deg, #fffdf6, #f8ecd2);
-  box-shadow: inset 0 0 0 3px #fffaf0, inset 0 0 0 4px rgb(212 165 74 / 0.55), 0 14px 26px -14px rgb(0 0 0 / 0.7);
-}
-.fw-initial {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #8a1c2f, #6a0f1f 60%, #4c0813);
-  box-shadow: 0 0 0 1.5px #d4a54a, 0 0 0 3.5px rgb(212 165 74 / 0.25);
+.fw-leaf-name {
   font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
   font-weight: 700;
   font-size: 1.05rem;
-  color: #f3cf73;
+  color: #5a1a10;
+  text-shadow: 0 1px 0 rgb(255 245 220 / 0.6);
 }
-.fw-contact-who {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-}
-.fw-contact-name {
+.fw-leaf-stamp {
+  padding: 2px 10px;
+  border: 1px solid #8e1426;
+  border-radius: 999px;
   font-family: "EB Garamond", Georgia, serif;
   font-weight: 600;
-  font-size: 1.06rem;
-  line-height: 1.2;
-  color: #3d1c14;
+  font-size: 0.8rem;
+  color: #8e1426;
+  rotate: -2deg;
 }
-.fw-contact-role {
+.fw-leaf-note {
+  margin-top: 3px;
   font-family: "EB Garamond", Georgia, serif;
   font-style: italic;
-  font-size: 0.92rem;
-  color: #7a4b2a;
+  font-size: 0.98rem;
+  line-height: 1.4;
+  color: #4a2a12;
+}
+.fw-leaf-link {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8e1426;
+}
+
+/* Contact: brass temple bells on a gold rod, each over a name plaque */
+.fw-bells {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 14px;
+  width: 100%;
+  margin-top: 26px;
+  list-style: none;
+}
+.fw-bell-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10px;
+}
+/* the rod: one gold bar across each row of bells */
+.fw-bell-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -7px;
+  right: -7px;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #fff0bf, #d9ab4d 50%, #8a5d1f);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 0.5);
+}
+.fw-bell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 0;
+  cursor: pointer;
+  border-radius: 12px;
+}
+.fw-bell:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 4px;
+}
+.fw-bell-chain {
+  display: block;
+  width: 2px;
+  height: 30px;
+  background: repeating-linear-gradient(180deg, #e8c56b 0 4px, #8a5d1f 4px 6px);
+}
+.fw-bell-svg {
+  display: block;
+  width: 58px;
+  height: 69px;
+  margin-top: -2px;
+}
+.fw-bell:hover {
+  animation: fw-bell-nudge 1.2s ease-in-out;
+}
+.fw-bell.is-ringing {
+  animation: fw-bell-ring 1.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes fw-bell-nudge {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(4deg); }
+  65% { transform: rotate(-3deg); }
+}
+@keyframes fw-bell-ring {
+  0% { transform: rotate(0deg); }
+  12% { transform: rotate(16deg); }
+  28% { transform: rotate(-13deg); }
+  44% { transform: rotate(9deg); }
+  60% { transform: rotate(-6deg); }
+  76% { transform: rotate(3deg); }
+  100% { transform: rotate(0deg); }
+}
+.fw-plaque {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 14rem;
+  margin-top: 12px;
+  padding: 22px 10px 14px;
+  border: 1px solid #d4a54a;
+  border-radius: 56px 56px 14px 14px;
+  background: linear-gradient(180deg, #fffaf0, #f4e4c0);
+  box-shadow: inset 0 0 0 3px #fffaf0, inset 0 0 0 4px rgb(212 165 74 / 0.6), 0 16px 28px -14px rgb(0 0 0 / 0.8);
+}
+.fw-plaque-name {
+  max-width: 100%;
+  font-family: "Great Vibes", cursive;
+  font-size: 1.55rem;
+  line-height: 1.05;
+  color: #6a0f1f;
+  overflow-wrap: anywhere;
+}
+.fw-plaque-role {
+  margin-top: 2px;
+  font-family: "Cormorant Garamond", "EB Garamond", serif;
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8a5d1f;
 }
 .fw-contact-actions {
   display: flex;
-  flex: none;
   gap: 8px;
+  margin-top: 10px;
 }
 .fw-icon-btn {
   display: grid;
@@ -1370,28 +1483,68 @@
     inset: 7px;
     outline: none;
   }
-  .fw-contacts {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
-  }
-  .fw-contact {
-    gap: 10px;
-    padding: 10px 10px 10px 12px;
-  }
-  .fw-initial {
-    width: 36px;
-    height: 36px;
-    font-size: 0.95rem;
-  }
-  .fw-icon-btn {
-    width: 36px;
-    height: 36px;
-  }
-  .fw-contact-name {
-    font-size: 1rem;
-  }
   .fw-address {
     text-align: left;
+  }
+  /* the journey runs top to bottom, the path on the left */
+  .fw-journey {
+    --medal: 56px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+    padding: 0 6px;
+  }
+  .fw-journey-line {
+    top: calc(var(--medal) / 2);
+    bottom: calc(var(--medal) / 2);
+    left: calc(6px + var(--medal) / 2 - 1px);
+    right: auto;
+    width: 2px;
+    height: auto;
+    background: repeating-linear-gradient(180deg, #e8c56b 0 10px, transparent 10px 18px);
+    transform-origin: center top;
+  }
+  .fw-stop {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+  }
+  .fw-stop-medal {
+    flex: none;
+  }
+  .fw-stop-medal svg {
+    width: 24px;
+    height: 24px;
+  }
+  .fw-stop-copy {
+    max-width: none;
+  }
+  .fw-leaf {
+    padding: 14px 15% 14px;
+    border-radius: 999px / 50%;
+  }
+  .fw-leaf-hole--l { left: 5.5%; }
+  .fw-leaf-hole--r { right: 5.5%; }
+  .fw-olai-thread--l { left: calc(5.5% + 5px); }
+  .fw-olai-thread--r { right: calc(5.5% + 5px); }
+  .fw-bells {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 10px;
+  }
+  .fw-bell-item::before {
+    left: -5px;
+    right: -5px;
+  }
+  .fw-plaque {
+    padding: 18px 8px 12px;
+    border-radius: 44px 44px 12px 12px;
+  }
+  .fw-plaque-name {
+    font-size: 1.32rem;
+  }
+  .fw-plaque-role {
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
   }
   .fw-ribbon {
     padding: 10px 30px 12px;

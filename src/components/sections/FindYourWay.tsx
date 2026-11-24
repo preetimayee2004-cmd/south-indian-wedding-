@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
@@ -76,14 +76,49 @@ function travelIcon(text: string) {
   return <CarIcon />;
 }
 
-function Corners() {
+/** The end of the journey: a small temple tower. */
+function TempleIcon() {
   return (
-    <>
-      {(["tl", "tr", "bl", "br"] as const).map((c) => (
-        <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`fw-corner fw-corner--${c}`} />
-      ))}
-    </>
+    <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" {...ICON} aria-hidden>
+      <path d="M12 2.5v2M9.5 6h5l1 3.5h-7L9.5 6ZM8 9.5h8l1 4H7l1-4ZM6 13.5h12l1 4H5l1-4ZM4 17.5h16V21H4z" />
+      <path d="M10.5 21v-2.2a1.5 1.5 0 0 1 3 0V21" />
+    </svg>
   );
+}
+
+/** A brass temple bell. */
+function Bell() {
+  return (
+    <svg viewBox="0 0 64 76" className="fw-bell-svg" aria-hidden>
+      <defs>
+        <linearGradient id="fw-brass" x1="0" x2="1">
+          <stop offset="0" stopColor="#8a5d1f" />
+          <stop offset="0.35" stopColor="#f3d27a" />
+          <stop offset="0.6" stopColor="#c8952f" />
+          <stop offset="1" stopColor="#7a5216" />
+        </linearGradient>
+      </defs>
+      <circle cx="32" cy="6" r="4.5" fill="none" stroke="#c8952f" strokeWidth="2.2" />
+      <path d="M28 11h8v5h-8z" fill="#b8892f" />
+      <path d="M32 15c-12 0-18 10-18 24 0 9-3 15-8 19h52c-5-4-8-10-8-19 0-14-6-24-18-24Z" fill="url(#fw-brass)" />
+      <path d="M6 58h52c0 3-2 5-5 5H11c-3 0-5-2-5-5Z" fill="#9a6a24" />
+      <path d="M17 44h30" stroke="#7a5216" strokeOpacity="0.55" strokeWidth="1.4" />
+      <path d="M20 28c2-5 5-8 9-9" stroke="#fff5d6" strokeOpacity="0.7" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <path d="M32 63v6" stroke="#7a5216" strokeWidth="2" />
+      <circle cx="32" cy="71" r="4" fill="#c8952f" />
+    </svg>
+  );
+}
+
+/** Phones lay the journey out top to bottom (the path then draws downwards). */
+const TOUCH_NARROW = () => window.matchMedia("(max-width: 680px)").matches;
+
+/** Ring a bell: restart its swing. */
+function ring(e: MouseEvent<HTMLButtonElement>) {
+  const el = e.currentTarget;
+  el.classList.remove("is-ringing");
+  void el.offsetWidth;
+  el.classList.add("is-ringing");
 }
 
 /** "Monday, 15 Feb 2027 · Muhurtham 7:00 – 8:30 AM", from the config. */
@@ -130,6 +165,15 @@ export function FindYourWay() {
         ease: "power2.out",
         scrollTrigger: { trigger: el, start: "top 70%", once: true },
       });
+      gsap.utils.toArray<HTMLElement>(".fw-journey", el).forEach((j) =>
+        gsap.from(j.querySelector(".fw-journey-line"), {
+          scaleX: TOUCH_NARROW() ? 1 : 0,
+          scaleY: TOUCH_NARROW() ? 0 : 1,
+          duration: 1.6,
+          ease: "power2.inOut",
+          scrollTrigger: { trigger: j, start: "top 80%", once: true },
+        }),
+      );
     }, el);
     return () => ctx.revert();
   }, [reduced]);
@@ -183,85 +227,102 @@ export function FindYourWay() {
           </div>
         </div>
 
-        {/* 4 · travel: getting there, and where to stay */}
-        {(travelNotes.length > 0 || stay.length > 0) && (
+        {/* 4 · travel: the journey as a golden path of stops, ending at the venue */}
+        {travelNotes.length > 0 && (
           <div className="fw-block" data-rise>
             <h3 className="fw-block-title">Travel</h3>
             <GoldDivider className="mt-2" />
-            <div className="fw-pair">
-              {travelNotes.length > 0 && (
-                <article className="fw-card fw-list-card">
-                  <Corners />
-                  <h4 className="fw-card-title">Getting There</h4>
-                  <ul className="fw-list">
-                    {travelNotes.map((note) => (
-                      <li key={note} className="fw-travel-row">
-                        <span className="fw-medal" aria-hidden>
-                          {travelIcon(note)}
-                        </span>
-                        <span className="fw-travel-text">{note}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a className="fw-btn fw-btn--ghost fw-card-cta" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
-                    Plan your route
-                  </a>
+            <p className="fw-block-sub">Your journey to us, stop by stop.</p>
+            <ol className="fw-journey" style={{ ["--n" as string]: travelNotes.length + 1 } as CSSProperties}>
+              <span aria-hidden className="fw-journey-line" />
+              {travelNotes.map((note, i) => (
+                <li key={note} className="fw-stop">
+                  <span className="fw-stop-medal" aria-hidden>
+                    {travelIcon(note)}
+                  </span>
+                  <span className="fw-stop-copy">
+                    <span className="fw-stop-num">Stop {String(i + 1).padStart(2, "0")}</span>
+                    <span className="fw-stop-text">{note}</span>
+                  </span>
+                </li>
+              ))}
+              <li className="fw-stop fw-stop--end">
+                <span className="fw-stop-medal" aria-hidden>
+                  <TempleIcon />
+                </span>
+                <span className="fw-stop-copy">
+                  <span className="fw-stop-num">You&rsquo;ve arrived</span>
+                  <span className="fw-stop-text fw-stop-text--end">{venue.name}</span>
+                </span>
+              </li>
+            </ol>
+            <a className="fw-btn fw-btn--ghost mt-7" href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+              Plan your route ›
+            </a>
+          </div>
+        )}
+
+        {/* where to stay: a palm-leaf (olai) manuscript, one leaf per hotel, bound by a red thread */}
+        {stay.length > 0 && (
+          <div className="fw-block" data-rise>
+            <h3 className="fw-block-title">Where to Stay</h3>
+            <GoldDivider className="mt-2" />
+            <div className="fw-olai">
+              <span aria-hidden className="fw-olai-board" />
+              {stay.map((s, i) => (
+                <article key={s.name} className="fw-leaf" style={{ ["--tilt" as string]: `${i % 2 ? 0.7 : -0.7}deg` } as CSSProperties}>
+                  <span aria-hidden className="fw-leaf-hole fw-leaf-hole--l" />
+                  <span aria-hidden className="fw-leaf-hole fw-leaf-hole--r" />
+                  <div className="fw-leaf-body">
+                    <div className="fw-leaf-top">
+                      <h4 className="fw-leaf-name">{s.name}</h4>
+                      {s.distance && <span className="fw-leaf-stamp">{s.distance}</span>}
+                    </div>
+                    {s.note && <p className="fw-leaf-note">{s.note}</p>}
+                    {s.url && (
+                      <a className="fw-leaf-link" href={s.url} target="_blank" rel="noopener noreferrer">
+                        View ›
+                      </a>
+                    )}
+                  </div>
                 </article>
-              )}
-              {stay.length > 0 && (
-                <article className="fw-card fw-list-card">
-                  <Corners />
-                  <h4 className="fw-card-title">Where to Stay</h4>
-                  <ul className="fw-list">
-                    {stay.map((s) => (
-                      <li key={s.name} className="fw-stay-row">
-                        <div className="fw-stay-top">
-                          <span className="fw-stay-name">{s.name}</span>
-                          {s.distance && <span className="fw-pill">{s.distance}</span>}
-                        </div>
-                        {s.note && <p className="fw-stay-note">{s.note}</p>}
-                        {s.url && (
-                          <a className="fw-link" href={s.url} target="_blank" rel="noopener noreferrer">
-                            View ›
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              )}
+              ))}
+              <span aria-hidden className="fw-olai-board fw-olai-board--bottom" />
+              <span aria-hidden className="fw-olai-thread fw-olai-thread--l" />
+              <span aria-hidden className="fw-olai-thread fw-olai-thread--r" />
             </div>
           </div>
         )}
 
-        {/* 5 · contact */}
+        {/* 5 · contact: temple bells hanging from a gold rod — tap one to ring it */}
         {contacts.length > 0 && (
           <div className="fw-block" data-rise>
             <h3 className="fw-block-title">Contact</h3>
             <GoldDivider className="mt-2" />
-            <p className="fw-block-sub">Need help finding us? Call or WhatsApp the family.</p>
-            <ul className="fw-contacts">
+            <p className="fw-block-sub">Ring a bell — the family is a call away.</p>
+            <ul className="fw-bells">
               {contacts.map((c) => (
-                <li key={c.name} className="fw-contact">
-                  <span className="fw-initial" aria-hidden>
-                    {c.name.trim().charAt(0).toUpperCase()}
-                  </span>
-                  <span className="fw-contact-who">
-                    <span className="fw-contact-name">{c.name}</span>
-                    {c.role && <span className="fw-contact-role">{c.role}</span>}
-                  </span>
-                  {c.phone && (
-                    <span className="fw-contact-actions">
-                      <a className="fw-icon-btn" href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${c.name}`}>
-                        <PhoneIcon />
-                      </a>
-                      {c.whatsapp && (
-                        <a className="fw-icon-btn fw-icon-btn--wa" href={`https://wa.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${c.name}`}>
-                          <ChatIcon />
+                <li key={c.name} className="fw-bell-item">
+                  <button type="button" className="fw-bell" onClick={ring} aria-label={`Ring the bell for ${c.name}`}>
+                    <span aria-hidden className="fw-bell-chain" />
+                    <Bell />
+                  </button>
+                  <div className="fw-plaque">
+                    <p className="fw-plaque-name">{c.name}</p>
+                    {c.role && <p className="fw-plaque-role">{c.role}</p>}
+                    {c.phone && (
+                      <span className="fw-contact-actions">
+                        <a className="fw-icon-btn" href={`tel:${c.phone.replace(/[^\d+]/g, "")}`} aria-label={`Call ${c.name}`}>
+                          <PhoneIcon />
                         </a>
-                      )}
-                    </span>
-                  )}
+                        {c.whatsapp && (
+                          <a className="fw-icon-btn fw-icon-btn--wa" href={`https://wa.me/${c.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${c.name}`}>
+                            <ChatIcon />
+                          </a>
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
