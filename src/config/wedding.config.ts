@@ -245,7 +245,7 @@ const weddingConfig: WeddingConfig = {
     // Background music. A gentle veena + tanpura piece in raga Mohanam is included
     // (generated, royalty-free). To use your own song, put the mp3 in /public/audio
     // and point this at it, e.g. music: "/audio/our-song.mp3". Remove it to hide the song button.
-    // The song button only turns the song on/off; the sound effects below always play.
+    // The song plays only when the guest taps the song button; the sound effects below always play.
     music: "/audio/music.mp3",
     volume: 0.35,
     sfxVolume: 0.7,

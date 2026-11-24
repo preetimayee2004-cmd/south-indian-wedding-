@@ -16,22 +16,19 @@ export interface SfxOptions {
 }
 
 interface AudioState {
-  /** A music track is configured (the song button is hidden otherwise — no dead buttons). */
+  /** A song is configured (the song button is hidden otherwise — no dead buttons). */
   hasMusic: boolean;
-  /** The guest switched the song off (remembered between visits). Effects keep playing. */
-  muted: boolean;
-  /** Music is playing right now. */
+  /** The song is playing right now. */
   playing: boolean;
-  /** Call from inside a user gesture (tap / click / key). Never autoplays. */
+  /** Wake the audio up for the sound effects. Call from inside a tap. Never starts the song. */
   start: () => void;
-  /** Song on/off. Call from a user gesture. Sound effects are not affected. */
+  /** Song on/off — the only way the song plays. Call from a tap. Sound effects are not affected. */
   toggle: () => void;
   /** Sound effects always play (once the guest has tapped anything), whether the song is on or off. */
   playSfx: (name: Sfx, opts?: SfxOptions) => void;
 }
 
 const Ctx = createContext<AudioState | null>(null);
-const MUTE_KEY = "wedding:muted";
 const FADE_IN = 2.5;
 const FADE_OUT = 0.8;
 
@@ -42,21 +39,6 @@ const OfflineCtor = (): typeof OfflineAudioContext | undefined =>
   typeof window === "undefined"
     ? undefined
     : (window.OfflineAudioContext ?? (window as unknown as { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext);
-
-function readMuted(): boolean {
-  try {
-    return localStorage.getItem(MUTE_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-function writeMuted(v: boolean) {
-  try {
-    localStorage.setItem(MUTE_KEY, v ? "1" : "0");
-  } catch {
-    /* storage blocked — preference just won't persist */
-  }
-}
 
 /** decodeAudioData, callback form (older Safari has no promise form). */
 function decode(ctx: BaseAudioContext, data: ArrayBuffer): Promise<AudioBuffer> {
@@ -79,25 +61,19 @@ function decode(ctx: BaseAudioContext, data: ArrayBuffer): Promise<AudioBuffer> 
  */
 export function AudioProvider({ children }: { children: ReactNode }) {
   const { audio } = useWedding();
-  const [muted, setMuted] = useState(readMuted);
   const [playing, setPlaying] = useState(false);
 
   const el = useRef<HTMLAudioElement | null>(null);
   const ctx = useRef<AudioContext | null>(null);
   const musicGain = useRef<GainNode | null>(null);
   const fxGain = useRef<GainNode | null>(null);
-  const started = useRef(false);
   const unlocked = useRef(false);
-  const mutedRef = useRef(muted);
+  const wantSong = useRef(false);
   const pausedByVisibility = useRef(false);
   const buffers = useRef(new Map<string, AudioBuffer>());
   const pending = useRef(new Map<string, Promise<AudioBuffer | null>>());
   const fxVolume = audio.sfxVolume ?? 0.7;
   const hasSfx = Object.values(audio.sfx).some(Boolean);
-
-  useEffect(() => {
-    mutedRef.current = muted;
-  }, [muted]);
 
   /** The live AudioContext (created on first use, inside a gesture). */
   const getCtx = useCallback(() => {
@@ -215,31 +191,21 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     if (!a) return;
     fadeTo(0, FADE_OUT);
     window.setTimeout(() => {
-      if (mutedRef.current) a.pause(); // unless the song was switched back on meanwhile
+      if (!wantSong.current) a.pause(); // unless the song was switched back on meanwhile
     }, FADE_OUT * 1000);
     setPlaying(false);
   }, [fadeTo]);
 
-  const start = useCallback(() => {
-    unlock();
-    if (started.current) return;
-    started.current = true;
-    if (!mutedRef.current) play();
-  }, [play, unlock]);
+  const start = useCallback(() => unlock(), [unlock]);
 
   const toggle = useCallback(() => {
     unlock();
-    started.current = true;
     if (!audio.music) return;
     if (playing) {
-      mutedRef.current = true;
-      setMuted(true);
-      writeMuted(true);
+      wantSong.current = false;
       pause();
     } else {
-      mutedRef.current = false;
-      setMuted(false);
-      writeMuted(false);
+      wantSong.current = true;
       play();
     }
   }, [audio.music, pause, play, playing, unlock]);
@@ -311,8 +277,8 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AudioState>(
-    () => ({ hasMusic: Boolean(audio.music), muted, playing, start, toggle, playSfx }),
-    [audio.music, muted, playing, start, toggle, playSfx],
+    () => ({ hasMusic: Boolean(audio.music), playing, start, toggle, playSfx }),
+    [audio.music, playing, start, toggle, playSfx],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

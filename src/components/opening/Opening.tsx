@@ -135,7 +135,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const { couple, wedding, opening, loveStory } = useWedding();
   const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
   const { guestName } = useGuest();
-  const { start: startMusic, toggle: toggleSong, playSfx, hasMusic, playing } = useAudio();
+  // the song plays only from its button; the envelope just wakes the sound effects
+  const { start: wakeAudio, toggle: toggleSong, playSfx, hasMusic, playing } = useAudio();
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
 
@@ -188,7 +189,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const begin = useCallback(() => {
     if (busy || finished.current) return;
     setBusy(true);
-    startMusic();
+    wakeAudio();
     if (reduced) {
       playSfx("bell", { volume: 0.7 });
       reveal();
@@ -269,12 +270,12 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .call(() => playSfx("slide", { volume: 0.85 }), undefined, 0.8)
       .call(() => playSfx("rise", { volume: 0.9 }), undefined, 2.3)
       .call(() => playSfx("bell", { volume: 0.75 }), undefined, 3.75);
-  }, [busy, reduced, startMusic, playSfx, reveal, finish]);
+  }, [busy, reduced, wakeAudio, playSfx, reveal, finish]);
 
-  /** Skip the envelope: straight to the invitation (music still starts, unless sound is off). */
+  /** Skip the envelope: straight to the invitation. */
   const skip = useCallback(() => {
     if (finished.current) return;
-    startMusic();
+    wakeAudio();
     setBusy(true);
     tl.current?.kill();
     const el = document.querySelector<HTMLElement>("#invitation-hero .sticky");
@@ -286,7 +287,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
     if (sec) sec.style.zIndex = "";
     reveal();
     gsap.to(root.current, { autoAlpha: 0, duration: 0.45, ease: "power1.out", onComplete: finish });
-  }, [startMusic, reveal, finish]);
+  }, [wakeAudio, reveal, finish]);
 
   const initials = `${couple.bride.name[0]}&${couple.groom.name[0]}`;
 
