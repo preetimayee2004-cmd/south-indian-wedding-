@@ -17,7 +17,7 @@ export function refreshSoon(delay = 200) {
  * Content that changes height after load (wishes arriving, a filter, web fonts,
  * images) moves everything below it. Re-measure once things settle, but only
  * when the page height really changed (avoids refresh loops). Also on a real
- * resize / rotation (width change), and every time an image finishes loading.
+ * resize / rotation (width change).
  */
 if (typeof window !== "undefined") {
   let lastHeight = 0;
