@@ -2630,3 +2630,71 @@
     filter: none;
   }
 }
+
+/* ---------------------------------------------------------------------------------------
+   Sound + Skip on the envelope screen (top right), and the page's sound button
+   --------------------------------------------------------------------------------------- */
+.op-ctrls {
+  position: absolute;
+  top: max(0.9rem, env(safe-area-inset-top));
+  right: max(0.9rem, env(safe-area-inset-right));
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: op-ctrls-in 0.8s ease 0.9s both;
+}
+@keyframes op-ctrls-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+.op-ctrl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid rgb(243 207 115 / 0.75);
+  background: linear-gradient(180deg, rgb(120 20 40 / 0.85), rgb(78 9 24 / 0.85));
+  color: #f6dc8e;
+  box-shadow: 0 6px 16px rgb(3 18 58 / 0.35), inset 0 1px 0 rgb(255 240 200 / 0.2);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.op-ctrl:active {
+  transform: scale(0.94);
+}
+.op-ctrl:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 2px;
+}
+@media (hover: hover) {
+  .op-ctrl:hover {
+    color: #fff0bf;
+    border-color: #f3cf73;
+  }
+}
+.op-ctrl--sound {
+  width: 2.5rem;
+}
+.op-ctrl--skip {
+  padding: 0 0.85rem 0 1.05rem;
+}
+.pm-sound {
+  color: #f6dc8e;
+  border: 1px solid rgb(243 207 115 / 0.8);
+  background: radial-gradient(circle at 35% 30%, #9a2033, #5c0b19 75%);
+  box-shadow: 0 6px 18px rgb(42 8 14 / 0.35), inset 0 1px 0 rgb(255 240 200 / 0.25);
+}
+.pm-sound:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 2px;
+}

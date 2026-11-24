@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 
 function left(target: number) {
   const ms = Math.max(0, target - Date.now());
@@ -14,6 +15,14 @@ const two = (n: number) => String(n).padStart(2, "0");
 export function Countdown({ iso, className = "" }: { iso: string; className?: string }) {
   const target = new Date(iso).getTime();
   const [t, setT] = useState(() => left(target));
+  const tiles = useRef<HTMLDivElement>(null);
+  // four little tinks climbing the scale as the tiles come into view
+  useSfxOnView(tiles, [
+    ["tink", { volume: 0.55 }],
+    ["tink", { volume: 0.5, rate: 1.122, delay: 0.13 }],
+    ["tink", { volume: 0.5, rate: 1.26, delay: 0.26 }],
+    ["tink", { volume: 0.55, rate: 1.498, delay: 0.39 }],
+  ], { threshold: 0.9 });
 
   useEffect(() => {
     const id = window.setInterval(() => setT(left(target)), 1000);
@@ -28,7 +37,7 @@ export function Countdown({ iso, className = "" }: { iso: string; className?: st
   ];
 
   return (
-    <div className={`gn-tiles ${className}`} role="timer" aria-label={`${t.days} days, ${t.hours} hours, ${t.minutes} minutes to go`}>
+    <div ref={tiles} className={`gn-tiles ${className}`} role="timer" aria-label={`${t.days} days, ${t.hours} hours, ${t.minutes} minutes to go`}>
       {cells.map(([v, label]) => (
         <div key={label}>
           <b key={v} className="gn-tick">{two(v)}</b>

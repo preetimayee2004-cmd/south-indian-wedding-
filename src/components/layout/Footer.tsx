@@ -1,5 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
+import { useAudio } from "@/context/AudioContext";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { TempleDress } from "@/components/ui/TempleDress";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
@@ -22,7 +24,11 @@ function shareableUrl(dropParams: string[]): string {
 export function Footer() {
   const { couple, wedding, meta, personalization } = useWedding();
   const reduced = usePrefersReducedMotion();
+  const { playSfx } = useAudio();
   const root = useRef<HTMLElement>(null);
+  const scene = useRef<HTMLDivElement>(null);
+  // reduced motion: no rise-in, but the finale still gets its sparkle
+  useSfxOnView(scene, [["shimmer", { volume: 0.8 }]], { enabled: reduced });
   const [shared, setShared] = useState<"idle" | "copied" | "fail">("idle");
 
   const date = new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, day: "numeric", month: "long", year: "numeric" }).format(new Date(wedding.dateISO));
@@ -54,10 +60,12 @@ export function Footer() {
       tl.from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" })
         .from(".fn-ele--r", { autoAlpha: 0, x: 30, duration: 1, ease: "power2.out" }, "<")
         .from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, "-=0.5")
+        // a sparkle of tiny bells as the couple's medallion rises between the elephants
+        .call(() => playSfx("shimmer", { volume: 0.85 }), undefined, "<")
         .fromTo(".fn-glow", { autoAlpha: 0.4, scale: 0.9 }, { autoAlpha: 1, scale: 1.06, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
     }, el);
     return () => ctx.revert();
-  }, [reduced]);
+  }, [reduced, playSfx]);
 
   return (
     <footer ref={root} className="fn-finale td-host td-bg relative z-[95] overflow-hidden text-center">
@@ -68,7 +76,7 @@ export function Footer() {
         <GoldDivider className="mt-2" />
 
         {/* two temple elephants facing each other, the couple's initials between them */}
-        <div className="fn-scene" aria-hidden>
+        <div ref={scene} className="fn-scene" aria-hidden>
           <span className="fn-glow" />
           <img src="/media/elephant-warm.webp" alt="" className="fn-ele fn-ele--l" draggable={false} loading="lazy" decoding="async" />
           <span className="fn-medal">

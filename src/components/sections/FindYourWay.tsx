@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { useWedding } from "@/context/WeddingContext";
+import { useAudio } from "@/context/AudioContext";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { JourneyMap } from "./travel/JourneyMap";
@@ -132,6 +133,9 @@ const STARS: [number, number, number, number][] = [
   [6, 18, 9, 0], [93, 22, 11, 1.2], [4, 41, 7, 2.1], [95, 47, 8, 0.7], [7, 63, 10, 1.7], [92, 70, 7, 2.6], [5, 86, 8, 0.4], [94, 90, 10, 1.9],
 ];
 
+/** Each contact bell rings at its own pitch (playback rates on one bell sound). */
+const BELL_PITCH = [1, 0.8909, 1.1225, 0.7937];
+
 /** Ring a bell: restart its swing. */
 function ring(e: MouseEvent<HTMLButtonElement>) {
   const el = e.currentTarget;
@@ -156,6 +160,7 @@ function dateLine(iso: string, timeZone: string, muhurtham?: string) {
  */
 export function FindYourWay() {
   const { venue, wedding, travelNotes = [], stay = [], contacts } = useWedding();
+  const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
@@ -315,9 +320,18 @@ export function FindYourWay() {
             <GoldDivider className="mt-2" />
             <p className="fw-block-sub">Ring a bell — the family is a call away.</p>
             <ul className="fw-bells">
-              {contacts.map((c) => (
+              {contacts.map((c, i) => (
                 <li key={c.name} className="fw-bell-item">
-                  <button type="button" className="fw-bell" onClick={ring} aria-label={`Ring the bell for ${c.name}`}>
+                  <button
+                    type="button"
+                    className="fw-bell"
+                    onClick={(e) => {
+                      ring(e);
+                      // each bell has its own voice
+                      playSfx("bell", { rate: BELL_PITCH[i % BELL_PITCH.length], volume: 0.75, gesture: true });
+                    }}
+                    aria-label={`Ring the bell for ${c.name}`}
+                  >
                     <span aria-hidden className="fw-bell-chain" />
                     <Bell />
                   </button>

@@ -242,11 +242,24 @@ const weddingConfig: WeddingConfig = {
   },
 
   audio: {
-    // Drop an mp3 in /public/audio and set e.g. music: "/audio/nadaswaram.mp3".
-    // The music button only appears when a track is configured.
-    music: undefined,
+    // Background music. A gentle veena + tanpura piece in raga Mohanam is included
+    // (generated, royalty-free). To use your own song, put the mp3 in /public/audio
+    // and point this at it, e.g. music: "/audio/our-song.mp3". Remove it to hide the music button.
+    music: "/audio/music.mp3",
     volume: 0.35,
-    sfx: {},
+    sfxVolume: 0.7,
+    // Little sounds tied to the animations (all generated, royalty-free). Remove any you don't want.
+    sfx: {
+      seal: "/audio/sfx/seal.mp3", // the seal cracks
+      shimmer: "/audio/sfx/shimmer.mp3", // gold sparks / the finale
+      rustle: "/audio/sfx/rustle.mp3", // the envelope flap lifts
+      slide: "/audio/sfx/slide.mp3", // the card slides out
+      rise: "/audio/sfx/rise.mp3", // the card grows into the sky
+      bell: "/audio/sfx/bell.mp3", // temple bell: welcome, contact bells, RSVP, wishes
+      tink: "/audio/sfx/tink.mp3", // countdown tiles
+      tap: "/audio/sfx/tap.mp3", // small taps
+      diya: "/audio/sfx/diya.mp3", // the family lamp
+    },
   },
 
   theme: {

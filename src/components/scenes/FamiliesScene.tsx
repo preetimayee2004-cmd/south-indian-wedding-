@@ -1,5 +1,6 @@
 import { Fragment, useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
+import { useSfxOnView } from "@/hooks/useSfxOnView";
 
 /** Traditional hanging wall lantern with swaying animation */
 function HangingLamp({ side }: { side: "left" | "right" }) {
@@ -159,6 +160,8 @@ export function FamiliesScene() {
   const arches = useRef<{ bride: HTMLDivElement | null; groom: HTMLDivElement | null }>({ bride: null, groom: null });
   const [g, setG] = useState<Garland | null>(null);
   const initials = `${couple.bride.name[0]} & ${couple.groom.name[0]}`;
+  // the lamp between the two families catches, softly, as they come into view
+  useSfxOnView(stage, [["diya", { volume: 0.9 }]], { threshold: 0.3 });
 
   // the garland is drawn between the two arches wherever they actually stand (wide screens)
   useLayoutEffect(() => {

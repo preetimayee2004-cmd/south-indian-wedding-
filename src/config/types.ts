@@ -31,6 +31,9 @@ export interface StoryMilestone {
   photo?: string;
 }
 
+/** Short sound effects the invitation can play (each optional — a missing one is silent). */
+export type SfxName = "seal" | "shimmer" | "rustle" | "slide" | "rise" | "bell" | "tink" | "tap" | "diya" | "door" | "thread";
+
 export type EventTheme = "nalangu" | "mehendi" | "sangeet" | "muhurtham" | "reception";
 
 export interface WeddingEvent {
@@ -246,8 +249,10 @@ export interface WeddingConfig {
   };
   audio: {
     music?: string;
-    volume: number; // 0–1
-    sfx: Partial<Record<"bell" | "thread" | "door" | "tap", string>>;
+    volume: number; // 0–1, background music
+    /** 0–1, sound effects (default 0.7) */
+    sfxVolume?: number;
+    sfx: Partial<Record<SfxName, string>>;
   };
   theme: ThemeTokens;
   /** Render order. Remove or set enabled:false to hide a section. */

@@ -3,6 +3,7 @@ import { gsap } from "gsap";
 import { useWedding } from "@/context/WeddingContext";
 import { useGuest } from "@/context/GuestContext";
 import { useAudio } from "@/context/AudioContext";
+import { SoundIcon } from "@/components/layout/MusicToggle";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { lockScroll } from "@/lib/smooth";
 
@@ -134,7 +135,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const { couple, wedding, opening, loveStory } = useWedding();
   const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
   const { guestName } = useGuest();
-  const { start: startMusic, playSfx } = useAudio();
+  const { start: startMusic, toggle: toggleSound, playSfx, hasSound, hasMusic, muted, playing } = useAudio();
+  const soundOn = hasMusic ? playing : !muted;
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
 
@@ -147,7 +149,9 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const sparks = useRef<(HTMLSpanElement | null)[]>([]);
   const card = useRef<HTMLDivElement>(null);
   const hint = useRef<HTMLParagraphElement>(null);
+  const ctrls = useRef<HTMLDivElement>(null);
   const finished = useRef(false);
+  const revealed = useRef(false);
   const tl = useRef<gsap.core.Timeline | null>(null);
 
   // No page scrolling while the overlay is up.
@@ -176,16 +180,25 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
     return () => ctx.revert();
   }, [reduced]);
 
+  const reveal = useCallback(() => {
+    if (revealed.current) return;
+    revealed.current = true;
+    onReveal();
+  }, [onReveal]);
+
   const begin = useCallback(() => {
     if (busy || finished.current) return;
     setBusy(true);
     startMusic();
-    playSfx("door");
     if (reduced) {
-      onReveal();
+      playSfx("bell", { volume: 0.7 });
+      reveal();
       gsap.to(root.current, { autoAlpha: 0, duration: 0.5, onComplete: finish });
       return;
     }
+    // the seal cracks with a little burst of gold sparkle
+    playSfx("seal");
+    playSfx("shimmer", { delay: 0.03, volume: 0.8 });
     gsap.killTweensOf(hint.current);
     // the seal cracks into two pieces and the flap opens; then the
     // hero itself — temple, names and sky — grows smoothly out of the card to fill the screen,
@@ -193,7 +206,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
     const hero = () => document.querySelector<HTMLElement>("#invitation-hero .sticky");
     const heroSec = () => hero()?.closest<HTMLElement>(".sec") ?? null;
     const grow = () => {
-      onReveal(); // scrolls to the top and starts the hero's text entrance
+      reveal(); // scrolls to the top and starts the hero's text entrance
       const el = hero();
       const sec = heroSec();
       if (!el || !sec) return;
@@ -202,7 +215,7 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       sec.style.zIndex = "200"; // above this overlay while it grows
-      gsap.to([env.current, ".op-shadow"], { autoAlpha: 0, duration: 0.5, ease: "power1.out" });
+      gsap.to([env.current, ".op-shadow", ctrls.current], { autoAlpha: 0, duration: 0.5, ease: "power1.out" });
       gsap.fromTo(
         el,
         { x: r.left, y: r.top, scaleX: r.width / vw, scaleY: r.height / vh, transformOrigin: "0 0", borderRadius: 10, autoAlpha: 1 },
@@ -251,8 +264,30 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .set(card.current, { autoAlpha: 1 }, 0.72)
       .to(card.current, { yPercent: -62, duration: 1.5, ease: "power2.out" }, 0.78)
       // …and grows into the hero
-      .add(grow, 2.4);
-  }, [busy, reduced, startMusic, playSfx, onReveal, finish]);
+      .add(grow, 2.4)
+      // sounds, each on its moment: the flap lifts, the card slides out, rises into the sky, a temple bell welcomes
+      .call(() => playSfx("rustle"), undefined, 0.24)
+      .call(() => playSfx("slide", { volume: 0.85 }), undefined, 0.8)
+      .call(() => playSfx("rise", { volume: 0.9 }), undefined, 2.3)
+      .call(() => playSfx("bell", { volume: 0.75 }), undefined, 3.75);
+  }, [busy, reduced, startMusic, playSfx, reveal, finish]);
+
+  /** Skip the envelope: straight to the invitation (music still starts, unless sound is off). */
+  const skip = useCallback(() => {
+    if (finished.current) return;
+    startMusic();
+    setBusy(true);
+    tl.current?.kill();
+    const el = document.querySelector<HTMLElement>("#invitation-hero .sticky");
+    const sec = el?.closest<HTMLElement>(".sec");
+    if (el) {
+      gsap.killTweensOf(el);
+      gsap.set(el, { clearProps: "transform,transformOrigin,borderRadius,opacity,visibility" });
+    }
+    if (sec) sec.style.zIndex = "";
+    reveal();
+    gsap.to(root.current, { autoAlpha: 0, duration: 0.45, ease: "power1.out", onComplete: finish });
+  }, [startMusic, reveal, finish]);
 
   const initials = `${couple.bride.name[0]}&${couple.groom.name[0]}`;
 
@@ -271,6 +306,28 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       {STARS.map(([l, t, s, d], i) => (
         <span key={i} aria-hidden className="op-star" style={{ left: `${l}%`, top: `${t}%`, width: s, height: s, animationDelay: `${d}s` }} />
       ))}
+
+      {/* top right: sound on/off and skip */}
+      <div ref={ctrls} className="op-ctrls">
+        {hasSound && (
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={soundOn}
+            aria-label={soundOn ? "Turn sound off" : "Play music"}
+            title={soundOn ? "Sound off" : "Play music"}
+            className="op-ctrl op-ctrl--sound"
+          >
+            <SoundIcon on={soundOn} />
+          </button>
+        )}
+        <button type="button" onClick={skip} className="op-ctrl op-ctrl--skip" aria-label="Skip the envelope and open the invitation">
+          Skip
+          <svg viewBox="0 0 16 16" aria-hidden className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 3.5 7.5 8 3 12.5M8.5 3.5 13 8l-4.5 4.5" />
+          </svg>
+        </button>
+      </div>
 
       {wedding.invocation && <p className="open-fade relative text-[0.8rem] tracking-[0.3em] text-[#f3cf73]">{wedding.invocation}</p>}
       <p className="open-fade relative mt-2 font-script text-[clamp(2.3rem,10.5vw,3.3rem)] leading-none text-[#fbf2dc]">Welcome to {city}</p>
