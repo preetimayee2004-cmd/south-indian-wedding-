@@ -191,7 +191,9 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
     setBusy(true);
     wakeAudio();
     if (reduced) {
-      playSfx("bell", { volume: 0.7 });
+      // no animation, but the guest still hears the seal crack and the temple bell
+      playSfx("seal");
+      playSfx("bell", { volume: 0.75, delay: 0.5 });
       reveal();
       gsap.to(root.current, { autoAlpha: 0, duration: 0.5, onComplete: finish });
       return;
