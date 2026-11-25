@@ -561,46 +561,76 @@
   flex-wrap: wrap;
   padding: 0 16px;
 }
-/* desktop: an endless, slow sideways marquee (transform only), fading at both edges */
-@media (min-width: 768px) {
-  .ww-wall--marquee {
-    overflow: hidden;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-    mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
-  }
-  .ww-wall--marquee .ww-track {
-    width: max-content;
-    animation: ww-marquee var(--ww-dur, 60s) linear infinite;
-  }
+/* an endless, slow sideways marquee (transform only), fading at both edges — on phones too */
+.ww-wall--marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+.ww-wall--marquee .ww-track {
+  width: max-content;
+  animation: ww-marquee var(--ww-dur, 60s) linear infinite;
+}
+@media (hover: hover) {
   .ww-wall--marquee:hover .ww-track {
     animation-play-state: paused;
+  }
+}
+/* phones: hold a finger on the wall to stop it and read */
+.ww-wall--marquee:active .ww-track {
+  animation-play-state: paused;
+}
+@media (max-width: 767px) {
+  .ww-wall--marquee {
+    /* the first card (the newest wish) starts in the middle of the screen */
+    padding-left: max(0px, calc((100vw - clamp(240px, 78vw, 300px)) / 2));
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
   }
 }
 @keyframes ww-marquee {
   from { transform: translateX(0); }
   to { transform: translateX(calc(-50% - clamp(14px, 1.6vw, 22px) / 2)); }
 }
-/* phones: a swipe row that snaps to each card, with a peek of the next one */
-@media (max-width: 767px) {
-  .ww-wall--marquee {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .ww-wall--marquee::-webkit-scrollbar {
-    display: none;
-  }
-  .ww-wall--marquee .ww-track {
-    width: max-content;
-    padding: 0 9vw;
-  }
-  .ww-wall--marquee .ww-card {
-    scroll-snap-align: center;
-  }
-  .ww-dup {
-    display: none;
-  }
+
+/* where the new wish was pinned: the card glows gold and a little tag says so */
+.ww-card--pinned {
+  z-index: 2;
+  box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px rgb(212 165 74 / 0.7), 0 0 0 3px #f3cf73, 0 0 28px 6px rgb(243 207 115 / 0.65), 0 10px 22px rgb(92 40 12 / 0.16);
+  animation: ww-pinned-glow 1.4s ease-in-out infinite alternate;
+}
+@keyframes ww-pinned-glow {
+  from { filter: brightness(1); }
+  to { filter: brightness(1.06); }
+}
+.ww-pinned-tag {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8a1c2f, #5e0b1a);
+  box-shadow: 0 0 0 1px #e8c56b, 0 4px 10px rgb(0 0 0 / 0.35);
+  color: #fbe7b0;
+  font: 600 11px/1 "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  translate: -50% 0;
+  animation: ww-tag-in 0.45s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+.ww-pinned-pin {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #8e1a2c 0 26%, transparent 28%), radial-gradient(circle at 35% 30%, #fff4c8, #e2b553 45%, #8a6420);
+}
+@keyframes ww-tag-in {
+  from { opacity: 0; transform: translateY(-8px) scale(0.8); }
+  to { opacity: 1; transform: none; }
 }
 
 /* one framed blessing card */

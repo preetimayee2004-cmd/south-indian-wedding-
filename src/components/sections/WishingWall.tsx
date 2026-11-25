@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 import { gsap } from "@/lib/gsap";
-import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { useMediaQuery, usePrefersReducedMotion } from "@/hooks/useMediaQuery";
+import { useGuest } from "@/context/GuestContext";
+import { scrollToTarget } from "@/lib/smooth";
 import { useWedding } from "@/context/WeddingContext";
 import { fetchWishes, addWish, subscribeWishes, validateWish, WISH_LIMITS, type Wish } from "@/lib/wishes";
 import { Container } from "@/components/layout/Container";
@@ -14,6 +16,8 @@ import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
 const ON_WALL = 12;
 /** Below this many, the cards simply stand in a centred row (no marquee). */
 const MARQUEE_FROM = 4;
+/** On phones one card fills the screen, so the wall slides on its own from two cards. */
+const MARQUEE_FROM_PHONE = 2;
 
 function LotusCrest({ className = "w-7 h-5" }: { className?: string }) {
   return (
@@ -29,14 +33,20 @@ function LotusCrest({ className = "w-7 h-5" }: { className?: string }) {
 }
 
 /** One framed blessing card: a big gold quote mark, the message, a gold rule and the guest's signature. */
-function BlessingCard({ wish, tilt, fresh, hidden }: { wish: Wish; tilt: number; fresh?: boolean; hidden?: boolean }) {
-  const cls = `ww-card ${fresh ? "ww-card--new" : ""}`;
+function BlessingCard({ wish, tilt, fresh, hidden, pinned }: { wish: Wish; tilt: number; fresh?: boolean; hidden?: boolean; pinned?: boolean }) {
+  const cls = `ww-card ${fresh ? "ww-card--new" : ""} ${pinned ? "ww-card--pinned" : ""}`;
   const initial = wish.name.trim().charAt(0).toUpperCase() || "✦";
   return (
     <figure className={cls} data-wish={hidden ? undefined : wish.id} style={{ ["--tilt" as string]: `${tilt}deg` }} aria-hidden={hidden || undefined}>
       {(["tl", "tr", "bl", "br"] as const).map((c) => (
         <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
       ))}
+      {pinned && (
+        <span className="ww-pinned-tag" role="status">
+          <span className="ww-pinned-pin" aria-hidden />
+          Your blessing is pinned here
+        </span>
+      )}
       <span className="ww-quote" aria-hidden>
         &ldquo;
       </span>
@@ -55,7 +65,9 @@ function BlessingCard({ wish, tilt, fresh, hidden }: { wish: Wish; tilt: number;
 export function WishingWall() {
   const { id: weddingId } = useWedding();
   const [wishes, setWishes] = useState<Wish[]>([]);
-  const [guestName, setGuestName] = useState("");
+  const { guestName, isPersonalized } = useGuest();
+  const [pinnedId, setPinnedId] = useState<string | null>(null);
+  const phone = useMediaQuery("(max-width: 767px)");
   const [guestMessage, setGuestMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,16 +79,76 @@ export function WishingWall() {
   const wallRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  /** The new wish flies from the composer onto the wall, a brass pin drops on it and hearts burst. */
+  /** A little burst of rose and gold hearts rising from a point on the screen. */
+  const burstHearts = (x: number, y: number, n: number, spread = 70) => {
+    if (reduced) return;
+    for (let i = 0; i < n; i++) {
+      const h = document.createElement("span");
+      h.className = `ww-heart ${i % 2 ? "ww-heart--rose" : "ww-heart--gold"}`;
+      h.textContent = "♥";
+      document.body.appendChild(h);
+      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
+      const d = spread * (0.7 + Math.random() * 0.9);
+      gsap.fromTo(
+        h,
+        { x, y, scale: 0.5, autoAlpha: 1 },
+        { x: `+=${Math.cos(a) * d}`, y: `+=${Math.sin(a) * d - 30}`, scale: 0.8 + Math.random() * 0.7, autoAlpha: 0, duration: 1.1 + Math.random() * 0.4, ease: "power2.out", onComplete: () => h.remove() },
+      );
+    }
+  };
+
+  /** Hearts burst out of the Send button the moment it is pressed. */
+  const heartsFromButton = () => {
+    const b = sendBtnRef.current?.getBoundingClientRect();
+    if (b) burstHearts(b.left + b.width / 2, b.top + b.height / 2, 14, 80);
+  };
+
+  /** The wall stops and starts again from the beginning, so the new wish (always first) is in view. */
+  const holdWall = () => {
+    const wall = wallRef.current;
+    const track = wall?.querySelector<HTMLElement>(".ww-track");
+    wall?.classList.add("is-landing");
+    if (track) {
+      track.style.animation = "none";
+      void track.offsetWidth;
+      track.style.animation = "";
+    }
+    if (wall) wall.scrollLeft = 0;
+  };
+
+  /** Show where the wish was pinned for a few seconds, then let the wall move on. */
+  const showPinned = (w: Wish) => {
+    setPinnedId(w.id);
+    window.setTimeout(() => {
+      setPinnedId((p) => (p === w.id ? null : p));
+      wallRef.current?.classList.remove("is-landing");
+    }, 4200);
+  };
+
+  /**
+   * After sending: the page glides up to the wall, the wish flies from the composer onto its
+   * spot, a brass pin drops on it, hearts burst, and the card glows with "Pinned here" for a moment.
+   */
   const flyToWall = (w: Wish) => {
+    holdWall();
+    const wall = wallRef.current;
+    if (wall) {
+      const r = wall.getBoundingClientRect();
+      const y = window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2);
+      scrollToTarget(y, { min: 700, max: 700 });
+    }
+    window.setTimeout(() => fly(w), wall ? 760 : 0);
+  };
+
+  const fly = (w: Wish) => {
     const card = document.querySelector<HTMLElement>(`[data-wish="${CSS.escape(w.id)}"]`);
     const from = formRef.current?.getBoundingClientRect();
     if (reduced || !card || !from) {
       playSfx("pin");
       playSfx("sweet", { volume: 0.5, delay: 0.15 });
+      showPinned(w);
       return;
     }
-    wallRef.current?.classList.add("is-landing");
     card.style.visibility = "hidden";
     const to = card.getBoundingClientRect();
     const fly = document.createElement("div");
@@ -91,18 +163,14 @@ export function WishingWall() {
     const fw = fly.offsetWidth;
     const fh = fly.offsetHeight;
     const sx = from.left + from.width / 2 - fw / 2;
-    const sy = from.top + from.height * 0.35 - fh / 2;
+    // the composer may be below the screen by now: start from the bottom edge
+    const sy = Math.min(window.innerHeight - fh - 12, from.top + from.height * 0.35 - fh / 2);
     const ex = to.left + to.width / 2 - fw / 2;
     const ey = to.top + to.height / 2 - fh / 2;
     const lift = Math.min(160, Math.abs(ey - sy) * 0.5 + 60);
     playSfx("whoosh", { volume: 0.4 });
-    const done = () => {
-      fly.remove();
-      card.style.visibility = "";
-      wallRef.current?.classList.remove("is-landing");
-    };
     gsap
-      .timeline({ onComplete: done })
+      .timeline({ onComplete: () => fly.remove() })
       .fromTo(fly, { x: sx, y: sy, rotate: -6, scale: 0.9, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0)
       .to(
         fly,
@@ -125,24 +193,14 @@ export function WishingWall() {
           playSfx("pin");
           playSfx("sweet", { volume: 0.5, delay: 0.12 });
           const box = fly.getBoundingClientRect();
-          const n = 10 + Math.floor(Math.random() * 5);
-          for (let i = 0; i < n; i++) {
-            const h = document.createElement("span");
-            h.className = `ww-heart ${i % 2 ? "ww-heart--rose" : "ww-heart--gold"}`;
-            h.textContent = "♥";
-            document.body.appendChild(h);
-            const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
-            const d = 50 + Math.random() * 70;
-            gsap.fromTo(
-              h,
-              { x: box.left + box.width / 2, y: box.top + 6, scale: 0.5, autoAlpha: 1 },
-              { x: `+=${Math.cos(a) * d}`, y: `+=${Math.sin(a) * d - 30}`, scale: 0.8 + Math.random() * 0.6, autoAlpha: 0, duration: 1.2, ease: "power2.out", onComplete: () => h.remove() },
-            );
-          }
+          burstHearts(box.left + box.width / 2, box.top + 6, 10 + Math.floor(Math.random() * 5));
         });
       }, undefined, 0.9)
-      // the real card takes its place underneath as the flyer fades
-      .call(() => void (card.style.visibility = ""), undefined, 1.45)
+      // the real card takes its place underneath as the flyer fades, and shows where it was pinned
+      .call(() => {
+        card.style.visibility = "";
+        showPinned(w);
+      }, undefined, 1.45)
       .to(fly, { autoAlpha: 0, duration: 0.25 }, 1.45);
   };
 
@@ -163,12 +221,14 @@ export function WishingWall() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanName = guestName.trim() || "Well-wisher";
+    // no name to type: a personal invite link signs it with the guest's name
+    const cleanName = (isPersonalized && guestName?.trim()) || "Well-wisher";
     const problem = validateWish(cleanName, guestMessage);
     if (problem) {
       setValidationError(problem);
       return;
     }
+    heartsFromButton();
     setIsSubmitting(true);
     setValidationError(null);
     try {
@@ -179,7 +239,6 @@ export function WishingWall() {
       });
       flyToWall(createdWish); // flies onto the wall, pinned with a "tik" and two soft tings
       setGuestMessage("");
-      setGuestName("");
     } catch (err) {
       console.error("Failed to add wish:", err);
     } finally {
@@ -188,7 +247,7 @@ export function WishingWall() {
   };
 
   const onWall = wishes.slice(0, ON_WALL);
-  const marquee = onWall.length >= MARQUEE_FROM;
+  const marquee = onWall.length >= (phone ? MARQUEE_FROM_PHONE : MARQUEE_FROM);
   const count = wishes.length;
   // the marquee runs at the same reading speed however many cards there are
   const duration = `${Math.max(30, onWall.length * 9)}s`;
@@ -228,7 +287,7 @@ export function WishingWall() {
           <div ref={wallRef} className={`ww-wall ${marquee ? "ww-wall--marquee" : "ww-wall--still"}`} role="region" aria-label="Blessings from guests">
             <div className="ww-track" style={{ ["--ww-dur" as string]: duration }}>
               {onWall.map((w, i) => (
-                <BlessingCard key={w.id} wish={w} tilt={i % 2 ? 0.6 : -0.6} fresh={w.id === newlyAddedId} />
+                <BlessingCard key={w.id} wish={w} tilt={i % 2 ? 0.6 : -0.6} fresh={w.id === newlyAddedId} pinned={w.id === pinnedId} />
               ))}
               {/* the second copy makes the marquee seamless (desktop only; hidden from screen readers) */}
               {marquee &&
@@ -250,10 +309,6 @@ export function WishingWall() {
             <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
           ))}
           <h3 className="ww-composer-title">Leave your blessing</h3>
-          <label className="ww-field">
-            <span className="sr-only">Your name</span>
-            <input type="text" value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your name" maxLength={WISH_LIMITS.name} className="ww-input" autoComplete="name" />
-          </label>
           <label className="ww-field">
             <span className="sr-only">Your blessing</span>
             <textarea
