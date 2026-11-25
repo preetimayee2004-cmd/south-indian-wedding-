@@ -2817,3 +2817,259 @@
   border-radius: 80% 0 80% 0;
   background: linear-gradient(135deg, #e86a84, #b83252);
 }
+
+/* ── RSVP: the guest completes the kolam (one meaningful tap) ── */
+.kr-col {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.kr-label {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: #e8c56b;
+}
+.kr-heading {
+  margin-top: 10px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: clamp(1.25rem, 5.6vw, 1.75rem);
+  line-height: 1.3;
+  color: #fbf2dc;
+  text-wrap: balance;
+}
+.kr-when {
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1rem;
+  color: #f1dfbd;
+}
+.kr-section .kr-deadline {
+  margin-top: 2px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.92rem;
+  color: #e8c56b;
+}
+/* the kolam, white on the maroon paper */
+.kr-section .kr-stage {
+  position: relative;
+  display: block;
+  width: min(80vw, 420px);
+  aspect-ratio: auto;
+  margin-top: clamp(14px, 2.6svh, 24px);
+}
+.kr-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+.kr-svg {
+  overflow: visible;
+}
+.kr-dflame,
+.kr-section .kr-flame {
+  fill: #ffb43a;
+  stroke: #ff7a1a;
+  stroke-width: 1;
+}
+/* the missing centre: a 64px tap target with a pulsing gold ring */
+.kr-centre {
+  position: absolute;
+  z-index: 3;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.kr-centre:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 2px;
+}
+.kr-ring {
+  position: absolute;
+  inset: 12px;
+  border: 2px solid #f3cf73;
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgb(243 207 115 / 0.55);
+  animation: kr-pulse 1.6s ease-in-out infinite;
+}
+.kr-centre:disabled .kr-ring {
+  animation: none;
+  opacity: 0.4;
+}
+@keyframes kr-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.55; }
+}
+.kr-hint {
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #f1dfbd;
+}
+/* the equal alternative: gold fill, maroon text, 52px */
+.kr-section .kr-accept {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  margin-top: 14px;
+  padding: 0 32px;
+  border: 1.5px solid #f3cf73;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f7dc8c, #e8c56b 45%, #d4a54a);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.5);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: #4c0813;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.kr-section .kr-accept::before {
+  display: none;
+}
+.kr-section .kr-accept:active {
+  transform: scale(0.97);
+}
+.kr-section .kr-accept:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
+.kr-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(76 8 19 / 0.3);
+  border-top-color: #4c0813;
+  border-radius: 50%;
+  animation: kr-spin 0.8s linear infinite;
+}
+@keyframes kr-spin {
+  to { transform: rotate(360deg); }
+}
+.kr-error {
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.95rem;
+  color: #ffd2c4;
+}
+/* after accepting */
+.kr-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  outline: none;
+}
+.kr-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: #f3cf73;
+}
+.kr-check {
+  width: 22px;
+  height: 22px;
+}
+.kr-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1.02rem;
+  color: #e8c56b;
+}
+.kr-links a {
+  color: #fbf2dc;
+  text-decoration: underline;
+  text-decoration-color: rgb(232 197 107 / 0.7);
+  text-underline-offset: 4px;
+}
+.kr-undo {
+  margin-top: 10px;
+  padding: 6px 10px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.85rem;
+  color: #d9c39a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* the wall of lamps */
+.kr-wall {
+  width: 100%;
+  margin-top: 22px;
+}
+.kr-wall-title {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  color: #f3cf73;
+}
+.kr-lamps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 10px 6px;
+  margin-top: 10px;
+}
+.kr-lampcell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 0.78rem;
+  color: #f1dfbd;
+}
+.kr-lampsvg {
+  width: 30px;
+  height: 30px;
+  overflow: visible;
+}
+.kr-lampcell--you {
+  color: #f3cf73;
+  font-weight: 600;
+}
+.kr-lampcell--you .kr-lampsvg {
+  border-radius: 50%;
+  box-shadow: 0 0 18px rgb(255 190 90 / 0.6);
+}
+.kr-lampcell--fly {
+  animation: kr-fly 1.1s cubic-bezier(0.22, 1, 0.36, 1) 2.6s both;
+}
+@keyframes kr-fly {
+  from { transform: translateY(-160px) scale(1.6); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.kr-more {
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  color: #e8c56b;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kr-ring,
+  .kr-spinner {
+    animation: none;
+  }
+}

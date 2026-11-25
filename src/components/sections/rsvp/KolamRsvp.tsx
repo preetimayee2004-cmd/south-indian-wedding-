@@ -1,318 +1,388 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { useGuest } from "@/context/GuestContext";
 import { useAudio } from "@/context/AudioContext";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
 import { backendReady } from "@/lib/supabase";
-import { calendarUrl } from "@/lib/format";
-import { saveLocalRsvp, submitRsvp } from "@/lib/rsvp";
+import { calendarUrl, directionsUrl } from "@/lib/format";
+import { readSaved, saveLocalRsvp, submitRsvp, forgetRsvp, fetchLampWall, type LampWall } from "@/lib/rsvp";
+import { KOLAM, KOLAM_DOTS } from "./kolamData";
 
-/* ─────────────────────────────── the kolam ───────────────────────────────
- * A sikku-style kolam on a 13 × 13 dot grid (dots at whole units −6…6): its lines weave
- * between the dots in four parts. */
+/* ──────────────────────────── the pieces ──────────────────────────── */
 
-const N = 6;
-const fmt = (v: number) => v.toFixed(2);
-
-/** A diamond |x|+|y| = R that weaves between the dots, with a little loop at each tip. */
-function weavingDiamond(R: number): string {
-  const tips = [
-    [R, 0],
-    [0, R],
-    [-R, 0],
-    [0, -R],
+const pct = (v: number, of: number) => `${(v / of) * 100}%`;
+/** The four lines of the centre crossing, as chords of the cut-out circle — they reveal the
+ *  centre's real lines (kolam-centre.webp) as they draw. */
+const CROSS = (() => {
+  const { cx, cy, cut } = KOLAM;
+  const v = 40; // the crossing's corners sit 40px from the centre dot
+  const lines: [number, number, number, number][] = [
+    [cx, cy - v, cx - v, cy],
+    [cx, cy - v, cx + v, cy],
+    [cx, cy + v, cx - v, cy],
+    [cx, cy + v, cx + v, cy],
   ];
-  let d = "";
-  for (let e = 0; e < 4; e++) {
-    const [ax, ay] = tips[e];
-    const [bx, by] = tips[(e + 1) % 4];
-    const len = Math.hypot(bx - ax, by - ay);
-    const nx = -(by - ay) / len;
-    const ny = (bx - ax) / len;
-    const steps = Math.max(8, Math.round(R * 10));
-    for (let i = 0; i <= steps; i++) {
-      const t = i / steps;
-      const w = 0.2 * Math.sin(Math.PI * 2 * R * t) * Math.sin(Math.PI * t);
-      const x = ax + (bx - ax) * t + nx * w;
-      const y = ay + (by - ay) * t + ny * w;
-      d += `${d ? "L" : "M"}${fmt(x)} ${fmt(y)}`;
-    }
-    // the loop around the next tip, swinging outwards
-    const ox = bx === 0 ? 0 : Math.sign(bx);
-    const oy = by === 0 ? 0 : Math.sign(by);
-    const cx = bx + ox * 0.5;
-    const cy = by + oy * 0.5;
-    for (let i = 1; i <= 16; i++) {
-      const a = Math.atan2(-oy, -ox) + (i / 16) * Math.PI * 2;
-      d += `L${fmt(cx + Math.cos(a) * 0.5)} ${fmt(cy + Math.sin(a) * 0.5)}`;
-    }
-  }
-  return d + "Z";
-}
+  return lines.map(([x1, y1, x2, y2]) => {
+    // extend each side of the diamond to the edge of the circle
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+    const ux = dx / L, uy = dy / L;
+    const fx = x1 - cx, fy = y1 - cy;
+    const b = fx * ux + fy * uy;
+    const c = fx * fx + fy * fy - cut * cut;
+    const t = Math.sqrt(Math.max(0, b * b - c));
+    const t1 = -b - t, t2 = -b + t;
+    return `M${(x1 + ux * t1).toFixed(1)} ${(y1 + uy * t1).toFixed(1)}L${(x1 + ux * t2).toFixed(1)} ${(y1 + uy * t2).toFixed(1)}`;
+  });
+})();
 
-function circle(cx: number, cy: number, r: number): string {
-  return `M${fmt(cx + r)} ${fmt(cy)}A${r} ${r} 0 1 1 ${fmt(cx - r)} ${fmt(cy)}A${r} ${r} 0 1 1 ${fmt(cx + r)} ${fmt(cy)}Z`;
-}
-
-/** The border: a rounded square just outside the dots, with a loop at the middle of each side. */
-function border(): string {
-  const S = N + 0.55;
-  const k = 1.2;
-  let d = `M${-S + k} ${-S}`;
-  const side = (x1: number, y1: number, x2: number, y2: number, lx: number, ly: number) => {
-    const mx = (x1 + x2) / 2;
-    const my = (y1 + y2) / 2;
-    d += `L${fmt(mx - (x2 - x1) * 0.04)} ${fmt(my - (y2 - y1) * 0.04)}`;
-    d += `C${fmt(mx + lx * 1.4 - (x2 - x1) * 0.08)} ${fmt(my + ly * 1.4 - (y2 - y1) * 0.08)} ${fmt(mx + lx * 1.4 + (x2 - x1) * 0.08)} ${fmt(my + ly * 1.4 + (y2 - y1) * 0.08)} ${fmt(mx + (x2 - x1) * 0.04)} ${fmt(my + (y2 - y1) * 0.04)}`;
-    d += `L${fmt(x2)} ${fmt(y2)}`;
-  };
-  side(-S + k, -S, S - k, -S, 0, 1);
-  d += `Q${S} ${-S} ${S} ${-S + k}`;
-  side(S, -S + k, S, S - k, -1, 0);
-  d += `Q${S} ${S} ${S - k} ${S}`;
-  side(S - k, S, -S + k, S, 0, -1);
-  d += `Q${-S} ${S} ${-S} ${S - k}`;
-  side(-S, S - k, -S, -S + k, 1, 0);
-  d += `Q${-S} ${-S} ${-S + k} ${-S}Z`;
-  return d;
-}
-
-
-/** Drawn from the outside in: the border (shown from the start), then the rings, then the heart. */
-const KOLAM_PARTS: string[][] = [
-  [border(), ...[-1, 1].flatMap((sx) => [-1, 1].map((sy) => circle(sx * N, sy * N, 0.5)))],
-  [weavingDiamond(5.5), ...[-1, 1].flatMap((sx) => [-1, 1].map((sy) => circle(sx * (N - 1), sy * (N - 1), 0.42)))],
-  [weavingDiamond(4.5), weavingDiamond(3.5)],
-  [weavingDiamond(2.5), weavingDiamond(1.5)],
-];
-
-const DOTS: [number, number][] = [];
-for (let x = -N; x <= N; x++) for (let y = -N; y <= N; y++) DOTS.push([x, y]);
-
-/** The kolam, with a lotus and a deepam at its heart (they open and light on accepting). */
-function Kolam({ partsRef }: { partsRef: React.MutableRefObject<(SVGGElement | null)[]> }) {
+/** A small brass deepam with a flame, centred on (0,0) at its base; ~26px wide in kolam pixels. */
+function Deepam({ big = false }: { big?: boolean }) {
+  const s = big ? 3 : 1;
   return (
-    <svg className="kr-kolam" viewBox="-7.6 -7.6 15.2 15.2" aria-hidden>
-      <defs>
-        <radialGradient id="kr-glow">
-          <stop offset="0" stopColor="#ffd98a" stopOpacity="0.85" />
-          <stop offset="1" stopColor="#ffb347" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id="kr-brass" x1="0" x2="1">
-          <stop offset="0" stopColor="#7a5216" />
-          <stop offset="0.35" stopColor="#f3d27a" />
-          <stop offset="0.62" stopColor="#c8952f" />
-          <stop offset="1" stopColor="#6e4a14" />
-        </linearGradient>
-      </defs>
-      {DOTS.map(([x, y]) => (
-        <circle key={`${x},${y}`} cx={x} cy={y} r="0.09" className="kr-dot" />
-      ))}
-      {KOLAM_PARTS.map((paths, i) => (
-        <g key={i} ref={(el) => void (partsRef.current[i] = el)} className={`kr-part ${i === 0 ? "kr-part--first" : ""}`}>
-          {paths.map((d, k) => (
-            <path key={k} d={d} pathLength={1} className="kr-line" />
-          ))}
-        </g>
-      ))}
-      {/* the heart: a lotus that opens, a brass lamp, its flame and a warm glow (no filters) */}
-      <g className="kr-heart">
-        <circle cx="0" cy="-0.5" r="2.2" fill="url(#kr-glow)" className="kr-glow" />
-        {Array.from({ length: 8 }, (_, i) => (
-          <path
-            key={i}
-            className="kr-petal"
-            transform={`rotate(${-78 + i * 22} 0 0.55)`}
-            d="M0 0.55C-0.42 0-0.42-0.75 0-1.35 0.42-0.75 0.42 0 0 0.55Z"
-            fill={i % 2 ? "#f2a2b0" : "#f7c3cc"}
-            stroke="#b84a63"
-            strokeWidth="0.04"
-          />
-        ))}
-        <ellipse cx="0" cy="0.62" rx="0.78" ry="0.2" fill="url(#kr-brass)" stroke="#6e4a14" strokeWidth="0.04" />
-        <path className="kr-flame" d="M0-0.95C0.3-0.5 0.3-0.12 0 0.42-0.3-0.12-0.3-0.5 0-0.95Z" />
-      </g>
-    </svg>
+    <g transform={`scale(${s})`}>
+      <path d="M-11 0C-11 6-6 9 0 9S11 6 11 0Z" fill="url(#kr-brass)" stroke="#6e4a14" strokeWidth="0.8" />
+      <ellipse cy="0" rx="11" ry="2.6" fill="#f3d27a" stroke="#6e4a14" strokeWidth="0.7" />
+      <path className="kr-flame" d="M0-17C4-10 4-5 0 0-4-5-4-10 0-17Z" />
+    </g>
   );
 }
 
-/* ─────────────────────────────── the RSVP ─────────────────────────────── */
 
 const PETAL_KINDS = ["marigold", "marigold-yellow", "mallipoo", "rose"] as const;
+function showerPetals(host: HTMLElement, seconds = 2) {
+  const count = window.innerWidth < 768 ? 16 : 26;
+  const H = host.offsetHeight;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement("span");
+    p.className = `kr-flower kr-flower--${PETAL_KINDS[i % PETAL_KINDS.length]}`;
+    p.style.left = `${Math.random() * 100}%`;
+    host.appendChild(p);
+    const dur = seconds + Math.random() * 0.8;
+    const sway = (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 26);
+    gsap
+      .timeline({ delay: Math.random() * 0.5, onComplete: () => p.remove() })
+      .fromTo(p, { y: -30, autoAlpha: 0, rotate: Math.random() * 360 }, { autoAlpha: 1, duration: 0.2 }, 0)
+      .to(p, { y: H * 0.9, rotate: `+=${180 + Math.random() * 240}`, duration: dur, ease: "sine.in" }, 0)
+      .to(p, { x: sway, duration: dur / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0)
+      .to(p, { autoAlpha: 0, duration: 0.35 }, dur - 0.35);
+  }
+}
+
+/* ──────────────────────────── the RSVP ──────────────────────────── */
+
+type Phase = "open" | "saving" | "done";
 
 /**
- * "Kolam RSVP", kept simple: on maroon silk a rice-flour kolam (its border already drawn) with
- * one "Accept Invitation" button breathing at its heart. Accepting draws the rest of the kolam,
- * opens a lotus, lights a deepam, showers flowers over the section and offers Add to Calendar.
- * The answer is saved quietly in the background; the guest only ever sees the celebration.
+ * RSVP in one meaningful tap: the guest completes the kolam. It is drawn whole except its
+ * centre (a faint dashed outline with a pulsing gold ring); tapping the centre — or the equal
+ * "Joyfully accept" button — saves the answer at once. A dot drops into the centre, its lines
+ * draw to join the rest, a brass lamp lights on it, flames light on every other dot from the
+ * centre outwards and the cells fill with haldi, kumkum and leaf green, petals fall. Then:
+ * a check, "Your response is saved", Add to calendar, Get directions and Undo. When the
+ * backend can tell how many have accepted, a wall of lit lamps appears below.
+ * Returning guests see it all complete. Works with animations off and without the kolam art.
  */
 export function KolamRsvp() {
   const { id: weddingId, rsvp, couple, wedding, events, venue } = useWedding();
   const { guestName, isPersonalized } = useGuest();
   const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
-  // every visit (and every refresh) starts on "Accept Invitation"; the RSVP itself is still saved
-  const [accepted, setAccepted] = useState(false);
+  const [phase, setPhase] = useState<Phase>(() => (readSaved(weddingId)?.attending ? "done" : "open"));
+  const [fresh, setFresh] = useState(false); // accepted just now (not a return visit)
+  const [error, setError] = useState("");
+  const [artFailed, setArtFailed] = useState(false);
+  const [wall, setWall] = useState<LampWall | null>(null);
   const [live, setLive] = useState("");
 
   const root = useRef<HTMLElement>(null);
-  const kolam = useRef<HTMLDivElement>(null);
-  const button = useRef<HTMLButtonElement>(null);
-  const after = useRef<HTMLDivElement>(null);
-  const cal = useRef<HTMLAnchorElement>(null);
-  const parts = useRef<(SVGGElement | null)[]>([]);
-  const breathe = useRef<ReturnType<typeof gsap.to> | null>(null);
+  const stage = useRef<HTMLDivElement>(null);
+  const confirm = useRef<HTMLDivElement>(null);
 
+  const name = (isPersonalized && guestName) || guestName || "Dear guest";
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
   const muh = events.find((e) => e.startISO === wedding.dateISO);
   const calUrl = calendarUrl(`${first.name} weds ${second.name} – Wedding`, wedding.dateISO, `${venue.name}, ${venue.address}`, muh?.endISO);
-  const deadline = rsvp.deadlineISO
-    ? new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, day: "numeric", month: "long", year: "numeric" }).format(new Date(rsvp.deadlineISO))
-    : null;
+  const query = venue.mapsQuery || `${venue.name}, ${venue.address}`;
+  const city = wedding.city.split(",")[0];
+  const fmt = (iso: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: wedding.timeZone, ...o }).format(new Date(iso));
+  const dates = (() => {
+    const all = [...events.map((e) => e.startISO), wedding.dateISO].sort();
+    const a = all[0], b = all[all.length - 1];
+    const sameMonth = fmt(a, { month: "long", year: "numeric" }) === fmt(b, { month: "long", year: "numeric" });
+    if (a.slice(0, 10) === b.slice(0, 10)) return fmt(b, { day: "numeric", month: "long", year: "numeric" });
+    return sameMonth ? `${fmt(a, { day: "numeric" })}–${fmt(b, { day: "numeric", month: "long", year: "numeric" })}` : `${fmt(a, { day: "numeric", month: "long" })} – ${fmt(b, { day: "numeric", month: "long", year: "numeric" })}`;
+  })();
+  const deadline = rsvp.deadlineISO ? fmt(rsvp.deadlineISO, { day: "numeric", month: "long" }) : null;
 
-  const lines = (i: number) => parts.current[i]?.querySelectorAll(".kr-line") ?? [];
-  const heart = () => kolam.current?.querySelector(".kr-heart");
+  const q = (sel: string) => stage.current?.querySelectorAll<SVGElement | HTMLElement>(sel) ?? [];
+  const done = phase === "done";
 
-  // first paint: the border drawn and the rest empty — or, for a guest who already accepted, all of it
+  // the wall of lamps, only when the backend can count them
+  useEffect(() => {
+    let alive = true;
+    if (done) fetchLampWall(weddingId).then((w) => alive && setWall(w));
+    return () => {
+      alive = false;
+    };
+  }, [done, weddingId]);
+
+  // first paint: incomplete (centre missing) — or, for a returning guest, complete and lit
   useLayoutEffect(() => {
-    const done = accepted;
-    parts.current.forEach((_, i) => gsap.set(lines(i), { strokeDashoffset: done || i === 0 ? 0 : 1 }));
-    const h = heart();
-    if (h) {
-      gsap.set(h.querySelectorAll(".kr-petal"), { scale: done ? 1 : 0, autoAlpha: done ? 1 : 0, svgOrigin: "0 0.55" });
-      gsap.set(h.querySelector(".kr-flame"), { scaleY: done ? 1 : 0, autoAlpha: done ? 1 : 0, svgOrigin: "0 0.42" });
-      gsap.set(h.querySelector(".kr-glow"), { autoAlpha: done ? 1 : 0 });
-    }
-    if (!done && !reduced && button.current) {
-      // a slow breath on the button (scale only)
-      breathe.current = gsap.to(button.current, { scale: 1.03, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: -1 });
-    }
-    return () => void breathe.current?.kill();
+    const finished = phase === "done";
+    gsap.set(q(".kr-cross"), { strokeDashoffset: finished ? 0 : 1 });
+    gsap.set(q(".kr-cdot"), { autoAlpha: finished ? 1 : 0, y: 0 });
+    gsap.set(q(".kr-lamp"), { autoAlpha: finished ? 1 : 0, scale: 1, transformOrigin: "50% 100%" });
+    gsap.set(q(".kr-dflame"), { autoAlpha: finished ? 1 : 0, scale: 1, transformOrigin: "50% 100%" });
+    gsap.set(q(".kr-fill"), { autoAlpha: finished ? 1 : 0 });
+    gsap.set(q(".kr-missing"), { autoAlpha: finished ? 0 : 1 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** A shower of marigold, jasmine and rose petals over the whole section; each is removed after it lands. */
-  const showerFlowers = () => {
-    const host = root.current;
-    if (!host) return;
-    const count = window.innerWidth < 768 ? 18 : 30;
-    const H = host.offsetHeight;
-    for (let i = 0; i < count; i++) {
-      const p = document.createElement("span");
-      p.className = `kr-flower kr-flower--${PETAL_KINDS[i % PETAL_KINDS.length]}`;
-      p.style.left = `${Math.random() * 100}%`;
-      host.appendChild(p);
-      const dur = 2.5 + Math.random();
-      const sway = (Math.random() < 0.5 ? -1 : 1) * (14 + Math.random() * 26);
-      gsap
-        .timeline({ delay: Math.random() * 0.6, onComplete: () => p.remove() })
-        .fromTo(p, { y: -30, autoAlpha: 0, rotate: Math.random() * 360 }, { autoAlpha: 1, duration: 0.25 }, 0)
-        .to(p, { y: H + 30, rotate: `+=${180 + Math.random() * 240}`, duration: dur, ease: "sine.in" }, 0)
-        .to(p, { x: sway, duration: dur / 4, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0)
-        .to(p, { autoAlpha: 0, duration: 0.35 }, dur - 0.35);
-    }
-  };
+  const accept = async () => {
+    if (phase !== "open") return;
+    setError("");
+    setPhase("saving");
+    playSfx("tap", { gesture: true });
+    const c = KOLAM;
+    // 1 · a white dot drops into the centre with a small bounce (it lifts out again if saving fails)
+    if (!reduced) gsap.fromTo(q(".kr-cdot"), { autoAlpha: 1, y: -c.cut * 1.6 }, { y: 0, duration: 0.55, ease: "bounce.out" });
+    else gsap.set(q(".kr-cdot"), { autoAlpha: 1, y: 0 });
 
-  /** Saved quietly: Supabase when it is set up, this device otherwise (or if it fails). Never shown. */
-  const saveQuietly = () => {
     const input = { name: (isPersonalized && guestName) || "Guest", attending: true, guests: 1, message: "" };
-    const local = () => void saveLocalRsvp(weddingId, input);
-    if (!backendReady) return local();
-    submitRsvp(weddingId, input).catch(local);
-  };
-
-  const accept = () => {
-    if (accepted) return;
-    // (the soft "pop" comes from the page-wide button listener, as on every pm-btn)
-    saveQuietly();
-    breathe.current?.kill();
-    const reveal = () => {
-      setAccepted(true);
-      setLive("Invitation accepted");
-    };
-
-    if (reduced) {
-      parts.current.forEach((_, i) => gsap.set(lines(i), { strokeDashoffset: 0 }));
-      const h = heart();
-      if (h) gsap.set(h.querySelectorAll(".kr-petal, .kr-flame, .kr-glow"), { scale: 1, scaleY: 1, autoAlpha: 1 });
-      playSfx("flame", { volume: 0.5 });
-      playSfx("bell", { volume: 0.5 });
-      reveal();
+    const minWait = new Promise((r) => window.setTimeout(r, reduced ? 0 : 550));
+    try {
+      if (backendReady) await submitRsvp(weddingId, input);
+      else saveLocalRsvp(weddingId, input);
+      await minWait;
+    } catch {
+      await minWait;
+      if (!reduced) gsap.to(q(".kr-cdot"), { y: -c.cut * 1.6, autoAlpha: 0, duration: 0.4, ease: "power2.in" });
+      else gsap.set(q(".kr-cdot"), { autoAlpha: 0 });
+      setPhase("open");
+      setError("Could not save. Please try again.");
       return;
     }
 
+    // saved: complete the kolam
+    setFresh(true);
+    setPhase("done");
+    setLive("Your response is saved. The celebration is complete.");
+    // a short buzz on phones that allow it (only while the tap still counts as the guest's own)
+    const act = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
+    if (!act || act.isActive) navigator.vibrate?.(35);
+    if (reduced) {
+      gsap.set(q(".kr-cross"), { strokeDashoffset: 0 });
+      gsap.set(q(".kr-lamp, .kr-dflame, .kr-fill"), { autoAlpha: 1 });
+      gsap.set(q(".kr-missing"), { autoAlpha: 0 });
+      playSfx("bell", { volume: 0.5 });
+      return;
+    }
+    const flames = [...q(".kr-dflame")];
+    const order = flames
+      .map((el) => ({ el, d: Number((el as HTMLElement).dataset.d) }))
+      .sort((a, b) => a.d - b.d);
     const tl = gsap.timeline();
-    // 1 · the button gives way
-    tl.to(button.current, { scale: 0.9, autoAlpha: 0, duration: 0.3, ease: "power1.in" }, 0);
-    // 2 · the rest of the kolam draws, part by part, each with a trickle of rice flour
-    let at = 0.25;
-    for (let i = 1; i < KOLAM_PARTS.length; i++) {
-      tl.call(() => playSfx("kolam", { volume: 0.35 }), undefined, at);
-      tl.to(lines(i), { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, at);
-      at += 0.7;
-    }
-    // 3 · the lotus opens, the deepam lights (flame + a soft temple bell)
-    const h = heart();
-    if (h) {
-      tl.to(h.querySelectorAll(".kr-petal"), { scale: 1, autoAlpha: 1, duration: 0.45, stagger: 0.06, ease: "back.out(1.6)" }, at - 0.05);
-      tl.call(() => {
-        playSfx("flame", { volume: 0.5 });
-        playSfx("bell", { volume: 0.5 });
-      });
-      tl.to(h.querySelector(".kr-flame"), { scaleY: 1, autoAlpha: 1, duration: 0.55, ease: "power2.out" });
-      tl.to(h.querySelector(".kr-glow"), { autoAlpha: 1, duration: 0.8, ease: "sine.out" }, "<");
-    }
-    // 4 · flowers fall over the section; 5 · the thank-you line and Add to Calendar rise in
+    tl.to(q(".kr-missing"), { autoAlpha: 0, duration: 0.3 }, 0);
+    // 2 · its lines draw to join the rest
+    tl.call(() => playSfx("kolam", { volume: 0.35 }), undefined, 0);
+    tl.to(q(".kr-cross"), { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut", stagger: 0.08 }, 0);
+    // 3 · the brass lamp appears on the centre dot and lights
+    tl.fromTo(q(".kr-lamp"), { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 0.75);
     tl.call(() => {
-      playSfx("petals", { volume: 0.4 });
-      showerFlowers();
-      reveal();
-    });
+      playSfx("flame", { volume: 0.5 });
+      playSfx("bell", { volume: 0.5 });
+      if (root.current) showerPetals(root.current, 2);
+    }, undefined, 1.1);
+    // 4 · flames light on every other dot, from the centre outwards; the cells fill with colour
+    const maxD = order[order.length - 1]?.d || 1;
+    order.forEach(({ el, d }) => tl.fromTo(el, { autoAlpha: 0, scale: 0.3 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.25 + (d / maxD) * 1.3));
+    tl.to(q(".kr-fill"), { autoAlpha: 1, duration: 1.4, ease: "sine.inOut" }, 1.4);
   };
 
-  // after accepting: the thank-you line and the calendar button fade up, focus moves to the button
+  const undo = () => {
+    forgetRsvp(weddingId);
+    if (backendReady) void submitRsvp(weddingId, { name: (isPersonalized && guestName) || "Guest", attending: false, guests: 0 }).catch(() => undefined);
+    gsap.set(q(".kr-cross"), { strokeDashoffset: 1 });
+    gsap.set(q(".kr-cdot, .kr-lamp, .kr-dflame, .kr-fill"), { autoAlpha: 0 });
+    gsap.set(q(".kr-missing"), { autoAlpha: 1 });
+    setWall(null);
+    setFresh(false);
+    setPhase("open");
+    setLive("Your response was undone.");
+  };
+
+  // the confirmation rises in right after accepting; focus moves to it
   useLayoutEffect(() => {
-    if (!accepted || !after.current) return;
-    if (live) cal.current?.focus({ preventScroll: true }); // only right after the guest tapped (not on a return visit)
-    if (reduced || !live) return;
-    // opacity only (not visibility), so the focused calendar button keeps its focus while it fades in
-    const t = gsap.fromTo(after.current.children, { y: 14, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, stagger: 0.12, ease: "power2.out" });
+    if (!done || !fresh || !confirm.current) return;
+    confirm.current.focus({ preventScroll: true });
+    if (reduced) return;
+    const t = gsap.fromTo(confirm.current.children, { y: 12, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, delay: 1.6, ease: "power2.out" });
     return () => void t.kill();
-  }, [accepted, live, reduced]);
+  }, [done, fresh, reduced]);
+
+  const W = KOLAM.w, H = KOLAM.h;
+  // the others on the wall (this guest is the "You" lamp, so their own name is left out once)
+  const own = name.trim().split(/\s+/)[0];
+  const wallNames = (() => {
+    const list = [...(wall?.names ?? [])];
+    const i = list.findIndex((n) => n === own);
+    if (i >= 0) list.splice(i, 1);
+    return list.slice(0, 23);
+  })();
+  const saving = phase === "saving";
 
   return (
     <section ref={root} id="rsvp" aria-labelledby="kr-heading" className="kr-section pm-silk">
-      <header className="kr-head">
-        <p className="pm-eyebrow">॥ Kindly Respond ॥</p>
-        {isPersonalized && guestName && <p className="kr-dear">Dear {guestName},</p>}
-        <h2 id="kr-heading" className="pm-script-title kr-title">
-          Will you bless us with your presence?
+      <div className="kr-col">
+        <p className="kr-label">R · S · V · P</p>
+        <h2 id="kr-heading" className="kr-heading">
+          {done ? <>The celebration is complete, {name}!</> : <>{name}, your presence completes our celebration</>}
         </h2>
-        {deadline && <p className="kr-deadline">Kindly respond by {deadline}</p>}
-      </header>
+        <p className="kr-when">
+          {dates} · {city}
+        </p>
+        {deadline && !done && <p className="kr-deadline">Kindly respond by {deadline}</p>}
 
-      <div ref={kolam} className="kr-stage">
-        <Kolam partsRef={parts} />
-        {!accepted && (
-          <button ref={button} type="button" className="pm-btn pm-btn--solid kr-accept" onClick={accept} aria-label="Accept the invitation">
-            Accept Invitation
-          </button>
+        {/* the kolam: complete but for its centre */}
+        {!artFailed && (
+          <div ref={stage} className="kr-stage" style={{ aspectRatio: `${W} / ${H}` }}>
+            <img src="/media/kolam-fill.webp" alt="" aria-hidden className="kr-layer kr-fill" draggable={false} />
+            <img
+              src="/media/kolam-lines.webp"
+              alt="A rice-flour kolam of loops and dots, complete except for its centre"
+              className="kr-layer"
+              draggable={false}
+              onError={() => setArtFailed(true)}
+            />
+            <svg className="kr-layer kr-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden>
+              <defs>
+                <linearGradient id="kr-brass" x1="0" x2="1">
+                  <stop offset="0" stopColor="#7a5216" />
+                  <stop offset="0.35" stopColor="#f3d27a" />
+                  <stop offset="0.62" stopColor="#c8952f" />
+                  <stop offset="1" stopColor="#6e4a14" />
+                </linearGradient>
+                <mask id="kr-centre-mask" maskUnits="userSpaceOnUse">
+                  {CROSS.map((d, i) => (
+                    <path key={i} className="kr-cross" d={d} pathLength={1} stroke="#fff" strokeWidth="26" strokeLinecap="round" fill="none" strokeDasharray="1" />
+                  ))}
+                </mask>
+              </defs>
+              {/* the missing centre: a faint dashed outline */}
+              <circle className="kr-missing" cx={KOLAM.cx} cy={KOLAM.cy} r={KOLAM.cut - 6} fill="none" stroke="#fffaf0" strokeOpacity="0.45" strokeWidth="3" strokeDasharray="7 9" />
+              {/* its real lines, revealed as they draw */}
+              <image href="/media/kolam-centre.webp" x={KOLAM.cx - KOLAM.cut} y={KOLAM.cy - KOLAM.cut} width={KOLAM.cut * 2} height={KOLAM.cut * 2} mask="url(#kr-centre-mask)" />
+              {/* the centre dot that drops in */}
+              <circle className="kr-cdot" cx={KOLAM.cx} cy={KOLAM.cy} r="9" fill="#fffaf0" />
+              {/* flames on every other dot */}
+              {KOLAM_DOTS.map(([x, y]) => (
+                <g key={`${x},${y}`} transform={`translate(${x} ${y - 2})`}>
+                  <path className="kr-dflame" data-d={Math.hypot(x - KOLAM.cx, y - KOLAM.cy).toFixed(0)} d="M0-15C3.6-9 3.6-4.5 0 0-3.6-4.5-3.6-9 0-15Z" />
+                </g>
+              ))}
+              {/* the brass lamp on the centre dot */}
+              <g transform={`translate(${KOLAM.cx} ${KOLAM.cy + 6})`}>
+                <g className="kr-lamp">
+                  <Deepam big />
+                </g>
+              </g>
+            </svg>
+            {/* the tap target and its pulsing gold ring */}
+            {!done && (
+              <button
+                type="button"
+                className="kr-centre"
+                style={{ left: pct(KOLAM.cx, W), top: pct(KOLAM.cy, H) }}
+                onClick={accept}
+                disabled={saving}
+                aria-label="Complete the kolam: accept the invitation"
+              >
+                <span aria-hidden className="kr-ring" />
+              </button>
+            )}
+          </div>
         )}
-      </div>
 
-      {accepted && (
-        <div ref={after} className="kr-after">
-          <p className="kr-thanks">Thank you! We can't wait to celebrate with you.</p>
-          <a ref={cal} href={calUrl} target="_blank" rel="noopener noreferrer" className="pm-btn pm-btn--solid">
-            Add to Calendar
-          </a>
-        </div>
-      )}
-      <p role="status" aria-live="polite" className="sr-only">
-        {live}
-      </p>
+        {!done && (
+          <>
+            {!artFailed && <p className="kr-hint">Tap the centre to say yes</p>}
+            <button type="button" className="kr-accept" onClick={accept} disabled={saving} aria-busy={saving || undefined}>
+              {saving ? <span aria-hidden className="kr-spinner" /> : null}
+              {saving ? "Saving…" : "Joyfully accept"}
+            </button>
+            {error && (
+              <p className="kr-error" role="alert">
+                {error}
+              </p>
+            )}
+          </>
+        )}
+
+        {done && (
+          <div ref={confirm} className="kr-confirm" tabIndex={-1}>
+            <p className="kr-saved">
+              <svg aria-hidden viewBox="0 0 24 24" className="kr-check">
+                <circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Your response is saved
+            </p>
+            <p className="kr-links">
+              <a href={calUrl} target="_blank" rel="noopener noreferrer">
+                Add to calendar
+              </a>
+              <span aria-hidden>·</span>
+              <a href={directionsUrl(query)} target="_blank" rel="noopener noreferrer">
+                Get directions
+              </a>
+            </p>
+            <button type="button" className="kr-undo" onClick={undo}>
+              Undo
+            </button>
+          </div>
+        )}
+
+        {/* the wall of lamps: only when the backend can count who has accepted */}
+        {done && wall && wall.count > 0 && (
+          <div className="kr-wall">
+            <p className="kr-wall-title">
+              {wall.count} {wall.count === 1 ? "family is" : "families are"} joining us
+            </p>
+            <ul className="kr-lamps">
+              <li className={`kr-lampcell kr-lampcell--you ${fresh && !reduced ? "kr-lampcell--fly" : ""}`}>
+                <svg viewBox="-16 -20 32 32" aria-hidden className="kr-lampsvg">
+                  <defs>
+                    <linearGradient id="kr-brass2" x1="0" x2="1">
+                      <stop offset="0" stopColor="#7a5216" />
+                      <stop offset="0.4" stopColor="#f3d27a" />
+                      <stop offset="1" stopColor="#6e4a14" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M-11 0C-11 6-6 9 0 9S11 6 11 0Z" fill="url(#kr-brass2)" />
+                  <path className="kr-flame" d="M0-17C4-10 4-5 0 0-4-5-4-10 0-17Z" />
+                </svg>
+                <span>You</span>
+              </li>
+              {wallNames.map((n, i) => (
+                <li key={`${n}-${i}`} className="kr-lampcell">
+                  <svg viewBox="-16 -20 32 32" aria-hidden className="kr-lampsvg">
+                    <path d="M-11 0C-11 6-6 9 0 9S11 6 11 0Z" fill="url(#kr-brass2)" />
+                    <path className="kr-flame" d="M0-17C4-10 4-5 0 0-4-5-4-10 0-17Z" />
+                  </svg>
+                  <span>{n}</span>
+                </li>
+              ))}
+            </ul>
+            {wall.count > 24 && <p className="kr-more">+ {wall.count - 24} more</p>}
+          </div>
+        )}
+
+        <p role="status" aria-live="polite" className="sr-only">
+          {live}
+        </p>
+      </div>
     </section>
   );
 }

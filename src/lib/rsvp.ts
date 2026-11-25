@@ -1,4 +1,4 @@
-import { getSupabase } from "./supabase";
+import { backendReady, getSupabase } from "./supabase";
 
 export interface RsvpInput {
   name: string;
@@ -78,4 +78,38 @@ export async function submitRsvp(weddingId: string, r: RsvpInput): Promise<Saved
     /* ignore */
   }
   return saved;
+}
+
+/** Forget this device's saved answer (Undo). */
+export function forgetRsvp(weddingId: string) {
+  try {
+    localStorage.removeItem(savedKey(weddingId));
+  } catch {
+    /* ignore */
+  }
+}
+
+/** How many have accepted, and their first names (latest first), for the wall of lamps. */
+export interface LampWall {
+  count: number;
+  names: string[];
+}
+
+/**
+ * Guests can't read the RSVP table, so the count comes from a small database function that
+ * returns only the number and first names (see supabase/migrations/003_rsvp_lamp_wall.sql).
+ * Resolves null when that isn't available — the wall of lamps is then simply not shown.
+ */
+export async function fetchLampWall(weddingId: string): Promise<LampWall | null> {
+  if (!backendReady) return null;
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.rpc("rsvp_lamp_wall", { p_wedding_id: weddingId });
+    if (error || !data) return null;
+    const row = (Array.isArray(data) ? data[0] : data) as { count?: number; names?: string[] } | undefined;
+    if (!row || typeof row.count !== "number") return null;
+    return { count: row.count, names: (row.names ?? []).map((n) => n.split(/\s+/)[0]).filter(Boolean) };
+  } catch {
+    return null;
+  }
 }
