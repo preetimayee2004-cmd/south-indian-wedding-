@@ -3825,3 +3825,52 @@
   }
   .rs-side { transition: opacity 0.4s ease; translate: none; }
 }
+
+/* RSVP and Wishing Wall: exactly one screen tall, like the gallery (useFitToScreen scales the content to fit) */
+.kr-section.kr-velvet,
+.wishing-wall-scene.ww-velvet {
+  min-height: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  justify-content: center;
+}
+.ww-fit {
+  position: relative;
+  z-index: 10;
+  flex: none;
+  width: 100%;
+}
+.kr-framed {
+  flex: none;
+}
+/* phones: the second kolam band (below the form) gives way, so the text can stay larger */
+@media (max-width: 767px) {
+  .ww-band--below {
+    display: none;
+  }
+}
+.wishing-wall-scene.ww-velvet {
+  padding-block: clamp(20px, 3.5svh, 40px);
+}
+/* the row of cards still runs edge to edge when the content is scaled down */
+.ww-fit .ww-wall {
+  width: calc(100vw / var(--fit, 1));
+  max-width: none;
+  margin-inline: calc(50% - 50vw / var(--fit, 1));
+}
+/* on wide but short screens the kolam bands follow the screen height, so the text can stay large */
+@media (min-width: 901px) {
+  .kr-framed {
+    --bandW: min(600px, 46vw, 36vh);
+  }
+  .ww-velvet .kb-solo {
+    width: min(70%, 420px, 30vh);
+  }
+}
+/* short screens: the Wishing Wall keeps one kolam band (above the heading) */
+@media (max-height: 900px) {
+  .ww-band--below {
+    display: none;
+  }
+}

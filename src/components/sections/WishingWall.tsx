@@ -12,6 +12,7 @@ import { AllWishesModal } from "./wishes/AllWishesModal";
 import { useAudio } from "@/context/AudioContext";
 import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
 import { useAcceptedThisVisit } from "@/hooks/useAcceptedThisVisit";
+import { useFitToScreen } from "@/hooks/useFitToScreen";
 
 /** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
 const ON_WALL = 12;
@@ -80,6 +81,10 @@ export function WishingWall() {
   const accepted = useAcceptedThisVisit(); // flowers fall here only once the RSVP is accepted in this visit
   const wallRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const fitRef = useRef<HTMLDivElement>(null);
+  // one screen tall, like the gallery: the content scales down to fit when it is taller
+  useFitToScreen(sectionRef, fitRef);
 
   /** A little burst of rose and gold hearts rising from a point on the screen. */
   const burstHearts = (x: number, y: number, n: number, spread = 70) => {
@@ -255,10 +260,11 @@ export function WishingWall() {
   const duration = `${Math.max(30, onWall.length * 9)}s`;
 
   return (
-    <section id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet">
+    <section ref={sectionRef} id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet">
       {/* the same velvet as the RSVP above, with half as much falling jasmine */}
       {accepted && <JasmineFall density={0.4} fromTop slow />}
 
+      <div ref={fitRef} className="ww-fit">
       <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
         {/* heading */}
         {/* a bird kolam band above the heading */}
@@ -351,8 +357,10 @@ export function WishingWall() {
           </button>
         </div>
 
-        <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </Container>
+      </div>
+      {/* outside the scaled content, so the full-screen modal is not scaled with it */}
+      <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }

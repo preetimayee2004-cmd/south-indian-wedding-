@@ -10,6 +10,7 @@ import { submitRsvp, fetchLampWall, type LampWall } from "@/lib/rsvp";
 import { KolamFrame, JasmineFall } from "./KolamBorder";
 import { RsvpSides } from "./RsvpSides";
 import { markAcceptedThisVisit, useAcceptedThisVisit } from "@/hooks/useAcceptedThisVisit";
+import { useFitToScreen } from "@/hooks/useFitToScreen";
 import { KOLAM, KOLAM_DOTS } from "./kolamData";
 
 /* ──────────────────────────── the pieces ──────────────────────────── */
@@ -105,6 +106,9 @@ export function KolamRsvp() {
   const root = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const confirm = useRef<HTMLDivElement>(null);
+  const framed = useRef<HTMLDivElement>(null);
+  // one screen tall, like the gallery: the content scales down to fit when it is taller
+  useFitToScreen(root, framed);
 
   const name = (isPersonalized && guestName) || guestName || "Dear guest";
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
@@ -245,7 +249,7 @@ export function KolamRsvp() {
       {/* no flowers until the guest accepts: then a dense shower, then a light slow fall */}
       {accepted && <JasmineFall burst={burst} density={0.6} fromTop slow />}
       <RsvpSides lit={done} />
-      <div className="kr-framed">
+      <div ref={framed} className="kr-framed">
       <KolamFrame lit={done} onDrawn={drawCentre} />
       <div className="kr-col">
         <p className="kr-label">R · S · V · P</p>

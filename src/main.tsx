@@ -22,6 +22,14 @@ import { ThemeProvider } from "@/context/ThemeProvider";
 import { GuestProvider } from "@/context/GuestContext";
 import { AudioProvider } from "@/context/AudioContext";
 import App from "./App";
+import { ScrollTrigger } from "@/lib/gsap";
+
+// Every visit (a reload too) starts at the top, where the envelope opens. If the browser put the
+// page back mid-way, every section above that point would play its one-time entrance behind the
+// envelope — before sound is allowed — and those sections would then stay silent.
+// (through ScrollTrigger: it remembers the browser's setting and would otherwise put "auto" back)
+ScrollTrigger.clearScrollMemory("manual");
+if (!location.hash) window.scrollTo(0, 0);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
