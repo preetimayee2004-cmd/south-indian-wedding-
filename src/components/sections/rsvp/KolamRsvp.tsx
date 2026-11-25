@@ -6,7 +6,7 @@ import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
 import { backendReady } from "@/lib/supabase";
 import { calendarUrl } from "@/lib/format";
-import { readSaved, saveLocalRsvp, submitRsvp } from "@/lib/rsvp";
+import { saveLocalRsvp, submitRsvp } from "@/lib/rsvp";
 
 /* ─────────────────────────────── the kolam ───────────────────────────────
  * A sikku-style kolam on a 13 × 13 dot grid (dots at whole units −6…6): its lines weave
@@ -152,7 +152,8 @@ export function KolamRsvp() {
   const { guestName, isPersonalized } = useGuest();
   const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
-  const [accepted, setAccepted] = useState(() => Boolean(readSaved(weddingId)?.attending));
+  // every visit (and every refresh) starts on "Accept Invitation"; the RSVP itself is still saved
+  const [accepted, setAccepted] = useState(false);
   const [live, setLive] = useState("");
 
   const root = useRef<HTMLElement>(null);
