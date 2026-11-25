@@ -57,12 +57,27 @@ export function saveLocalRsvp(weddingId: string, r: RsvpInput): SavedRsvp {
   return saved;
 }
 
-/** Saves for real. Resolves only after Supabase confirms the insert. */
-export async function submitRsvp(weddingId: string, r: RsvpInput): Promise<SavedRsvp> {
+/** A stable id from a guest code (the ?guest= link), shaped like a uuid, so the same guest always counts once. */
+function idFromCode(weddingId: string, code: string): string {
+  const text = `${weddingId}:${code.trim().toLowerCase()}`;
+  let h = "";
+  for (let seed = 0; seed < 4; seed++) {
+    let x = 0x811c9dc5 ^ seed;
+    for (let i = 0; i < text.length; i++) x = Math.imul(x ^ text.charCodeAt(i), 0x01000193) >>> 0;
+    h += x.toString(16).padStart(8, "0");
+  }
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-4${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
+}
+
+/**
+ * Saves for real. Resolves only after Supabase confirms the insert. With a guest code the answer
+ * is filed under that guest (repeat taps, other devices: still one answer); otherwise under this browser.
+ */
+export async function submitRsvp(weddingId: string, r: RsvpInput, guestCode?: string): Promise<SavedRsvp> {
   const supabase = await getSupabase();
   const row = {
     wedding_id: weddingId,
-    respondent_id: respondentId(),
+    respondent_id: guestCode ? idFromCode(weddingId, guestCode) : respondentId(),
     name: r.name.trim(),
     attending: r.attending,
     guests: r.attending ? r.guests : 0,
@@ -71,13 +86,8 @@ export async function submitRsvp(weddingId: string, r: RsvpInput): Promise<Saved
   // No .select(): guests have no read access to RSVPs, by design.
   const { error } = await supabase.from("rsvps").insert(row);
   if (error) throw error;
-  const saved: SavedRsvp = { name: row.name, attending: row.attending, guests: row.guests, message: row.message ?? undefined, at: new Date().toISOString() };
-  try {
-    localStorage.setItem(savedKey(weddingId), JSON.stringify(saved));
-  } catch {
-    /* ignore */
-  }
-  return saved;
+  // (nothing is kept on this device: the backend keeps one answer per guest)
+  return { name: row.name, attending: row.attending, guests: row.guests, message: row.message ?? undefined, at: new Date().toISOString() };
 }
 
 /** Forget this device's saved answer (Undo). */

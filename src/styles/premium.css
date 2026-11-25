@@ -3073,3 +3073,273 @@
     animation: none;
   }
 }
+
+/* ── RSVP + Wishing Wall: deep maroon velvet, a white kolam border, falling jasmine ── */
+.kr-velvet,
+.ww-velvet {
+  /* deep maroon velvet: soft darker and lighter patches (one pre-rendered texture, no seams) */
+  background: #5a0f14 url("/media/velvet-maroon.webp") center / cover no-repeat;
+  color: #fbf2dc;
+}
+.sec[data-section="wishingWall"] > .section-separator {
+  display: none; /* the RSVP and the Wishing Wall are one continuous area */
+}
+
+/* the frame round the RSVP content */
+.kr-framed {
+  --chainW: 56px;
+  --bandW: min(480px, calc((100vw - 20px) * 0.7));
+  --bandH: calc(var(--bandW) * 158 / 446);
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: calc(var(--bandH) + 14px) calc(var(--chainW) + 18px) calc(var(--bandH) + 18px);
+}
+@media (max-width: 699px) {
+  .kr-section.kr-velvet {
+    padding-inline: 10px;
+  }
+  .kr-framed {
+    --chainW: 30px;
+    --bandW: calc((100vw - 20px) * 0.7);
+    padding-inline: calc(var(--chainW) + 10px);
+  }
+}
+.kb-frame {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.kb-band {
+  position: absolute;
+  left: 50%;
+  display: block;
+  width: var(--bandW, 70%);
+  translate: -50% 0;
+}
+.kb-frame .kb-top { top: 0; }
+.kb-frame .kb-bottom { bottom: 0; }
+.kb-art,
+.kb-art img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+.kb-gold {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.is-lit .kb-band .kb-gold { transition-delay: 1.5s; }
+.is-lit .kb-side .kb-gold { transition-delay: 2s; }
+.is-lit .kb-gold { opacity: 1; }
+.kb-side {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+}
+.kb-side--l { left: 0; }
+.kb-side--r { right: 0; }
+.kb-chain {
+  display: flex;
+  flex-direction: column;
+}
+.kb-link {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+/* the birds nod now and then */
+.kb-head {
+  position: absolute;
+  display: block;
+  transform-origin: 50% 85%;
+  animation: kb-nod 5.2s ease-in-out infinite;
+}
+@keyframes kb-nod {
+  0%, 9%, 100% { transform: rotate(0deg); }
+  4% { transform: rotate(9deg) translateY(1px); }
+}
+.kb-head:nth-child(odd) { animation-name: kb-nod-r; }
+@keyframes kb-nod-r {
+  0%, 9%, 100% { transform: rotate(0deg); }
+  4% { transform: rotate(-9deg) translateY(1px); }
+}
+/* the dots twinkle softly */
+.kb-twinkle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fffef6 0 30%, rgb(255 236 180 / 0.6) 45%, transparent 70%);
+  opacity: 0;
+  animation: kb-tw 4s ease-in-out infinite;
+}
+@keyframes kb-tw {
+  0%, 70%, 100% { opacity: 0; transform: scale(0.6); }
+  82% { opacity: 0.95; transform: scale(1.3); }
+}
+/* a soft light that travels once round the frame every 6 s */
+.kb-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110px;
+  height: 110px;
+  margin: -55px 0 0 -55px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 228 150 / 0.55), rgb(255 210 120 / 0.18) 55%, transparent);
+  opacity: 0;
+}
+/* a single band (the Wishing Wall) */
+.kb-solo {
+  position: relative;
+  left: auto;
+  translate: none;
+  width: min(70%, 420px);
+  margin: 0 auto;
+}
+
+/* the hand on the button: fingertip on its lower right corner, pressing, with a ripple */
+.kr-accept-wrap {
+  position: relative;
+  display: inline-block;
+}
+.kr-hand {
+  position: absolute;
+  left: calc(100% - 26px);
+  top: calc(100% - 14px);
+  width: 34px;
+  pointer-events: none;
+  animation: kr-press 1.6s ease-in-out infinite;
+}
+.kr-hand-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+}
+.kr-ripple {
+  position: absolute;
+  left: 15px;
+  top: 4px;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 2px solid #f3cf73;
+  border-radius: 50%;
+  opacity: 0;
+  animation: kr-ripple 1.6s ease-out infinite;
+}
+@keyframes kr-press {
+  0%, 100% { transform: translate(6px, 8px); }
+  40%, 55% { transform: translate(0, 0) scale(0.94); }
+}
+@keyframes kr-ripple {
+  0%, 40% { opacity: 0; transform: scale(0.3); }
+  45% { opacity: 0.9; }
+  90%, 100% { opacity: 0; transform: scale(1.6); }
+}
+
+/* falling jasmine, behind the content */
+.jf-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  container-type: size;
+  pointer-events: none;
+}
+.jf {
+  position: absolute;
+  top: -30px;
+  animation: jf-fall linear infinite;
+}
+.jf--burst {
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+@keyframes jf-fall {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(100cqh + 60px)); }
+}
+.jf-sway {
+  display: block;
+  animation: jf-sway ease-in-out infinite alternate;
+}
+@keyframes jf-sway {
+  from { transform: translateX(-14px) rotate(-35deg); }
+  to { transform: translateX(14px) rotate(55deg); }
+}
+.jf-flower {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-10 -10 20 20'%3E%3Cg fill='%23fffdf6' stroke='%23e9dfc6' stroke-width='.4'%3E%3Cellipse rx='2.6' ry='4.6' cy='-4.4'/%3E%3Cellipse rx='2.6' ry='4.6' cy='-4.4' transform='rotate(72)'/%3E%3Cellipse rx='2.6' ry='4.6' cy='-4.4' transform='rotate(144)'/%3E%3Cellipse rx='2.6' ry='4.6' cy='-4.4' transform='rotate(216)'/%3E%3Cellipse rx='2.6' ry='4.6' cy='-4.4' transform='rotate(288)'/%3E%3C/g%3E%3Ccircle r='1.7' fill='%23f2df8a'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.jf-petal {
+  border-radius: 80% 0 80% 0;
+  background: linear-gradient(135deg, #fffef8, #efe7d2);
+  scale: 0.55 0.85;
+}
+.jf--far {
+  opacity: 0.7;
+  filter: blur(0.7px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .kb-head,
+  .kb-twinkle,
+  .kr-hand,
+  .kr-ripple {
+    animation: none;
+  }
+}
+
+/* the Wishing Wall on the RSVP's velvet: cream words, cream cards and fields, a gold send button */
+.ww-velvet .wishing-title-text {
+  color: #fbf2dc;
+  text-shadow: none;
+}
+.ww-velvet .wishing-subtitle-text,
+.ww-velvet .ww-count {
+  color: #f1dfbd;
+}
+.ww-velvet .ww-eyebrow {
+  color: #e8c56b;
+}
+.ww-band {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.ww-band--below {
+  margin: 24px 0 0;
+}
+.ww-velvet .ww-input {
+  padding: 10px 12px;
+  border: 1px solid #d4a54a;
+  border-radius: 10px;
+  background: #fbf2dc;
+}
+.ww-velvet .ww-input:focus {
+  border-color: #b8862e;
+  box-shadow: 0 0 0 2px rgb(212 165 74 / 0.35);
+}
+.ww-velvet .ww-send {
+  border-color: #f3cf73;
+  background: linear-gradient(180deg, #f7dc8c, #e8c56b 45%, #d4a54a);
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.25), inset 0 1px 0 rgb(255 255 255 / 0.5);
+  color: #4c0813;
+}
+
+/* the kolam never wider than the space between the side chains */
+.kr-framed .kr-stage {
+  max-width: 100%;
+}
+/* the lovebirds picture has cream paper baked in: on the velvet the kolam birds take its place */
+.ww-velvet .wishing-lovebirds-container {
+  display: none;
+}

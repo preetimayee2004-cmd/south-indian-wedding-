@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { useAudio } from "@/context/AudioContext";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { TempleDress } from "@/components/ui/TempleDress";
@@ -39,8 +38,7 @@ export function ThankYouScene() {
   const calUrl = calendarUrl(`${first.name} weds ${second.name} – Wedding`, wedding.dateISO, `${venue.name}, ${venue.address}`, muh?.endISO);
   const signature = loveNote?.signature ?? `${first.name} & ${second.name}`;
 
-  // the closing sound: one soft temple bell strike with a long fade, once, as "Thank You" appears
-  useSfxOnView("#thanks-heading", [["bell", { volume: 0.3, fadeOut: 3 }]], { threshold: 0.6, rootMargin: "0px" });
+  // (the closing sound is the elephants' soft footsteps as they walk in — see below; no bell, no trumpet)
 
   useLayoutEffect(() => {
     const el = root.current;
@@ -65,12 +63,21 @@ export function ThankYouScene() {
         );
       });
 
-      // two temple elephants walk in — heavy steps, neck bells clanking — and one trumpets as the
+      // two temple elephants walk in with a gentle walking bob, and with each bob a soft footstep
+      // and a light ankle-bell jingle (the hero's sound, 35%), fading as they stop; then the
       // couple's medallion rises between them
+      const WALK = 2.2;
+      const STEP = 0.55;
       const tl = gsap.timeline({ scrollTrigger: { trigger: el.querySelector(".fn-scene"), start: "top 85%", once: true } });
-      tl.from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" }, 0)
-        .from(".fn-ele--r", { autoAlpha: 0, x: 30, duration: 1, ease: "power2.out" }, "<")
-        .from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, "-=0.5")
+      tl.from(".fn-ele--l", { autoAlpha: 0, x: -110, duration: WALK, ease: "power1.out" }, 0)
+        .from(".fn-ele--r", { autoAlpha: 0, x: 110, duration: WALK, ease: "power1.out" }, 0)
+        .to(".fn-ele", { y: -5, duration: STEP / 2, ease: "sine.inOut", yoyo: true, repeat: Math.round(WALK / STEP) * 2 - 1 }, 0);
+      for (let i = 0, n = Math.round(WALK / STEP); i < n; i++) {
+        // the last steps fade out as they come to rest
+        const vol = 0.35 * Math.min(1, (n - i) / 2);
+        tl.call(() => playSfx("elestep", { volume: vol, cut: 0.5, owner: el }), undefined, i * STEP + STEP / 2);
+      }
+      tl.from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, WALK - 0.3)
         .fromTo(".fn-glow", { autoAlpha: 0.4, scale: 0.9 }, { autoAlpha: 1, scale: 1.06, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
     }, el);
     return () => ctx.revert();

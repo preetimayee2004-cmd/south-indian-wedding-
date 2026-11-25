@@ -6,7 +6,8 @@ import { usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { gsap } from "@/lib/gsap";
 import { backendReady } from "@/lib/supabase";
 import { calendarUrl, directionsUrl } from "@/lib/format";
-import { readSaved, saveLocalRsvp, submitRsvp, forgetRsvp, fetchLampWall, type LampWall } from "@/lib/rsvp";
+import { submitRsvp, fetchLampWall, type LampWall } from "@/lib/rsvp";
+import { KolamFrame, JasmineFall } from "./KolamBorder";
 import { KOLAM, KOLAM_DOTS } from "./kolamData";
 
 /* ──────────────────────────── the pieces ──────────────────────────── */
@@ -79,17 +80,20 @@ type Phase = "open" | "saving" | "done";
  * "Joyfully accept" button — saves the answer at once. A dot drops into the centre, its lines
  * draw to join the rest, a brass lamp lights on it, flames light on every other dot from the
  * centre outwards and the cells fill with haldi, kumkum and leaf green, petals fall. Then:
- * a check, "Your response is saved", Add to calendar, Get directions and Undo. When the
+ * a check, "Your response is saved", Add to calendar and Get directions. When the
  * backend can tell how many have accepted, a wall of lit lamps appears below.
- * Returning guests see it all complete. Works with animations off and without the kolam art.
+ * Every visit starts fresh (nothing is kept on the device). Works with animations off and without the kolam art.
  */
 export function KolamRsvp() {
   const { id: weddingId, rsvp, couple, wedding, events, venue } = useWedding();
   const { guestName, isPersonalized } = useGuest();
   const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
-  const [phase, setPhase] = useState<Phase>(() => (readSaved(weddingId)?.attending ? "done" : "open"));
-  const [fresh, setFresh] = useState(false); // accepted just now (not a return visit)
+  // nothing is remembered on this device: every visit starts with the unlit kolam
+  const [phase, setPhase] = useState<Phase>("open");
+  const [fresh, setFresh] = useState(false); // accepted just now
+  const [burst, setBurst] = useState(false); // the denser shower of jasmine for three seconds
+  const [handOn, setHandOn] = useState(true); // the tapping hand, until the first tap
   const [error, setError] = useState("");
   const [artFailed, setArtFailed] = useState(false);
   const [wall, setWall] = useState<LampWall | null>(null);
@@ -137,12 +141,20 @@ export function KolamRsvp() {
     gsap.set(q(".kr-dflame"), { autoAlpha: finished ? 1 : 0, scale: 1, transformOrigin: "50% 100%" });
     gsap.set(q(".kr-fill"), { autoAlpha: finished ? 1 : 0 });
     gsap.set(q(".kr-missing"), { autoAlpha: finished ? 0 : 1 });
+    if (!reduced && stage.current) gsap.set(stage.current, { clipPath: "circle(0% at 50% 50%)" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /** After the frame has drawn itself, the centre kolam draws (opens out from its middle). */
+  const drawCentre = () => {
+    if (reduced || !stage.current) return;
+    gsap.to(stage.current, { clipPath: "circle(75% at 50% 50%)", duration: 1.1, ease: "power2.inOut", clearProps: "clipPath" });
+  };
 
   const accept = async () => {
     if (phase !== "open") return;
     setError("");
+    setHandOn(false);
     setPhase("saving");
     playSfx("tap", { gesture: true, owner: root.current });
     const c = KOLAM;
@@ -153,8 +165,8 @@ export function KolamRsvp() {
     const input = { name: (isPersonalized && guestName) || "Guest", attending: true, guests: 1, message: "" };
     const minWait = new Promise((r) => window.setTimeout(r, reduced ? 0 : 550));
     try {
-      if (backendReady) await submitRsvp(weddingId, input);
-      else saveLocalRsvp(weddingId, input);
+      // sent to the backend (one answer per guest there); nothing is kept on this device
+      if (backendReady) await submitRsvp(weddingId, input, isPersonalized ? guestName : undefined);
       await minWait;
     } catch {
       await minWait;
@@ -165,9 +177,11 @@ export function KolamRsvp() {
       return;
     }
 
-    // saved: complete the kolam
+    // saved: complete the kolam; a denser shower of jasmine for three seconds
     setFresh(true);
     setPhase("done");
+    setBurst(true);
+    window.setTimeout(() => setBurst(false), 3200);
     setLive("Your response is saved. The celebration is complete.");
     // a short buzz on phones that allow it (only while the tap still counts as the guest's own)
     const act = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
@@ -201,17 +215,6 @@ export function KolamRsvp() {
     tl.to(q(".kr-fill"), { autoAlpha: 1, duration: 1.4, ease: "sine.inOut" }, 1.4);
   };
 
-  const undo = () => {
-    forgetRsvp(weddingId);
-    if (backendReady) void submitRsvp(weddingId, { name: (isPersonalized && guestName) || "Guest", attending: false, guests: 0 }).catch(() => undefined);
-    gsap.set(q(".kr-cross"), { strokeDashoffset: 1 });
-    gsap.set(q(".kr-cdot, .kr-lamp, .kr-dflame, .kr-fill"), { autoAlpha: 0 });
-    gsap.set(q(".kr-missing"), { autoAlpha: 1 });
-    setWall(null);
-    setFresh(false);
-    setPhase("open");
-    setLive("Your response was undone.");
-  };
 
   // the confirmation rises in right after accepting; focus moves to it
   useLayoutEffect(() => {
@@ -234,7 +237,10 @@ export function KolamRsvp() {
   const saving = phase === "saving";
 
   return (
-    <section ref={root} id="rsvp" aria-labelledby="kr-heading" className="kr-section pm-silk">
+    <section ref={root} id="rsvp" aria-labelledby="kr-heading" className="kr-section kr-velvet">
+      <JasmineFall burst={burst} />
+      <div className="kr-framed">
+      <KolamFrame lit={done} onDrawn={drawCentre} />
       <div className="kr-col">
         <p className="kr-label">R · S · V · P</p>
         <h2 id="kr-heading" className="kr-heading">
@@ -299,7 +305,6 @@ export function KolamRsvp() {
                 disabled={saving}
                 aria-label="Complete the kolam: accept the invitation"
               >
-                <span aria-hidden className="kr-ring" />
               </button>
             )}
           </div>
@@ -307,11 +312,28 @@ export function KolamRsvp() {
 
         {!done && (
           <>
-            {!artFailed && <p className="kr-hint">Tap the centre to say yes</p>}
-            <button type="button" className="kr-accept" onClick={accept} disabled={saving} aria-busy={saving || undefined}>
-              {saving ? <span aria-hidden className="kr-spinner" /> : null}
-              {saving ? "Saving…" : "Joyfully accept"}
-            </button>
+            <p className="kr-hint">Tap on the Accept button</p>
+            <span className="kr-accept-wrap">
+              <button type="button" className="kr-accept" onClick={accept} disabled={saving} aria-busy={saving || undefined}>
+                {saving ? <span aria-hidden className="kr-spinner" /> : null}
+                {saving ? "Saving…" : "Joyfully accept"}
+              </button>
+              {/* the tapping hand: its fingertip on the button's lower right corner */}
+              {handOn && !reduced && (
+                <span aria-hidden className="kr-hand">
+                  <span className="kr-ripple" />
+                  <svg viewBox="0 0 40 48" className="kr-hand-svg">
+                    <path
+                      d="M15 22V8a3 3 0 0 1 6 0v11l1-1a3 3 0 0 1 5 2v1a3 3 0 0 1 5 1v1a3 3 0 0 1 5 1v8c0 7-5 12-12 12h-2c-4 0-7-2-9-5l-6-9a3 3 0 0 1 4-4l3 3Z"
+                      fill="#fbf2dc"
+                      stroke="#5e1220"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              )}
+            </span>
             {error && (
               <p className="kr-error" role="alert">
                 {error}
@@ -338,9 +360,6 @@ export function KolamRsvp() {
                 Get directions
               </a>
             </p>
-            <button type="button" className="kr-undo" onClick={undo}>
-              Undo
-            </button>
           </div>
         )}
 
@@ -382,6 +401,7 @@ export function KolamRsvp() {
         <p role="status" aria-live="polite" className="sr-only">
           {live}
         </p>
+      </div>
       </div>
     </section>
   );

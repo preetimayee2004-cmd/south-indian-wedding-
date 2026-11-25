@@ -8,6 +8,7 @@ import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
 import { useAudio } from "@/context/AudioContext";
+import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
 
 /** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
 const ON_WALL = 12;
@@ -193,16 +194,16 @@ export function WishingWall() {
   const duration = `${Math.max(30, onWall.length * 9)}s`;
 
   return (
-    <section id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene">
-      {/* a few slow falling petals: jasmine and marigold */}
-      <div className="ww-petals" aria-hidden="true">
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <span key={i} className={`ww-petal ${i % 2 ? "ww-petal--marigold" : "ww-petal--jasmine"} ww-petal--${i}`} />
-        ))}
-      </div>
+    <section id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet">
+      {/* the same velvet as the RSVP above, with half as much falling jasmine */}
+      <JasmineFall density={0.5} />
 
       <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
         {/* heading */}
+        {/* a bird kolam band above the heading */}
+        <span aria-hidden className="ww-band">
+          <KolamBand className="kb-solo" />
+        </span>
         <header className="ww-head">
           <p className="ww-eyebrow">॥ आशीर्वाद ॥</p>
           <h2 id="wishing-wall-heading" className="wishing-title-text">
@@ -281,6 +282,11 @@ export function WishingWall() {
             {isSubmitting ? "Sending…" : "Send Blessing ✦"}
           </button>
         </form>
+
+        {/* and one below the form */}
+        <span aria-hidden className="ww-band ww-band--below">
+          <KolamBand className="kb-solo" />
+        </span>
 
         <div className="mt-5 md:mt-6">
           <button type="button" onClick={() => setIsModalOpen(true)} className="ww-view-all">
