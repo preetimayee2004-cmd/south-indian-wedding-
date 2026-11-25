@@ -3117,9 +3117,6 @@
   background-position: center, center top;
   color: #fbf2dc;
 }
-.sec[data-section="wishingWall"] > .section-separator {
-  display: none; /* the RSVP and the Wishing Wall are one continuous area */
-}
 
 /* the frame round the RSVP content */
 .kr-framed {
