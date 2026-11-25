@@ -74,8 +74,25 @@ const LAMPS: [number, number][] = [
 /** Couple-scene timeline, in screens of scroll (the section pins for 350vh). */
 const T = 3.5;
 const at = (f: number) => f * T;
-/** Screens of pinned scroll after they meet, while the ending plays in place. */
-const HOLD = 0.6;
+/** Screens of pinned scroll after they meet (a little room, so a slightly late meeting still counts). */
+const HOLD = 0.08;
+/** When the names are written, the page eases down this much of a screen, so the next section peeks in below. */
+const PEEK = 0.14;
+
+/** Ease the page down until the section's bottom sits PEEK of a screen above the screen's bottom. */
+function peekNext(section: HTMLElement, seconds = 0.9) {
+  const from = window.scrollY;
+  const to = section.getBoundingClientRect().bottom + window.scrollY - window.innerHeight * (1 - PEEK);
+  if (to <= from) return;
+  const t0 = performance.now();
+  const step = (now: number) => {
+    const k = Math.min(1, (now - t0) / (seconds * 1000));
+    const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    window.scrollTo(0, from + (to - from) * e);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
 
 const SEEN_KEY = "wedding:couple-finished";
 const seenOnce = () => {
@@ -234,6 +251,7 @@ export function CoupleScene() {
     groom: useRef<HTMLDivElement>(null),
     groomBob: useRef<HTMLDivElement>(null),
     lamps: useRef<(HTMLSpanElement | null)[]>([]),
+    hint: useRef<HTMLDivElement>(null),
     cloud: useRef<CloudRefs>({ drift: null, main: null, left: null, right: null, label: null, amp: null, letters: [], flourish: null, petals: [], rain: null }),
   };
 
@@ -317,6 +335,10 @@ export function CoupleScene() {
       );
     });
     finish.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 2.8);
+    // the names are written: the next section peeks in at the bottom, so the guest sees there is more,
+    // and a highlighted "Scroll down" appears at the foot of the scene
+    finish.call(() => peekNext(section), undefined, 2.25);
+    finish.fromTo(refs.hint.current, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 2.3);
     finish
       .fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: 0.4, ease: "sine.out" }, 2.6)
       .to(lamps, { autoAlpha: 0.85, scale: 1, duration: 0.5, ease: "sine.inOut" }, 3.0);
@@ -363,6 +385,12 @@ export function CoupleScene() {
     >
       <CoupleRoom refs={refs} />
       <Toran />
+      <div ref={refs.hint} className="cp-scroll" aria-hidden>
+        Scroll down
+        <svg viewBox="0 0 24 22" className="cp-scroll-arrows">
+          <path d="M4 3l8 7 8-7M4 12l8 7 8-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
     </Scene>
   );
 }
