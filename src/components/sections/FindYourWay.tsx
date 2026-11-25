@@ -189,6 +189,8 @@ export function FindYourWay() {
         const open = gsap.timeline({ paused: true });
         leaves.forEach((leaf, i) => {
           if (!reduced) open.to(leaf, { scaleY: 1, autoAlpha: 1, duration: 0.7, ease: "power2.out", clearProps: "transform" }, i * 0.35);
+          // a dry palm-leaf rustle as each one unrolls
+          open.call(() => playSfx("leaf", { volume: 0.55, rate: 1 + (i % 3) * 0.05, owner: el }), [], i * 0.35);
         });
         gsap.timeline({ scrollTrigger: { trigger: leaves[0].parentElement, start: "top 75%", once: true } }).call(() => void open.play());
       }

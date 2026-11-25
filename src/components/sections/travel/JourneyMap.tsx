@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { gsap } from "@/lib/gsap";
+import { useAudio } from "@/context/AudioContext";
 
 export interface JourneyStop {
   /** small caps line above the text, e.g. "Stop 01" or "You've arrived" */
@@ -59,6 +60,7 @@ function Compass() {
  * the journey rather than the patterned section background.
  */
 export function JourneyMap({ stops, reduced }: { stops: JourneyStop[]; place?: string; nickname?: string; reduced: boolean }) {
+  const { playSfx } = useAudio();
   const box = useRef<HTMLDivElement>(null);
   const route = useRef<SVGPathElement>(null);
   const [geo, setGeo] = useState<Geo | null>(null);
@@ -98,6 +100,9 @@ export function JourneyMap({ stops, reduced }: { stops: JourneyStop[]; place?: s
       tl.fromTo(".jm-route-draw", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2, ease: "power1.inOut" }, 0)
         .from(".jm-route-dots", { opacity: 0, duration: 0.6 }, 1.2)
         .from(".jm-stop", { opacity: 0, scale: 0.6, duration: 0.45, stagger: 0.42, ease: "back.out(2)" }, 0.1);
+      // each stop lands on the map with a soft pop; the last one, the venue, with a little bell
+      for (let i = 0; i < n; i++)
+        tl.call(() => void (i === n - 1 ? playSfx("bell", { volume: 0.45, owner: el }) : playSfx("pop", { volume: 0.5, rate: 1 + i * 0.06, owner: el })), [], 0.1 + i * 0.42);
     }, el);
     return () => ctx.revert();
     // only once the layout is known

@@ -3523,3 +3523,10 @@
     animation: none;
   }
 }
+
+/* every pinned scene fills the screen as it is right now: on phones the visible height grows when
+   the address bar slides away, and a fixed 100svh stage then left a strip of the cream page below it */
+.scene-stage {
+  height: 100vh;
+  height: 100dvh;
+}

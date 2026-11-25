@@ -108,7 +108,7 @@ export function Scene({ id, labelledBy, label, className = "", style, edgeTop, e
   return (
     <section ref={root} id={id} aria-labelledby={labelledBy} aria-label={label} className="scene relative h-[100svh]">
       {edgeTop}
-      <div className={`sticky top-0 h-[100svh] overflow-hidden ${className}`} style={style}>
+      <div className={`scene-stage sticky top-0 overflow-hidden ${className}`} style={style}>
         {children}
       </div>
       {edgeBottom}
