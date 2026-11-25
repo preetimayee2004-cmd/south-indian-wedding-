@@ -186,9 +186,10 @@ const FLOWER_SPEEDS = [16, 12, 9];
 /**
  * White jasmine flowers (five petals, a pale yellow centre) and a few single petals, falling
  * slowly behind the content with a gentle sway and turn. `density` 1 = 14 on phones, 24 on
- * desktop. `burst` adds a denser shower for three seconds.
+ * desktop. `burst` adds a dense shower that keeps coming for about four seconds. With `fromTop`
+ * the light fall begins at the top (instead of already mid-air), and `slow` makes it slower.
  */
-export function JasmineFall({ density = 1, burst = false }: { density?: number; burst?: boolean }) {
+export function JasmineFall({ density = 1, burst = false, fromTop = false, slow = false }: { density?: number; burst?: boolean; fromTop?: boolean; slow?: boolean }) {
   const reduced = usePrefersReducedMotion();
   const [count] = useState(() => Math.round((typeof window !== "undefined" && window.innerWidth < 700 ? 14 : 24) * density));
   if (reduced) return null;
@@ -196,8 +197,9 @@ export function JasmineFall({ density = 1, burst = false }: { density?: number; 
     Array.from({ length: n }, (_, i) => {
       const tier = i % 3;
       const size = FLOWER_SIZES[tier] * (0.85 + r01(i, seed) * 0.3);
-      const dur = (fast ? 4 : FLOWER_SPEEDS[tier]) * (0.85 + r01(i, seed + 1) * 0.3);
+      const dur = (fast ? 3 : FLOWER_SPEEDS[tier] * (slow ? 1.5 : 1)) * (0.85 + r01(i, seed + 1) * 0.3);
       const petal = i % 5 === 4;
+      const delay = fast ? r01(i, seed + 3) * 4 : fromTop ? 0.8 + r01(i, seed + 3) * dur : -r01(i, seed + 3) * dur;
       return (
         <span
           key={`${seed}-${i}`}
@@ -205,7 +207,7 @@ export function JasmineFall({ density = 1, burst = false }: { density?: number; 
           style={{
             left: `${(r01(i, seed + 2) * 100).toFixed(2)}%`,
             animationDuration: `${dur.toFixed(2)}s`,
-            animationDelay: fast ? `${(r01(i, seed + 3) * 1.2).toFixed(2)}s` : `${(-r01(i, seed + 3) * dur).toFixed(2)}s`,
+            animationDelay: `${delay.toFixed(2)}s`,
           }}
         >
           <span
@@ -218,7 +220,7 @@ export function JasmineFall({ density = 1, burst = false }: { density?: number; 
   return (
     <div className="jf-layer" aria-hidden>
       {items(count, 11)}
-      {burst && items(Math.round(count * 1.6), 41, true)}
+      {burst && items(Math.round(count * 3), 41, true)}
     </div>
   );
 }

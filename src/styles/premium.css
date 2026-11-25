@@ -3560,3 +3560,271 @@
   height: 100vh;
   height: 100dvh;
 }
+
+/* ── RSVP side decoration (RsvpSides.tsx): behind everything, never over the content ── */
+.rs-sides {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.rs-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.rs-side,
+.rs-edge,
+.rs-mini {
+  display: none;
+}
+
+/* wide screens: the centre grows, and a panel fills each side */
+@media (min-width: 901px) {
+  .kr-section.kr-velvet {
+    /* 1100px where there is room; on smaller desktops a little narrower, so the side panels keep space */
+    --frameW: min(1100px, max(868px, calc(100vw - 460px)));
+  }
+  .kr-framed {
+    --bandW: min(600px, 46vw);
+    width: min(var(--frameW), 100%);
+  }
+  .kr-col {
+    max-width: 720px;
+  }
+  .kr-section .kr-stage,
+  .kr-framed .kr-stage {
+    width: min(46vh, 560px);
+    max-width: 100%;
+  }
+  .kr-heading {
+    font-size: clamp(34px, 3.4vw, 52px);
+    line-height: 1.18;
+  }
+  .kr-section .kr-label { font-size: 0.9rem; }
+  .kr-section .kr-when { font-size: 1.15rem; }
+  .kr-section .kr-hint { font-size: 1.05rem; }
+  .kr-section .kr-accept {
+    width: 360px;
+    max-width: 100%;
+    min-height: 60px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .rs-side {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: block;
+    width: calc((100% - var(--frameW)) / 2);
+    /* a faint dot-kolam grid, so no part of the side is flat colour */
+    background:
+      radial-gradient(circle, rgb(255 255 255 / 0.06) 1.6px, transparent 2.2px) 0 0 / 26px 26px,
+      repeating-linear-gradient(45deg, transparent 0 17.4px, rgb(255 255 255 / 0.06) 17.4px 18.4px),
+      repeating-linear-gradient(-45deg, transparent 0 17.4px, rgb(255 255 255 / 0.06) 17.4px 18.4px);
+    opacity: 0;
+    translate: 0 40px;
+    transition: opacity 1.2s ease, translate 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .rs-side--l { left: 0; }
+  .rs-side--r { right: 0; transform: scaleX(-1); }
+  .rs-sides.is-in .rs-side {
+    opacity: 1;
+    translate: 0 0;
+  }
+  .rs-sides.is-in .rs-side--r { transition-delay: 0.15s; }
+}
+
+/* strings of jasmine and marigold from the top: the box is 55% of the section */
+.rs-garlands {
+  position: absolute;
+  top: 0;
+  left: 6%;
+  right: 6%;
+  height: 55%;
+}
+.rs-garland {
+  position: absolute;
+  top: -6px;
+  display: block;
+  width: 26px;
+  margin-left: -13px;
+  transform-origin: 50% 0;
+  animation: rs-sway ease-in-out infinite alternate;
+  filter: drop-shadow(0 3px 3px rgb(0 0 0 / 0.35));
+}
+.rs-garland svg {
+  display: block;
+  height: calc(100% - 22px);
+}
+.rs-tassel {
+  display: block;
+  width: 10px;
+  height: 22px;
+  margin: 0 auto;
+  border-radius: 50% 50% 3px 3px;
+  background: linear-gradient(180deg, #f2890f, #c45808 50%, #f3cf73 52%, #d4a54a);
+}
+@keyframes rs-sway {
+  from { transform: rotate(-1.8deg); }
+  to { transform: rotate(1.8deg); }
+}
+
+/* the medallion: white line art at 55%, one turn every 90 s, a soft glow behind */
+.rs-medallion {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: min(260px, 86%);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+.rs-medallion-glow {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 236 200 / 0.18), rgb(255 220 170 / 0.06) 60%, transparent);
+  transition: background 1.6s ease;
+}
+.rs-medallion-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #fffaf0;
+  opacity: 0.55;
+  animation: rs-turn 90s linear infinite;
+  transition: color 1.6s ease, opacity 1.6s ease;
+}
+@keyframes rs-turn {
+  to { transform: rotate(360deg); }
+}
+.rs-sides.is-lit .rs-medallion-art {
+  color: #f3cf73;
+  opacity: 0.8;
+}
+.rs-sides.is-lit .rs-medallion-glow {
+  background: radial-gradient(closest-side, rgb(255 210 120 / 0.35), rgb(255 190 90 / 0.1) 60%, transparent);
+}
+
+/* the tall brass lamp: 40% of the section, a warm glow round its flames */
+.rs-lamp {
+  position: absolute;
+  bottom: 3%;
+  left: 50%;
+  height: 40%;
+  aspect-ratio: 140 / 420;
+  translate: -50% 0;
+}
+.rs-lamp-svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.4));
+}
+.rs-lamp-glow {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  width: 260%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgb(255 190 90 / 0.45), rgb(255 150 60 / 0.16) 45%, transparent);
+  animation: rs-glow 2.6s ease-in-out infinite alternate;
+  transition: opacity 0.8s ease, scale 0.8s ease;
+}
+@keyframes rs-glow {
+  from { opacity: 0.75; }
+  to { opacity: 1; }
+}
+.rs-sides.is-lit .rs-lamp-glow {
+  scale: 1.35;
+  background: radial-gradient(closest-side, rgb(255 205 110 / 0.7), rgb(255 160 60 / 0.25) 45%, transparent);
+}
+.rs-flame {
+  fill: #ff9a28;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rs-flicker 0.9s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 4px #ffb347);
+}
+.rs-flame-core {
+  fill: #fff1b8;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: rs-flicker 0.7s ease-in-out infinite alternate-reverse;
+}
+.rs-lamp-svg g:nth-of-type(odd) .rs-flame { animation-duration: 1.15s; }
+@keyframes rs-flicker {
+  0% { transform: scale(1, 1) rotate(-2deg); }
+  50% { transform: scale(0.92, 1.08) rotate(1.5deg); }
+  100% { transform: scale(1.05, 0.94) rotate(-1deg); }
+}
+.rs-sides.is-lit .rs-flame {
+  fill: #ffb43c;
+  filter: drop-shadow(0 0 9px #ffc04d);
+}
+
+/* the small kolam drawn on the floor in front of the lamp */
+.rs-floor-kolam {
+  position: absolute;
+  bottom: 0.6%;
+  left: 50%;
+  width: min(210px, 88%);
+  height: 64px;
+  translate: -50% 0;
+  color: #fffaf0;
+  opacity: 0.5;
+}
+
+/* phones, tablets and small desktops: one jasmine string down each edge, a small lamp in each bottom corner */
+@media (max-width: 1099px) {
+  .rs-edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: block;
+    width: 14px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .rs-edge svg {
+    display: block;
+    height: 100%;
+  }
+  .rs-edge--l { left: -2px; }
+  .rs-edge--r { right: -2px; }
+  .rs-mini {
+    position: absolute;
+    bottom: 6px;
+    display: block;
+    width: 30px;
+    height: 90px;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .rs-mini .rs-lamp-glow { width: 220%; top: 24%; }
+  .rs-mini--l { left: 4px; }
+  .rs-mini--r { right: 4px; }
+  .rs-sides.is-in .rs-edge,
+  .rs-sides.is-in .rs-mini {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-garland,
+  .rs-medallion-art,
+  .rs-lamp-glow,
+  .rs-flame,
+  .rs-flame-core {
+    animation: none;
+  }
+  .rs-side { transition: opacity 0.4s ease; translate: none; }
+}

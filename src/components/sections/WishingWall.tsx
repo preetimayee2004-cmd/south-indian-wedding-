@@ -11,6 +11,7 @@ import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
 import { useAudio } from "@/context/AudioContext";
 import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
+import { useAcceptedThisVisit } from "@/hooks/useAcceptedThisVisit";
 
 /** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
 const ON_WALL = 12;
@@ -76,6 +77,7 @@ export function WishingWall() {
   const sendBtnRef = useRef<HTMLButtonElement>(null);
   const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
+  const accepted = useAcceptedThisVisit(); // flowers fall here only once the RSVP is accepted in this visit
   const wallRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -255,7 +257,7 @@ export function WishingWall() {
   return (
     <section id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet">
       {/* the same velvet as the RSVP above, with half as much falling jasmine */}
-      <JasmineFall density={0.5} />
+      {accepted && <JasmineFall density={0.4} fromTop slow />}
 
       <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
         {/* heading */}

@@ -8,6 +8,8 @@ import { backendReady } from "@/lib/supabase";
 import { calendarUrl, directionsUrl } from "@/lib/format";
 import { submitRsvp, fetchLampWall, type LampWall } from "@/lib/rsvp";
 import { KolamFrame, JasmineFall } from "./KolamBorder";
+import { RsvpSides } from "./RsvpSides";
+import { markAcceptedThisVisit, useAcceptedThisVisit } from "@/hooks/useAcceptedThisVisit";
 import { KOLAM, KOLAM_DOTS } from "./kolamData";
 
 /* ──────────────────────────── the pieces ──────────────────────────── */
@@ -92,7 +94,8 @@ export function KolamRsvp() {
   // nothing is remembered on this device: every visit starts with the unlit kolam
   const [phase, setPhase] = useState<Phase>("open");
   const [fresh, setFresh] = useState(false); // accepted just now
-  const [burst, setBurst] = useState(false); // the denser shower of jasmine for three seconds
+  const [burst, setBurst] = useState(false); // the dense shower of jasmine, about four seconds of it
+  const accepted = useAcceptedThisVisit(); // no flowers fall until the guest accepts
   const [handOn, setHandOn] = useState(true); // the tapping hand, until the first tap
   const [error, setError] = useState("");
   const [artFailed, setArtFailed] = useState(false);
@@ -177,11 +180,12 @@ export function KolamRsvp() {
       return;
     }
 
-    // saved: complete the kolam; a denser shower of jasmine for three seconds
+    // saved: complete the kolam; a dense shower of jasmine
     setFresh(true);
     setPhase("done");
     setBurst(true);
-    window.setTimeout(() => setBurst(false), 3200);
+    markAcceptedThisVisit();
+    window.setTimeout(() => setBurst(false), 8000); // (the last flowers of the shower have landed by then)
     setLive("Your response is saved. The celebration is complete.");
     // a short buzz on phones that allow it (only while the tap still counts as the guest's own)
     const act = (navigator as Navigator & { userActivation?: { isActive: boolean } }).userActivation;
@@ -238,7 +242,9 @@ export function KolamRsvp() {
 
   return (
     <section ref={root} id="rsvp" aria-labelledby="kr-heading" className="kr-section kr-velvet">
-      <JasmineFall burst={burst} />
+      {/* no flowers until the guest accepts: then a dense shower, then a light slow fall */}
+      {accepted && <JasmineFall burst={burst} density={0.6} fromTop slow />}
+      <RsvpSides lit={done} />
       <div className="kr-framed">
       <KolamFrame lit={done} onDrawn={drawCentre} />
       <div className="kr-col">
