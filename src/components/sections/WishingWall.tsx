@@ -9,7 +9,7 @@ import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
 import { PalmLeafString } from "./wishes/PalmLeafString";
-import { LotusPond, DiyaArt } from "./wishes/LotusPond";
+import { LampField, DiyaArt } from "./wishes/LampField";
 import { LeafViewer } from "./wishes/LeafViewer";
 import { useAudio } from "@/context/AudioContext";
 import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
@@ -73,8 +73,8 @@ function BlessingCount({ count, reduced }: { count: number; reduced: boolean }) 
 
 /**
  * The Wishing Wall: the latest wishes as palm-leaf manuscript strips strung on a maroon thread,
- * a short form, and below it a temple pond where one small lamp floats for each wish. Sending a
- * blessing lights the lamp on the button; it rises, arcs down onto the pond with a ripple, a new
+ * a short form, and below it two loose rows of small lamps, one for each wish. Sending a
+ * blessing lights the lamp on the button; it rises and arcs down into the rows of lamps, a new
  * leaf slides onto the front of the thread, jasmine falls and the count goes up by one.
  */
 export function WishingWall() {
@@ -101,7 +101,7 @@ export function WishingWall() {
   const textRef = useRef<HTMLTextAreaElement>(null);
   const btnLamp = useRef<HTMLSpanElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
-  // one screen tall, like the gallery: the content above the pond scales down to fit when it is taller
+  // one screen tall, like the gallery: the content above the lamps scales down to fit when it is taller
   useFitToScreen(sectionRef, fitRef);
 
   const knownName = isPersonalized && guestName?.trim() ? guestName.trim() : null;
@@ -130,7 +130,7 @@ export function WishingWall() {
     setOpen({ wish, from });
   };
 
-  /** A lit lamp rises from the button, floats down in an arc and lands on the pond with a ripple. */
+  /** A lit lamp rises from the button, floats down in an arc and lands among the other lamps. */
   const launchLamp = (w: Wish, from: DOMRect | undefined) => {
     const land = () => {
       setLandingId(null);
@@ -213,7 +213,7 @@ export function WishingWall() {
       {/* flowers only once the RSVP is accepted; a short shower when a blessing is sent */}
       {accepted && <JasmineFall density={0.4} fromTop slow />}
       {shower && <JasmineFall density={0} burst shower={phone ? 22 : 40} />}
-      <RsvpSides lit={accepted} variant="pond" />
+      <RsvpSides lit={accepted} variant="wall" />
 
       <div ref={fitRef} className="ww-fit">
         <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
@@ -312,7 +312,7 @@ export function WishingWall() {
         </Container>
       </div>
 
-      <LotusPond wishes={wishes} landingId={landingId} rippleId={rippleId} reduced={reduced} onOpen={openWish} />
+      <LampField wishes={wishes} landingId={landingId} rippleId={rippleId} reduced={reduced} onOpen={openWish} />
 
       {open && <LeafViewer key={open.wish.id} wish={open.wish} from={open.from} reduced={reduced} onClose={() => setOpen(null)} />}
       <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

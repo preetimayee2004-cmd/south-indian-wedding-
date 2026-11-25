@@ -47,6 +47,7 @@ export function PalmLeafString({ wishes, newId, hiddenId, reduced, onOpen }: Pro
   const strip = useRef<HTMLDivElement>(null);
   const items = useRef(new Map<string, HTMLElement>());
   const threads = useRef<(HTMLSpanElement | null)[]>([]);
+  const heights = useRef(new Map<string, number>());
   const st = useRef({ tx: 0, ready: false, lastMode: "" as Mode | "", paused: false, focused: false, dragging: false, moved: false, downX: 0, startTx: 0, time: 0, resumeAt: 0 });
   const ent = useRef(new Map<string, { y: number; r: number; o: number }>());
   const prev = useRef<{ first?: string; P: number }>({ P: 0 });
@@ -71,14 +72,23 @@ export function PalmLeafString({ wishes, newId, hiddenId, reduced, onOpen }: Pro
     const el = strip.current;
     if (!el) return;
     const W = el.clientWidth;
-    const leaf = el.querySelector<HTMLElement>(".pl-leaf");
-    const w = leaf?.offsetWidth ?? 320;
-    const h = leaf?.offsetHeight ?? 94;
+    const leaves = el.querySelectorAll<HTMLElement>("ul.pl-list .pl-leaf");
+    const w = leaves[0]?.offsetWidth ?? 320;
+    // each leaf is as tall as its words need (up to three lines); all hang centred on the thread
+    heights.current.clear();
+    let h = 0;
+    leaves.forEach((lf, i) => {
+      const id = list.current[i]?.id;
+      if (id) heights.current.set(id, lf.offsetHeight);
+      h = Math.max(h, lf.offsetHeight);
+    });
+    h ||= 150;
     const phone = W < 700;
-    const g = phone ? Math.round(W * 0.035) : 34;
+    // desktop: at most three whole leaves on screen, the next one peeking in at each side
+    const g = phone ? Math.round(W * 0.035) : Math.max(34, Math.round((W - 3.5 * w) / 3.5));
     const sag = phone ? 12 : Math.min(34, W * 0.022);
     const s = w + g;
-    geo.current = { W, w, h, g, s, sag, pad: phone ? Math.round((W - w) * 0.3) : 28, top: 12 };
+    geo.current = { W, w, h, g, s, sag, pad: phone ? Math.round((W - w) * 0.3) : Math.round(w * 0.25), top: 12 };
     el.style.height = `${Math.round(12 + sag + h + 26)}px`;
     // enough rounds of the leaves for an endless loop wider than the screen
     const one = list.current.length * s;
@@ -126,10 +136,11 @@ export function PalmLeafString({ wishes, newId, hiddenId, reduced, onOpen }: Pro
         const a = Math.atan((-2 * sag * (xc - half)) / (half * half));
         const sway = reduced ? 0 : Math.sin(t.time * (0.9 + r01(j, 3) * 0.6) + r01(j, 7) * 6.283) * 0.9;
         const e = ent.current.get(wish.id);
-        const y = top + curve(xc) + (e?.y ?? 0);
+        const mid = top + curve(xc) + h / 2 + (e?.y ?? 0); // the thread's height here
+        const y = mid - (heights.current.get(wish.id) ?? h) / 2;
         el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${(a * DEG + sway + (e?.r ?? 0)).toFixed(2)}deg)`;
         el.style.opacity = hidden.current === wish.id ? "0" : String(e?.o ?? 1);
-        if (xc > -w && xc < W + w) pts.push({ x: xc, y: y + h / 2, a });
+        if (xc > -w && xc < W + w) pts.push({ x: xc, y: mid, a });
       });
     }
     // the thread: from the left edge, through both holes of every leaf, to the right edge

@@ -1,13 +1,14 @@
-/* ── Wishing Wall: palm leaves on a thread, a short form, a temple pond of lamps ──
+/* ── Wishing Wall: palm leaves on a thread, a short form, rows of small lamps ──
    Only transform and opacity animate. */
 
-/* the section: one screen tall; the pond takes the lower 30%, the content fits above it */
+/* the section: one screen tall; the lamps take the bottom strip, the content fits above it */
 .wishing-wall-scene.ww-velvet.ww2 {
+  --lampsH: clamp(104px, 15svh, 150px);
   padding-top: clamp(14px, 2.6svh, 30px);
-  padding-bottom: calc(30svh + 8px);
+  padding-bottom: calc(var(--lampsH) + 6px);
 }
 .ww2 .jf-layer {
-  z-index: 3; /* the falling jasmine passes in front of the pond, behind the content */
+  z-index: 3; /* the falling jasmine passes in front of the lamps, behind the content */
 }
 .ww2 .ww-fit {
   z-index: 10;
@@ -107,23 +108,25 @@
 
 /* a palm-leaf manuscript strip: tan, fine grain, uneven cut ends, a burnt edge, a hole at each end */
 .pl-leaf {
+  --hole: 14px;
+  --holeX: 4%;
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px;
-  width: clamp(290px, 25vw, 370px);
-  aspect-ratio: 3.4;
-  padding: 0 11% 0 10%;
-  container-type: inline-size;
+  gap: 4px;
+  width: 440px;
+  min-height: 150px;
+  /* 28px inside, and clear of the thread holes at each end */
+  padding: 22px calc(var(--holeX) + var(--hole) + 16px);
   text-align: left;
-  color: #3b210f;
+  color: #2e1a0f;
   background:
     radial-gradient(ellipse 60% 120% at 50% 50%, rgb(255 244 214 / 0.35), transparent 70%),
-    repeating-linear-gradient(180deg, rgb(120 78 30 / 0.12) 0 1px, transparent 1px 3px, rgb(120 78 30 / 0.06) 3px 4px, transparent 4px 7px),
+    repeating-linear-gradient(180deg, rgb(120 78 30 / 0.1) 0 1px, transparent 1px 3px, rgb(120 78 30 / 0.05) 3px 4px, transparent 4px 7px),
     linear-gradient(180deg, #ecd5a2, #e6cc96 45%, #dcbd82);
-  box-shadow: inset 0 0 0 1px rgb(96 52 16 / 0.55), inset 0 0 12px 2px rgb(110 58 14 / 0.5), inset 0 0 3px 1px rgb(60 28 6 / 0.6);
-  clip-path: polygon(1.4% 9%, 3.2% 1%, 50% 0.5%, 96.6% 2%, 98.9% 10%, 99.6% 48%, 98.6% 90%, 96.2% 99%, 50% 99.6%, 3% 98%, 0.8% 89%, 0.2% 52%);
+  box-shadow: inset 0 0 0 1px rgb(96 52 16 / 0.55), inset 0 0 12px 2px rgb(110 58 14 / 0.45), inset 0 0 3px 1px rgb(60 28 6 / 0.6);
+  clip-path: polygon(1.2% 9%, 2.8% 1%, 50% 0.5%, 97% 2%, 99% 10%, 99.6% 48%, 98.8% 90%, 96.6% 99%, 50% 99.6%, 2.6% 98%, 0.7% 89%, 0.2% 52%);
   -webkit-tap-highlight-color: transparent;
 }
 /* the two holes the thread passes through */
@@ -132,38 +135,41 @@
   content: "";
   position: absolute;
   top: 50%;
-  width: 3.4cqw;
-  height: 3.4cqw;
-  margin-top: -1.7cqw;
+  width: var(--hole);
+  height: var(--hole);
+  margin-top: calc(var(--hole) / -2);
   border-radius: 50%;
   background: radial-gradient(circle, #4c0813 0 32%, #7a1424 34% 42%, #5a3414 46% 60%, rgb(90 50 16 / 0.35) 64%, transparent 72%);
 }
-.pl-leaf::before { left: 4.2%; }
-.pl-leaf::after { right: 4.2%; }
+.pl-leaf::before { left: var(--holeX); }
+.pl-leaf::after { right: var(--holeX); }
+/* the wish: up to three lines, bold and easy to read */
 .pl-msg {
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   font-family: "EB Garamond", Georgia, serif;
-  font-style: italic;
-  font-size: 4.5cqw;
-  line-height: 1.25;
+  font-style: normal;
+  font-weight: 600;
+  font-size: clamp(18px, 1.5vw, 22px);
+  line-height: 1.45;
+  color: #2e1a0f;
 }
 .pl-name {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 5px;
+  gap: 8px;
   font-family: "Great Vibes", cursive;
-  font-size: 6cqw;
+  font-size: clamp(26px, 2.2vw, 34px);
   line-height: 1.1;
-  color: #6a1220;
+  color: #6b1424;
 }
 .pl-dot {
-  width: 1.6cqw;
-  height: 1.6cqw;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 35%, #fff1bf, #d4a54a 55%, #8a5d1f);
   flex: none;
@@ -177,8 +183,14 @@ button.pl-leaf:focus-visible {
 }
 @media (max-width: 699px) {
   .pl-strip .pl-leaf {
-    width: calc(86vw / var(--fit, 1)); /* 86% of the screen, even when the section content is scaled to fit */
+    /* 88% of the screen, even when the section content is scaled to fit */
+    width: calc(88vw / var(--fit, 1));
+    min-height: 140px;
+    padding-block: 16px;
+    --hole: 12px;
   }
+  .pl-msg { font-size: 18px; }
+  .pl-name { font-size: 26px; }
 }
 
 /* the leaf opened in the centre */
@@ -207,11 +219,11 @@ button.pl-leaf:focus-visible {
   display: block;
   -webkit-line-clamp: unset;
   line-clamp: unset;
-  font-size: clamp(18px, 4.2cqw, 26px);
+  font-size: clamp(20px, 2.4vw, 26px);
   line-height: 1.4;
 }
 .pl-leaf--big .pl-name {
-  font-size: clamp(26px, 5.6cqw, 36px);
+  font-size: clamp(30px, 3.4vw, 40px);
 }
 .pl-leaf--big::before,
 .pl-leaf--big::after {
@@ -448,184 +460,75 @@ button.pl-leaf:focus-visible {
   height: 100%;
 }
 
-/* ── the temple pond ── */
-.lp-pond {
+/* ── the lamps: two loose rows on the maroon, a warm glow under each ── */
+.lf-field {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 2;
-  height: 30%;
+  height: var(--lampsH);
 }
-.lp-defs {
+@media (min-width: 1100px) {
+  /* clear of the tall brass lamps in the side panels */
+  .lf-field {
+    left: calc((100% - var(--frameW)) / 2 + 40px);
+    right: calc((100% - var(--frameW)) / 2 + 40px);
+  }
+}
+.lf-lamp {
   position: absolute;
-}
-/* the carved stone edge along the top */
-.lp-edge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
-  height: clamp(14px, 2.2svh, 22px);
-  background:
-    repeating-linear-gradient(90deg, transparent 0 62px, rgb(40 30 20 / 0.6) 62px 64px),
-    linear-gradient(180deg, #b3a48f, #8c7d69 55%, #5b5041);
-  box-shadow: 0 5px 10px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 245 225 / 0.35);
-}
-.lp-edge::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  height: 9px;
-  background: radial-gradient(circle at 50% 0, transparent 5px, #5b5041 5.5px 7.5px, transparent 8px) 0 0 / 18px 9px repeat-x;
-  opacity: 0.85;
-}
-/* still water: dark teal-maroon, soft ripples and reflections */
-.lp-water {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse 50% 40% at 30% 30%, rgb(120 170 170 / 0.12), transparent 70%),
-    radial-gradient(ellipse 40% 50% at 78% 60%, rgb(140 60 80 / 0.18), transparent 70%),
-    linear-gradient(180deg, #16343a, #1d2a33 40%, #2b1a26 75%, #3a1120);
-}
-.lp-ripples {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 200%;
-  pointer-events: none;
-}
-.lp-ripples--a {
-  background: repeating-linear-gradient(180deg, transparent 0 9px, rgb(200 235 235 / 0.06) 9px 10px, transparent 10px 15px);
-  -webkit-mask-image: repeating-linear-gradient(90deg, #000 0 80px, transparent 140px 200px, #000 260px 340px);
-  mask-image: repeating-linear-gradient(90deg, #000 0 80px, transparent 140px 200px, #000 260px 340px);
-  animation: lp-drift 38s linear infinite;
-}
-.lp-ripples--b {
-  background: repeating-linear-gradient(180deg, transparent 0 14px, rgb(255 220 200 / 0.05) 14px 15px, transparent 15px 22px);
-  -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 60px, #000 120px 220px, transparent 300px 360px);
-  mask-image: repeating-linear-gradient(90deg, transparent 0 60px, #000 120px 220px, transparent 300px 360px);
-  animation: lp-drift 56s linear infinite reverse;
-}
-@keyframes lp-drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.lp-shine {
-  position: absolute;
-  inset: 18% -10% auto;
-  height: 40%;
-  background: linear-gradient(90deg, transparent, rgb(255 230 200 / 0.06) 30%, transparent 45%, rgb(255 230 200 / 0.05) 70%, transparent);
-  animation: lp-shine 9s ease-in-out infinite alternate;
-}
-@keyframes lp-shine {
-  from { opacity: 0.4; transform: translateX(-3%); }
-  to { opacity: 1; transform: translateX(3%); }
-}
-.lp-float {
-  position: absolute;
-  inset: 8% 0 0;
-}
-.lp-lotus,
-.lp-pad {
-  position: absolute;
-  width: 62px;
-  height: auto;
-  translate: -50% -50%;
-  scale: var(--s, 1);
-  animation: lp-bob 5.5s ease-in-out infinite alternate;
-}
-.lp-pad {
-  width: 52px;
-  opacity: 0.9;
-  animation-duration: 7s;
-}
-@keyframes lp-bob {
-  from { transform: translateY(-1.5px) rotate(-1.5deg); }
-  to { transform: translateY(1.5px) rotate(1.5deg); }
-}
-/* one floating lamp per wish */
-.lp-lamp {
-  position: absolute;
-  z-index: 1;
-  width: clamp(28px, 2.6vw, 38px);
+  width: clamp(30px, 2.6vw, 40px);
   aspect-ratio: 44 / 50;
-  translate: -50% -60%;
+  translate: -50% -50%;
   cursor: pointer;
   transition: opacity 0.3s ease;
 }
-.lp-lamp.is-landing {
+.lf-lamp.is-landing {
   opacity: 0;
 }
-.lp-bob {
-  display: block;
-  width: 100%;
-  height: 100%;
-  animation: lp-bob var(--b, 3s) ease-in-out var(--d, 0s) infinite alternate;
-}
 .lp-lamp-art {
+  position: relative;
   width: 100%;
   height: 100%;
 }
-/* its flame reflected in the water */
-.lp-reflect {
+.lf-glow {
   position: absolute;
   left: 50%;
-  top: 92%;
-  width: 70%;
-  height: 120%;
-  translate: -50% 0;
-  border-radius: 50%;
-  background: radial-gradient(ellipse 30% 50% at 50% 30%, rgb(255 190 90 / 0.6), rgb(255 150 60 / 0.18) 55%, transparent 75%);
-  animation: lp-glint 2.2s ease-in-out var(--d, 0s) infinite alternate;
-  pointer-events: none;
-}
-@keyframes lp-glint {
-  from { opacity: 0.45; transform: scaleX(0.85); }
-  to { opacity: 0.9; transform: scaleX(1.1); }
-}
-.lp-ring {
-  position: absolute;
-  left: 50%;
-  top: 88%;
-  width: 260%;
-  aspect-ratio: 3;
+  top: 40%;
+  width: 320%;
+  aspect-ratio: 1.6;
   translate: -50% -50%;
-  border: 1.5px solid rgb(255 230 180 / 0.75);
   border-radius: 50%;
-  animation: lp-ring 1.6s ease-out forwards;
+  background: radial-gradient(closest-side, rgb(255 196 110 / 0.5), rgb(255 150 60 / 0.16) 55%, transparent);
+  animation: lf-glow 2.4s ease-in-out var(--d, 0s) infinite alternate;
   pointer-events: none;
 }
-@keyframes lp-ring {
-  from { opacity: 0.95; transform: scale(0.2); }
-  to { opacity: 0; transform: scale(1.6); }
+@keyframes lf-glow {
+  0% { opacity: 0.6; transform: scale(0.94); }
+  40% { opacity: 0.95; transform: scale(1.04); }
+  100% { opacity: 0.75; transform: scale(0.98); }
 }
-@media (max-width: 699px) {
-  .lp-lotus { width: 46px; }
-  .lp-pad { width: 38px; }
+.lf-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, transparent 55%, rgb(255 220 150 / 0.7) 70%, transparent);
+  animation: lf-ring 1.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes lf-ring {
+  from { opacity: 1; transform: scale(0.3); }
+  to { opacity: 0; transform: scale(1.7); }
 }
 
-/* ── desktop sides: the same as the RSVP, the lamps standing on the pond's stone edge ── */
-.rs-sides--pond .rs-garlands {
-  height: 34%;
-}
-.rs-sides--pond .rs-medallion {
-  top: 30%;
-  width: min(200px, 78%);
-}
-.rs-sides--pond .rs-lamp {
-  bottom: 30%;
-  height: 33%;
-}
-.rs-sides--pond .rs-floor-kolam,
-.rs-sides--pond .rs-edge,
-.rs-sides--pond .rs-mini {
+/* ── desktop sides: the same as the RSVP (no phone edge strings or corner lamps here) ── */
+.rs-sides--wall .rs-edge,
+.rs-sides--wall .rs-mini {
   display: none;
 }
 
@@ -702,10 +605,10 @@ button.pl-leaf:focus-visible {
   display: block;
   -webkit-line-clamp: unset;
   line-clamp: unset;
-  font-size: clamp(15px, 3.4cqw, 18px);
+  font-size: 18px;
 }
 .pl-leaf--list .pl-name {
-  font-size: clamp(20px, 4.4cqw, 26px);
+  font-size: clamp(26px, 2.2vw, 32px);
 }
 .pl-leaf--list::before,
 .pl-leaf--list::after {
@@ -716,13 +619,8 @@ button.pl-leaf:focus-visible {
 
 /* animations off: the leaves and lamps stand still */
 @media (prefers-reduced-motion: reduce) {
-  .lp-ripples,
-  .lp-shine,
-  .lp-lotus,
-  .lp-pad,
-  .lp-bob,
-  .lp-reflect,
-  .lp-ring,
+  .lf-glow,
+  .lf-ring,
   .lp-diya.is-lit .lp-diya-flame,
   .lp-diya.is-lit .lp-diya-core {
     animation: none;
@@ -737,5 +635,97 @@ button.pl-leaf:focus-visible {
 @media (min-width: 901px) {
   .ww2 {
     --frameW: min(1100px, max(868px, calc(100vw - 460px)));
+  }
+}
+
+/* ── bigger, bolder text; a plain input box ── */
+.ww2 .wishing-subtitle-text {
+  font-size: 19px;
+  font-weight: 500;
+}
+.ww2-count {
+  font-size: 16px;
+  font-weight: 600;
+}
+.ww2-viewall {
+  font-size: 13px;
+}
+.ww2-form,
+.ww2-done {
+  width: min(100%, 620px);
+}
+.ww2-form-title {
+  font-size: clamp(34px, 3.2vw, 48px);
+}
+.ww2-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #c8961e;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  color: #fbf3df;
+}
+/* plain cream box: no grain, a gold border, a soft gold glow on focus */
+.ww2-leafbox {
+  height: 120px;
+  min-height: 0;
+  padding: 16px 18px;
+  border: 1.5px solid #c8961e;
+  border-radius: 12px;
+  background: #fbf3df;
+  box-shadow: none;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.4;
+  color: #2e1a0f;
+  transition: box-shadow 0.2s ease;
+}
+.ww2-leafbox::placeholder {
+  color: rgb(110 64 28 / 0.55);
+}
+.ww2-leafbox:focus {
+  outline: none;
+  border-width: 2px;
+  padding: 15.5px 17.5px; /* the thicker border without a jump */
+  box-shadow: 0 0 0 4px rgb(200 150 30 / 0.22), 0 0 18px rgb(232 197 107 / 0.35);
+}
+.ww2 .ww-help {
+  font-size: 14px;
+}
+.ww2 .ww-counter {
+  color: #fbf3df;
+}
+.ww2-send {
+  min-width: 260px;
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: 700;
+}
+/* desktop: the three chips in one row (wider than the box), so the form stays short */
+@media (min-width: 700px) {
+  .ww2-chips {
+    flex-wrap: nowrap;
+    width: max-content;
+    max-width: 100vw;
+    margin-inline: auto;
+    position: relative;
+    left: 50%;
+    translate: -50% 0;
+  }
+}
+.wishing-wall-scene.ww-velvet.ww2 {
+  --lampsH: clamp(96px, 13svh, 130px);
+}
+/* phones: the form spans the screen less 16px each side, even when the content is scaled to fit */
+@media (max-width: 699px) {
+  .ww2-form,
+  .ww2-done {
+    width: calc((100vw - 32px) / var(--fit, 1));
+    max-width: none;
+    margin-inline: calc(50% - (100vw - 32px) / var(--fit, 1) / 2);
   }
 }

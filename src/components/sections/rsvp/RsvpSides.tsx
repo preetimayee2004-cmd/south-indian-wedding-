@@ -3,55 +3,12 @@ import { useEffect, useRef, useState } from "react";
 /*
  * The RSVP's side decoration, behind everything and never over the content.
  *  - Wide screens: a panel each side (mirrored), between the kolam frame and the screen edge —
- *    strings of jasmine and marigold hanging from the top, a slowly turning white kolam
- *    medallion in the middle, a tall brass oil lamp on a stand at the bottom with a little
- *    floor kolam in front, all over a faint dot-kolam grid. They fade and rise in when the
- *    section comes on screen; on accept the lamps flare and the medallions turn gold.
+ *    strings of jasmine and marigold hanging from the top and a tall brass oil lamp on a
+ *    stand at the bottom with a soft warm glow, all over a faint dot-kolam grid. They fade
+ *    and rise in when the section comes on screen; on accept the lamps flare brighter.
  *  - Phones and tablets: one jasmine string down each screen edge and a small lamp in each
  *    bottom corner.
  */
-
-/* ── a round kolam medallion in white line art (centred on 0,0, radius ~126) ── */
-const PETALS = Array.from({ length: 8 }, (_, k) => k * 45);
-const LOOPS = Array.from({ length: 16 }, (_, k) => k * 22.5);
-const DOTS_IN = Array.from({ length: 8 }, (_, k) => 22.5 + k * 45);
-
-function MedallionArt() {
-  return (
-    <g fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <circle r="124" />
-      <circle r="117" strokeDasharray="1 7" strokeWidth="2.6" />
-      {LOOPS.map((a) => (
-        <circle key={a} r="7.5" cx="0" cy="-106" transform={`rotate(${a})`} />
-      ))}
-      {PETALS.map((a) => (
-        <g key={a} transform={`rotate(${a})`}>
-          <path d="M0-36C24-56 24-84 0-96C-24-84-24-56 0-36Z" />
-          <path d="M0-48C12-60 12-76 0-84C-12-76-12-60 0-48Z" />
-        </g>
-      ))}
-      {DOTS_IN.map((a) => (
-        <g key={a} transform={`rotate(${a})`}>
-          <circle r="2.6" cy="-74" fill="currentColor" stroke="none" />
-          <circle r="2" cy="-100" fill="currentColor" stroke="none" />
-          <path d="M0-50C9-58 9-64 0-68C-9-64-9-58 0-50Z" />
-        </g>
-      ))}
-      <rect x="-24" y="-24" width="48" height="48" />
-      <rect x="-24" y="-24" width="48" height="48" transform="rotate(45)" />
-      <circle r="13" />
-      <circle r="3" fill="currentColor" stroke="none" />
-    </g>
-  );
-}
-
-function Medallion({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="-130 -130 260 260" aria-hidden>
-      <MedallionArt />
-    </svg>
-  );
-}
 
 /* ── a tall brass kuthu vilakku (oil lamp on a stand) with four flames ── */
 function Flame({ x, y, s = 1 }: { x: number; y: number; s?: number }) {
@@ -182,21 +139,16 @@ function SidePanel({ side }: { side: "l" | "r" }) {
           <Garland key={i} {...s} i={i + (side === "r" ? 2 : 0)} />
         ))}
       </div>
-      <div className="rs-medallion">
-        <span className="rs-medallion-glow" />
-        <Medallion className="rs-medallion-art" />
-      </div>
       <div className="rs-lamp">
         <span className="rs-lamp-glow" />
         <Lamp id={`rs-brass-${side}`} />
       </div>
-      <Medallion className="rs-floor-kolam" />
     </div>
   );
 }
 
-/** `variant="pond"`: the Wishing Wall's sides, where the lamps stand on the pond's stone edge. */
-export function RsvpSides({ lit, variant }: { lit: boolean; variant?: "pond" }) {
+/** `variant="wall"`: the Wishing Wall's sides (no phone edge strings there). */
+export function RsvpSides({ lit, variant }: { lit: boolean; variant?: "wall" }) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
