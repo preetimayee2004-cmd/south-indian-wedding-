@@ -3,213 +3,108 @@ import { flushSync } from "react-dom";
 import { gsap } from "@/lib/gsap";
 import { useMediaQuery, usePrefersReducedMotion } from "@/hooks/useMediaQuery";
 import { useGuest } from "@/context/GuestContext";
-import { scrollToTarget } from "@/lib/smooth";
 import { useWedding } from "@/context/WeddingContext";
 import { fetchWishes, addWish, subscribeWishes, validateWish, WISH_LIMITS, type Wish } from "@/lib/wishes";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { AllWishesModal } from "./wishes/AllWishesModal";
+import { PalmLeafString } from "./wishes/PalmLeafString";
+import { LotusPond, DiyaArt } from "./wishes/LotusPond";
+import { LeafViewer } from "./wishes/LeafViewer";
 import { useAudio } from "@/context/AudioContext";
 import { KolamBand, JasmineFall } from "./rsvp/KolamBorder";
+import { RsvpSides } from "./rsvp/RsvpSides";
 import { useAcceptedThisVisit } from "@/hooks/useAcceptedThisVisit";
 import { useFitToScreen } from "@/hooks/useFitToScreen";
+import "@/styles/wishing-wall.css";
 
-/** How many of the latest wishes ride on the wall (the rest are in "View All Wishes"). */
-const ON_WALL = 12;
-/** Below this many, the cards simply stand in a centred row (no marquee). */
-const MARQUEE_FROM = 4;
-/** On phones one card fills the screen, so the wall slides on its own from two cards. */
-const MARQUEE_FROM_PHONE = 2;
+/** How many of the latest wishes hang on the thread (all of them are in "View all wishes"). */
+const ON_STRING = 12;
 
-function LotusCrest({ className = "w-7 h-5" }: { className?: string }) {
+const SUGGESTIONS = ["Wishing you a lifetime of love and happiness", "May your home be filled with joy", "Blessings to you both from our family"];
+
+/** "5 blessings and counting": counts up when the section comes on screen, and up by one for each new wish. */
+function BlessingCount({ count, reduced }: { count: number; reduced: boolean }) {
+  const el = useRef<HTMLSpanElement>(null);
+  const val = useRef({ v: 0 });
+  const seen = useRef(false);
+  const latest = useRef(count);
+  latest.current = count;
+  const write = (v: number) => {
+    const n = Math.round(v);
+    if (el.current) el.current.textContent = `${n} ${n === 1 ? "blessing" : "blessings"} and counting`;
+  };
+  const run = (to: number) => {
+    gsap.killTweensOf(val.current);
+    if (reduced) {
+      val.current.v = to;
+      write(to);
+      return;
+    }
+    gsap.to(val.current, { v: to, duration: Math.min(1.6, 0.4 + Math.abs(to - val.current.v) * 0.08), ease: "power1.out", onUpdate: () => write(val.current.v) });
+  };
+  useEffect(() => {
+    write(val.current.v);
+    const node = el.current;
+    if (!node) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting || seen.current) return;
+      seen.current = true;
+      run(latest.current);
+      io.disconnect();
+    });
+    io.observe(node);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (seen.current) run(count);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
   return (
-    <svg viewBox="0 0 32 20" fill="none" className={className} aria-hidden="true">
-      <path d="M16 2C16 2 19 8 19 13C19 15.5 17.5 17 16 17C14.5 17 13 15.5 13 13C13 8 16 2 16 2Z" fill="#d4a347" stroke="#9a6b18" strokeWidth="0.8" />
-      <path d="M16 6C17.5 6 23 10 23 14C23 16.5 21 17.5 19 17C18 15 17 12 16 10" fill="#e6be65" stroke="#9a6b18" strokeWidth="0.8" />
-      <path d="M16 6C14.5 6 9 10 9 14C9 16.5 11 17.5 13 17C14 15 15 12 16 10" fill="#e6be65" stroke="#9a6b18" strokeWidth="0.8" />
-      <path d="M16 10C18 10 27 12 28 16C28 18 25 18.5 22 17.5C20 16 18 13.5 16 12" fill="#f3d485" stroke="#9a6b18" strokeWidth="0.8" />
-      <path d="M16 10C14 10 5 12 4 16C4 18 7 18.5 10 17.5C12 16 14 13.5 16 12" fill="#f3d485" stroke="#9a6b18" strokeWidth="0.8" />
-      <ellipse cx="16" cy="18" rx="8" ry="1.5" fill="#c49028" />
-    </svg>
-  );
-}
-
-/** One framed blessing card: a big gold quote mark, the message, a gold rule and the guest's signature. */
-function BlessingCard({ wish, tilt, fresh, hidden, pinned }: { wish: Wish; tilt: number; fresh?: boolean; hidden?: boolean; pinned?: boolean }) {
-  const cls = `ww-card ${fresh ? "ww-card--new" : ""} ${pinned ? "ww-card--pinned" : ""}`;
-  const initial = wish.name.trim().charAt(0).toUpperCase() || "✦";
-  return (
-    <figure className={cls} data-wish={hidden ? undefined : wish.id} style={{ ["--tilt" as string]: `${tilt}deg` }} aria-hidden={hidden || undefined}>
-      {(["tl", "tr", "bl", "br"] as const).map((c) => (
-        <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
-      ))}
-      {pinned && (
-        <span className="ww-pinned-tag" role="status">
-          <span className="ww-pinned-pin" aria-hidden />
-          Your blessing is pinned here
-        </span>
-      )}
-      <span className="ww-quote" aria-hidden>
-        &ldquo;
+    <>
+      <span ref={el} aria-hidden />
+      <span className="sr-only">
+        {count} {count === 1 ? "blessing" : "blessings"} and counting
       </span>
-      <blockquote className="ww-message">{wish.message}</blockquote>
-      <span className="ww-rule" aria-hidden />
-      <figcaption className="ww-sign">
-        <span className="ww-medallion" aria-hidden>
-          {initial}
-        </span>
-        <span className="ww-name">{wish.name}</span>
-      </figcaption>
-    </figure>
+    </>
   );
 }
 
+/**
+ * The Wishing Wall: the latest wishes as palm-leaf manuscript strips strung on a maroon thread,
+ * a short form, and below it a temple pond where one small lamp floats for each wish. Sending a
+ * blessing lights the lamp on the button; it rises, arcs down onto the pond with a ripple, a new
+ * leaf slides onto the front of the thread, jasmine falls and the count goes up by one.
+ */
 export function WishingWall() {
   const { id: weddingId } = useWedding();
-  const [wishes, setWishes] = useState<Wish[]>([]);
   const { guestName, isPersonalized } = useGuest();
-  const [pinnedId, setPinnedId] = useState<string | null>(null);
-  const phone = useMediaQuery("(max-width: 767px)");
+  const [wishes, setWishes] = useState<Wish[]>([]);
   const [guestMessage, setGuestMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newlyAddedId, setNewlyAddedId] = useState<string | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
-  const sendBtnRef = useRef<HTMLButtonElement>(null);
+  const [newId, setNewId] = useState<string | null>(null);
+  const [landingId, setLandingId] = useState<string | null>(null);
+  const [rippleId, setRippleId] = useState<string | null>(null);
+  const [open, setOpen] = useState<{ wish: Wish; from: HTMLElement } | null>(null);
+  const [btnLit, setBtnLit] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [shower, setShower] = useState(false);
   const { playSfx } = useAudio();
   const reduced = usePrefersReducedMotion();
+  const phone = useMediaQuery("(max-width: 699px)");
   const accepted = useAcceptedThisVisit(); // flowers fall here only once the RSVP is accepted in this visit
-  const wallRef = useRef<HTMLDivElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const fitRef = useRef<HTMLDivElement>(null);
-  // one screen tall, like the gallery: the content scales down to fit when it is taller
+  const textRef = useRef<HTMLTextAreaElement>(null);
+  const btnLamp = useRef<HTMLSpanElement>(null);
+  const doneRef = useRef<HTMLDivElement>(null);
+  // one screen tall, like the gallery: the content above the pond scales down to fit when it is taller
   useFitToScreen(sectionRef, fitRef);
 
-  /** A little burst of rose and gold hearts rising from a point on the screen. */
-  const burstHearts = (x: number, y: number, n: number, spread = 70) => {
-    if (reduced) return;
-    for (let i = 0; i < n; i++) {
-      const h = document.createElement("span");
-      h.className = `ww-heart ${i % 2 ? "ww-heart--rose" : "ww-heart--gold"}`;
-      h.textContent = "♥";
-      document.body.appendChild(h);
-      const a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2;
-      const d = spread * (0.7 + Math.random() * 0.9);
-      gsap.fromTo(
-        h,
-        { x, y, scale: 0.5, autoAlpha: 1 },
-        { x: `+=${Math.cos(a) * d}`, y: `+=${Math.sin(a) * d - 30}`, scale: 0.8 + Math.random() * 0.7, autoAlpha: 0, duration: 1.1 + Math.random() * 0.4, ease: "power2.out", onComplete: () => h.remove() },
-      );
-    }
-  };
-
-  /** Hearts burst out of the Send button the moment it is pressed. */
-  const heartsFromButton = () => {
-    const b = sendBtnRef.current?.getBoundingClientRect();
-    if (b) burstHearts(b.left + b.width / 2, b.top + b.height / 2, 14, 80);
-  };
-
-  /** The wall stops and starts again from the beginning, so the new wish (always first) is in view. */
-  const holdWall = () => {
-    const wall = wallRef.current;
-    const track = wall?.querySelector<HTMLElement>(".ww-track");
-    wall?.classList.add("is-landing");
-    if (track) {
-      track.style.animation = "none";
-      void track.offsetWidth;
-      track.style.animation = "";
-    }
-    if (wall) wall.scrollLeft = 0;
-  };
-
-  /** Show where the wish was pinned for a few seconds, then let the wall move on. */
-  const showPinned = (w: Wish) => {
-    setPinnedId(w.id);
-    window.setTimeout(() => {
-      setPinnedId((p) => (p === w.id ? null : p));
-      wallRef.current?.classList.remove("is-landing");
-    }, 4200);
-  };
-
-  /**
-   * After sending: the page glides up to the wall, the wish flies from the composer onto its
-   * spot, a brass pin drops on it, hearts burst, and the card glows with "Pinned here" for a moment.
-   */
-  const flyToWall = (w: Wish) => {
-    holdWall();
-    const wall = wallRef.current;
-    if (wall) {
-      const r = wall.getBoundingClientRect();
-      const y = window.scrollY + r.top - Math.max(16, (window.innerHeight - r.height) / 2);
-      scrollToTarget(y, { min: 700, max: 700 });
-    }
-    window.setTimeout(() => fly(w), wall ? 760 : 0);
-  };
-
-  const fly = (w: Wish) => {
-    const card = document.querySelector<HTMLElement>(`[data-wish="${CSS.escape(w.id)}"]`);
-    const from = formRef.current?.getBoundingClientRect();
-    if (reduced || !card || !from) {
-      playSfx("pin");
-      playSfx("sweet", { volume: 0.5, delay: 0.15 });
-      showPinned(w);
-      return;
-    }
-    card.style.visibility = "hidden";
-    const to = card.getBoundingClientRect();
-    const fly = document.createElement("div");
-    fly.className = "ww-fly";
-    fly.setAttribute("aria-hidden", "true");
-    const name = document.createElement("strong");
-    name.textContent = w.name;
-    const line = document.createElement("span");
-    line.textContent = w.message.split("\n")[0].slice(0, 60);
-    fly.append(line, name);
-    document.body.appendChild(fly);
-    const fw = fly.offsetWidth;
-    const fh = fly.offsetHeight;
-    const sx = from.left + from.width / 2 - fw / 2;
-    // the composer may be below the screen by now: start from the bottom edge
-    const sy = Math.min(window.innerHeight - fh - 12, from.top + from.height * 0.35 - fh / 2);
-    const ex = to.left + to.width / 2 - fw / 2;
-    const ey = to.top + to.height / 2 - fh / 2;
-    const lift = Math.min(160, Math.abs(ey - sy) * 0.5 + 60);
-    playSfx("whoosh", { volume: 0.4 });
-    gsap
-      .timeline({ onComplete: () => fly.remove() })
-      .fromTo(fly, { x: sx, y: sy, rotate: -6, scale: 0.9, autoAlpha: 0 }, { autoAlpha: 1, duration: 0.15 }, 0)
-      .to(
-        fly,
-        {
-          motionPath: { path: [{ x: sx, y: sy }, { x: (sx + ex) / 2, y: Math.min(sy, ey) - lift }, { x: ex, y: ey }], curviness: 1.2 },
-          rotate: 4,
-          scale: Math.max(0.6, to.width / fw),
-          duration: 0.9,
-          ease: "power2.inOut",
-        },
-        0,
-      )
-      .call(() => {
-        // the brass pin drops onto the card, and hearts burst up
-        const pin = document.createElement("span");
-        pin.className = "ww-fly-pin";
-        fly.appendChild(pin);
-        gsap.fromTo(pin, { y: -46, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.25, ease: "power2.in" });
-        gsap.delayedCall(0.22, () => {
-          playSfx("pin");
-          playSfx("sweet", { volume: 0.5, delay: 0.12 });
-          const box = fly.getBoundingClientRect();
-          burstHearts(box.left + box.width / 2, box.top + 6, 10 + Math.floor(Math.random() * 5));
-        });
-      }, undefined, 0.9)
-      // the real card takes its place underneath as the flyer fades, and shows where it was pinned
-      .call(() => {
-        card.style.visibility = "";
-        showPinned(w);
-      }, undefined, 1.45)
-      .to(fly, { autoAlpha: 0, duration: 0.25 }, 1.45);
-  };
+  const knownName = isPersonalized && guestName?.trim() ? guestName.trim() : null;
 
   useEffect(() => {
     let active = true;
@@ -226,140 +121,200 @@ export function WishingWall() {
     };
   }, [weddingId]);
 
+  useEffect(() => {
+    if (sent) doneRef.current?.focus({ preventScroll: true });
+  }, [sent]);
+
+  const openWish = (wish: Wish, from: HTMLElement) => {
+    playSfx("leaf", { volume: 0.4, gesture: true, owner: sectionRef.current });
+    setOpen({ wish, from });
+  };
+
+  /** A lit lamp rises from the button, floats down in an arc and lands on the pond with a ripple. */
+  const launchLamp = (w: Wish, from: DOMRect | undefined) => {
+    const land = () => {
+      setLandingId(null);
+      setRippleId(w.id);
+      window.setTimeout(() => setRippleId((r) => (r === w.id ? null : r)), 1800);
+    };
+    const target = document.querySelector<HTMLElement>(`[data-lamp="${CSS.escape(w.id)}"] .lp-lamp-art`);
+    if (reduced || !target || !from) return land();
+    const to = target.getBoundingClientRect();
+    const fly = document.createElement("div");
+    fly.className = "lp-fly";
+    fly.setAttribute("aria-hidden", "true");
+    fly.innerHTML = target.outerHTML;
+    fly.style.width = `${to.width}px`;
+    fly.style.height = `${to.height}px`;
+    document.body.appendChild(fly);
+    const sx = from.left + from.width / 2 - to.width / 2;
+    const sy = from.top + from.height / 2 - to.height / 2;
+    const ex = to.left;
+    const ey = to.top;
+    const peak = Math.min(sy, ey) - Math.min(160, Math.abs(ey - sy) * 0.6 + 70);
+    playSfx("whoosh", { volume: 0.35, delay: 0.15 });
+    gsap
+      .timeline({
+        onComplete: () => {
+          fly.remove();
+          land();
+          playSfx("sweet", { volume: 0.45 });
+        },
+      })
+      .fromTo(fly, { x: sx, y: sy, scale: 0.7, opacity: 0 }, { scale: 1.15, opacity: 1, duration: 0.3 }, 0)
+      .to(fly, { motionPath: { path: [{ x: sx, y: sy }, { x: sx + (ex - sx) * 0.35, y: peak }, { x: ex, y: ey }], curviness: 1.3 }, scale: 1, duration: 1.5, ease: "power1.inOut" }, 0.1);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // no name to type: a personal invite link signs it with the guest's name
-    const cleanName = (isPersonalized && guestName?.trim()) || "Well-wisher";
+    const cleanName = knownName || "Well-wisher";
     const problem = validateWish(cleanName, guestMessage);
     if (problem) {
       setValidationError(problem);
       return;
     }
-    heartsFromButton();
     setIsSubmitting(true);
     setValidationError(null);
+    setBtnLit(true); // the lamp on the button lights
+    playSfx("flame", { volume: 0.5, gesture: true, owner: sectionRef.current });
     try {
-      const createdWish = await addWish(weddingId, cleanName, guestMessage);
+      const created = await addWish(weddingId, cleanName, guestMessage);
+      const from = btnLamp.current?.getBoundingClientRect();
       flushSync(() => {
-        setNewlyAddedId(createdWish.id);
-        setWishes((prev) => [createdWish, ...prev.filter((w) => w.id !== createdWish.id)]);
+        setLandingId(created.id);
+        setNewId(created.id);
+        setWishes((prev) => [created, ...prev.filter((w) => w.id !== created.id)]);
+        setSent(true);
+        setGuestMessage("");
       });
-      flyToWall(createdWish); // flies onto the wall, pinned with a "tik" and two soft tings
-      setGuestMessage("");
+      launchLamp(created, from);
+      setShower(true);
+      window.setTimeout(() => setShower(false), 7500);
     } catch (err) {
       console.error("Failed to add wish:", err);
+      setBtnLit(false);
+      setValidationError("Could not send your blessing. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const onWall = wishes.slice(0, ON_WALL);
-  const marquee = onWall.length >= (phone ? MARQUEE_FROM_PHONE : MARQUEE_FROM);
-  const count = wishes.length;
-  // the marquee runs at the same reading speed however many cards there are
-  const duration = `${Math.max(30, onWall.length * 9)}s`;
+  const writeAnother = () => {
+    setSent(false);
+    setBtnLit(false);
+    window.setTimeout(() => textRef.current?.focus({ preventScroll: true }), 0);
+  };
+
+  const onString = wishes.slice(0, ON_STRING);
 
   return (
-    <section ref={sectionRef} id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet">
-      {/* the same velvet as the RSVP above, with half as much falling jasmine */}
+    <section ref={sectionRef} id="wishingWall" aria-labelledby="wishing-wall-heading" className="wishing-wall-scene ww-velvet ww2">
+      {/* flowers only once the RSVP is accepted; a short shower when a blessing is sent */}
       {accepted && <JasmineFall density={0.4} fromTop slow />}
+      {shower && <JasmineFall density={0} burst shower={phone ? 22 : 40} />}
+      <RsvpSides lit={accepted} variant="pond" />
 
       <div ref={fitRef} className="ww-fit">
-      <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
-        {/* heading */}
-        {/* a bird kolam band above the heading */}
-        <span aria-hidden className="ww-band">
-          <KolamBand className="kb-solo" />
-        </span>
-        <header className="ww-head">
-          <p className="ww-eyebrow">॥ आशीर्वाद ॥</p>
-          <h2 id="wishing-wall-heading" className="wishing-title-text">
-            Wishing Wall
-          </h2>
-          <GoldDivider className="mt-3" />
-          <p className="wishing-subtitle-text mt-2">Leave a little love and a blessing for our new beginning.</p>
-          {count > 0 && (
-            <p className="ww-count" aria-live="polite">
-              {count} {count === 1 ? "blessing" : "blessings"} so far
-            </p>
-          )}
-        </header>
-
-        {/* the lovebirds, fading softly into the wall */}
-        <div className="wishing-lovebirds-container mt-2 md:mt-3">
-          <img src="/media/wishing-lovebirds-clean.webp" alt="Two lovebirds sitting on a blossoming floral branch" className="wishing-lovebirds-art ww-lovebirds" draggable={false} />
-        </div>
-
-        {/* the latest blessings: an endless slow marquee on desktop, a swipe row on phones */}
-        {onWall.length > 0 && (
-          <div ref={wallRef} className={`ww-wall ${marquee ? "ww-wall--marquee" : "ww-wall--still"}`} role="region" aria-label="Blessings from guests">
-            <div className="ww-track" style={{ ["--ww-dur" as string]: duration }}>
-              {onWall.map((w, i) => (
-                <BlessingCard key={w.id} wish={w} tilt={i % 2 ? 0.6 : -0.6} fresh={w.id === newlyAddedId} pinned={w.id === pinnedId} />
-              ))}
-              {/* the second copy makes the marquee seamless (desktop only; hidden from screen readers) */}
-              {marquee &&
-                onWall.map((w, i) => (
-                  <div key={`dup-${w.id}`} className="ww-dup">
-                    <BlessingCard wish={w} tilt={i % 2 ? 0.6 : -0.6} hidden />
-                  </div>
-                ))}
-            </div>
-          </div>
-        )}
-
-        {/* leave your blessing */}
-        <form ref={formRef} onSubmit={handleSubmit} className="ww-composer" noValidate>
-          <span className="ww-composer-crest" aria-hidden="true">
-            <LotusCrest className="h-6 w-10" />
+        <Container className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center">
+          <span aria-hidden className="ww-band">
+            <KolamBand className="kb-solo" />
           </span>
-          {(["tl", "tr", "bl", "br"] as const).map((c) => (
-            <img key={c} src="/media/gold-corner.webp" alt="" aria-hidden draggable={false} className={`ww-corner ww-corner--${c}`} />
-          ))}
-          <h3 className="ww-composer-title">Leave your blessing</h3>
-          <label className="ww-field">
-            <span className="sr-only">Your blessing</span>
-            <textarea
-              value={guestMessage}
-              onChange={(e) => {
-                setGuestMessage(e.target.value);
-                if (validationError) setValidationError(null);
-              }}
-              placeholder="Write your blessing…"
-              maxLength={WISH_LIMITS.message}
-              rows={3}
-              className="ww-input ww-textarea"
-              aria-invalid={validationError ? true : undefined}
-              aria-describedby="ww-help"
-            />
-          </label>
-          <div id="ww-help" className="ww-help">
-            <span className="ww-error" role="alert">
-              {validationError ?? ""}
-            </span>
-            <span className="ww-counter">
-              {guestMessage.length} / {WISH_LIMITS.message}
-            </span>
-          </div>
-          <button ref={sendBtnRef} type="submit" disabled={isSubmitting || !guestMessage.trim()} className="ww-send">
-            {isSubmitting ? "Sending…" : "Send Blessing ✦"}
-          </button>
-        </form>
+          <header className="ww-head">
+            <p className="ww-eyebrow">॥ आशीर्वाद ॥</p>
+            <h2 id="wishing-wall-heading" className="wishing-title-text">
+              Wishing Wall
+            </h2>
+            <GoldDivider className="mt-3" />
+            <p className="wishing-subtitle-text mt-2">Leave a little love and a blessing for our new beginning.</p>
+            <p className="ww2-count" aria-live="polite">
+              <DiyaArt className="ww2-count-lamp" />
+              <BlessingCount count={wishes.length} reduced={reduced} />
+              <span aria-hidden className="ww2-sep">
+                ·
+              </span>
+              <button type="button" onClick={() => setIsModalOpen(true)} className="ww2-viewall">
+                View all wishes <span aria-hidden="true">›</span>
+              </button>
+            </p>
+          </header>
 
-        {/* and one below the form */}
-        <span aria-hidden className="ww-band ww-band--below">
-          <KolamBand className="kb-solo" />
-        </span>
+          {onString.length > 0 && (
+            <div className="ww2-string">
+              <PalmLeafString wishes={onString} newId={newId} hiddenId={open?.wish.id ?? null} reduced={reduced} onOpen={openWish} />
+            </div>
+          )}
 
-        <div className="mt-5 md:mt-6">
-          <button type="button" onClick={() => setIsModalOpen(true)} className="ww-view-all">
-            View All Wishes <span aria-hidden="true">›</span>
-          </button>
-        </div>
-
-      </Container>
+          {sent ? (
+            <div ref={doneRef} className="ww2-done" role="status" tabIndex={-1}>
+              <p className="ww2-done-text">Your blessing has been added</p>
+              <button type="button" className="ww2-link" onClick={writeAnother}>
+                Write another
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="ww2-form" noValidate>
+              <h3 className="ww2-form-title">Leave your blessing</h3>
+              {knownName && (
+                <p className="ww2-from">
+                  From <span>{knownName}</span>
+                </p>
+              )}
+              <div className="ww2-chips" role="group" aria-label="Suggestions">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="ww2-chip"
+                    onClick={() => {
+                      setGuestMessage(s);
+                      setValidationError(null);
+                      textRef.current?.focus({ preventScroll: true });
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <label className="ww2-field">
+                <span className="sr-only">Your blessing</span>
+                <textarea
+                  ref={textRef}
+                  value={guestMessage}
+                  onChange={(e) => {
+                    setGuestMessage(e.target.value);
+                    if (validationError) setValidationError(null);
+                  }}
+                  placeholder="Write your blessing..."
+                  maxLength={WISH_LIMITS.message}
+                  rows={2}
+                  className="ww2-leafbox"
+                  aria-invalid={validationError ? true : undefined}
+                  aria-describedby="ww-help"
+                />
+              </label>
+              <div id="ww-help" className="ww-help">
+                <span className="ww-error" role="alert">
+                  {validationError ?? ""}
+                </span>
+                <span className="ww-counter">
+                  {guestMessage.length} / {WISH_LIMITS.message}
+                </span>
+              </div>
+              <button type="submit" disabled={isSubmitting || !guestMessage.trim()} className="ww2-send">
+                <span ref={btnLamp} className="ww2-send-lamp">
+                  <DiyaArt lit={btnLit} />
+                </span>
+                {isSubmitting ? "Sending…" : "Send blessing"}
+              </button>
+            </form>
+          )}
+        </Container>
       </div>
-      {/* outside the scaled content, so the full-screen modal is not scaled with it */}
+
+      <LotusPond wishes={wishes} landingId={landingId} rippleId={rippleId} reduced={reduced} onOpen={openWish} />
+
+      {open && <LeafViewer key={open.wish.id} wish={open.wish} from={open.from} reduced={reduced} onClose={() => setOpen(null)} />}
       <AllWishesModal wishes={wishes} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );

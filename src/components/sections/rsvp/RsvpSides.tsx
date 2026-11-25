@@ -195,7 +195,8 @@ function SidePanel({ side }: { side: "l" | "r" }) {
   );
 }
 
-export function RsvpSides({ lit }: { lit: boolean }) {
+/** `variant="pond"`: the Wishing Wall's sides, where the lamps stand on the pond's stone edge. */
+export function RsvpSides({ lit, variant }: { lit: boolean; variant?: "pond" }) {
   const ref = useRef<HTMLDivElement>(null);
   const [inView, setInView] = useState(false);
 
@@ -217,7 +218,7 @@ export function RsvpSides({ lit }: { lit: boolean }) {
   }, []);
 
   return (
-    <div ref={ref} className={`rs-sides ${inView ? "is-in" : ""} ${lit ? "is-lit" : ""}`} aria-hidden>
+    <div ref={ref} className={`rs-sides ${variant ? `rs-sides--${variant}` : ""} ${inView ? "is-in" : ""} ${lit ? "is-lit" : ""}`} aria-hidden>
       <GarlandDefs />
       <SidePanel side="l" />
       <SidePanel side="r" />

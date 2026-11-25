@@ -189,7 +189,7 @@ const FLOWER_SPEEDS = [16, 12, 9];
  * desktop. `burst` adds a dense shower that keeps coming for about four seconds. With `fromTop`
  * the light fall begins at the top (instead of already mid-air), and `slow` makes it slower.
  */
-export function JasmineFall({ density = 1, burst = false, fromTop = false, slow = false }: { density?: number; burst?: boolean; fromTop?: boolean; slow?: boolean }) {
+export function JasmineFall({ density = 1, burst = false, fromTop = false, slow = false, shower }: { density?: number; burst?: boolean; fromTop?: boolean; slow?: boolean; /** how many flowers in the burst */ shower?: number }) {
   const reduced = usePrefersReducedMotion();
   const [count] = useState(() => Math.round((typeof window !== "undefined" && window.innerWidth < 700 ? 14 : 24) * density));
   if (reduced) return null;
@@ -220,7 +220,7 @@ export function JasmineFall({ density = 1, burst = false, fromTop = false, slow 
   return (
     <div className="jf-layer" aria-hidden>
       {items(count, 11)}
-      {burst && items(Math.round(count * 3), 41, true)}
+      {burst && items(shower ?? Math.round(count * 3), 41, true)}
     </div>
   );
 }

@@ -1,0 +1,741 @@
+/* ── Wishing Wall: palm leaves on a thread, a short form, a temple pond of lamps ──
+   Only transform and opacity animate. */
+
+/* the section: one screen tall; the pond takes the lower 30%, the content fits above it */
+.wishing-wall-scene.ww-velvet.ww2 {
+  padding-top: clamp(14px, 2.6svh, 30px);
+  padding-bottom: calc(30svh + 8px);
+}
+.ww2 .jf-layer {
+  z-index: 3; /* the falling jasmine passes in front of the pond, behind the content */
+}
+.ww2 .ww-fit {
+  z-index: 10;
+}
+.ww2 .ww-band {
+  display: block;
+  margin-bottom: 2px;
+}
+.ww2 .kb-solo {
+  width: min(60%, 360px, 24vh);
+}
+.ww2 .wishing-subtitle-text {
+  margin-top: 6px;
+}
+
+/* the count: a small lit lamp, "5 blessings and counting", View all wishes */
+.ww2-count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  margin-top: 8px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  color: #f3cf73;
+}
+.ww2-count-lamp {
+  width: 22px;
+  height: 25px;
+}
+.ww2-sep {
+  color: rgb(243 207 115 / 0.6);
+}
+.ww2-viewall {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fbe7b0;
+  text-decoration: underline;
+  text-decoration-color: rgb(243 207 115 / 0.5);
+  text-underline-offset: 4px;
+}
+.ww2-viewall:hover,
+.ww2-viewall:focus-visible {
+  color: #fff6dc;
+}
+
+/* ── the string of palm leaves, edge to edge ── */
+.ww2-string {
+  width: calc(100vw / var(--fit, 1));
+  margin: 6px calc(50% - 50vw / var(--fit, 1)) 0;
+}
+.pl-strip {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+.pl-strip:active {
+  cursor: grabbing;
+}
+.pl-thread {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  margin-top: -1px;
+  transform-origin: 0 50%;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #c84a58, #7a1424 55%, #4c0813);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+}
+.pl-list {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pl-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  filter: drop-shadow(0 6px 7px rgb(20 0 4 / 0.45));
+}
+
+/* a palm-leaf manuscript strip: tan, fine grain, uneven cut ends, a burnt edge, a hole at each end */
+.pl-leaf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  width: clamp(290px, 25vw, 370px);
+  aspect-ratio: 3.4;
+  padding: 0 11% 0 10%;
+  container-type: inline-size;
+  text-align: left;
+  color: #3b210f;
+  background:
+    radial-gradient(ellipse 60% 120% at 50% 50%, rgb(255 244 214 / 0.35), transparent 70%),
+    repeating-linear-gradient(180deg, rgb(120 78 30 / 0.12) 0 1px, transparent 1px 3px, rgb(120 78 30 / 0.06) 3px 4px, transparent 4px 7px),
+    linear-gradient(180deg, #ecd5a2, #e6cc96 45%, #dcbd82);
+  box-shadow: inset 0 0 0 1px rgb(96 52 16 / 0.55), inset 0 0 12px 2px rgb(110 58 14 / 0.5), inset 0 0 3px 1px rgb(60 28 6 / 0.6);
+  clip-path: polygon(1.4% 9%, 3.2% 1%, 50% 0.5%, 96.6% 2%, 98.9% 10%, 99.6% 48%, 98.6% 90%, 96.2% 99%, 50% 99.6%, 3% 98%, 0.8% 89%, 0.2% 52%);
+  -webkit-tap-highlight-color: transparent;
+}
+/* the two holes the thread passes through */
+.pl-leaf::before,
+.pl-leaf::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 3.4cqw;
+  height: 3.4cqw;
+  margin-top: -1.7cqw;
+  border-radius: 50%;
+  background: radial-gradient(circle, #4c0813 0 32%, #7a1424 34% 42%, #5a3414 46% 60%, rgb(90 50 16 / 0.35) 64%, transparent 72%);
+}
+.pl-leaf::before { left: 4.2%; }
+.pl-leaf::after { right: 4.2%; }
+.pl-msg {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 4.5cqw;
+  line-height: 1.25;
+}
+.pl-name {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  font-family: "Great Vibes", cursive;
+  font-size: 6cqw;
+  line-height: 1.1;
+  color: #6a1220;
+}
+.pl-dot {
+  width: 1.6cqw;
+  height: 1.6cqw;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff1bf, #d4a54a 55%, #8a5d1f);
+  flex: none;
+}
+button.pl-leaf {
+  cursor: inherit;
+}
+button.pl-leaf:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 3px;
+}
+@media (max-width: 699px) {
+  .pl-strip .pl-leaf {
+    width: calc(86vw / var(--fit, 1)); /* 86% of the screen, even when the section content is scaled to fit */
+  }
+}
+
+/* the leaf opened in the centre */
+.lv-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.lv-dim {
+  position: absolute;
+  inset: 0;
+  background: rgb(14 2 5 / 0.72);
+}
+.pl-leaf--big {
+  width: min(92vw, 640px);
+  aspect-ratio: auto;
+  min-height: calc(min(92vw, 640px) / 3.4);
+  padding: 7% 12% 6% 11%;
+  gap: 10px;
+  filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.55));
+}
+.pl-leaf--big .pl-msg {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  font-size: clamp(18px, 4.2cqw, 26px);
+  line-height: 1.4;
+}
+.pl-leaf--big .pl-name {
+  font-size: clamp(26px, 5.6cqw, 36px);
+}
+.pl-leaf--big::before,
+.pl-leaf--big::after {
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+}
+.lv-close {
+  position: absolute;
+  top: 10px;
+  right: 7%;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #6a1220;
+  color: #fbe7b0;
+  font-size: 13px;
+  box-shadow: 0 0 0 1px #d4a54a;
+}
+
+/* ── the form ── */
+.ww2-form,
+.ww2-done {
+  position: relative;
+  width: min(100%, 560px);
+  margin-top: 10px;
+  text-align: center;
+}
+.ww2-form-title {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.7rem, 3vw, 2.1rem);
+  line-height: 1.1;
+  color: #f3cf73;
+}
+.ww2-from {
+  margin-top: 2px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.98rem;
+  color: #f1dfbd;
+}
+.ww2-from span {
+  font-family: "Great Vibes", cursive;
+  font-style: normal;
+  font-size: 1.35rem;
+  color: #fbe7b0;
+}
+.ww2-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.ww2-chip {
+  padding: 6px 12px;
+  border: 1px solid rgb(243 207 115 / 0.6);
+  border-radius: 999px;
+  background: rgb(60 6 16 / 0.55);
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  line-height: 1.2;
+  color: #fbe7b0;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.ww2-chip:active {
+  transform: scale(0.96);
+}
+.ww2-chip:focus-visible {
+  outline: 2px solid #f3cf73;
+  outline-offset: 2px;
+}
+@media (max-width: 699px) {
+  /* one row that scrolls sideways, so the form stays short */
+  .ww2-chips {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -4px;
+    padding: 0 4px 2px;
+  }
+  .ww2-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .ww2-chip {
+    flex: none;
+  }
+}
+.ww2-field {
+  display: block;
+  margin-top: 8px;
+}
+/* the text box: a blank palm leaf with the same grain */
+.ww2-leafbox {
+  display: block;
+  width: 100%;
+  min-height: 74px;
+  padding: 14px 9% 12px;
+  border: 0;
+  border-radius: 10px / 26px;
+  resize: none;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  line-height: 1.35;
+  color: #3b210f;
+  background:
+    repeating-linear-gradient(180deg, rgb(120 78 30 / 0.12) 0 1px, transparent 1px 3px, rgb(120 78 30 / 0.06) 3px 4px, transparent 4px 7px),
+    linear-gradient(180deg, #ecd5a2, #e6cc96 45%, #dcbd82);
+  box-shadow: inset 0 0 0 1px rgb(96 52 16 / 0.55), inset 0 0 12px 2px rgb(110 58 14 / 0.45), 0 6px 14px rgb(20 0 4 / 0.35);
+}
+.ww2-leafbox::placeholder {
+  color: rgb(80 46 18 / 0.6);
+}
+.ww2-leafbox:focus {
+  outline: 2px solid #f3cf73;
+  outline-offset: 2px;
+}
+.ww2 .ww-help {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #f1dfbd;
+}
+.ww2 .ww-error {
+  color: #ffc9a8;
+}
+/* gold, maroon text, an unlit lamp that lights on sending */
+.ww2-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 220px;
+  min-height: 50px;
+  margin-top: 6px;
+  padding: 0 28px;
+  border: 1.5px solid #f3cf73;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f7dc8c, #e8c56b 45%, #d4a54a);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.5);
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+  color: #4c0813;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.ww2-send:active {
+  transform: scale(0.97);
+}
+.ww2-send:disabled {
+  opacity: 0.7;
+}
+.ww2-send-lamp {
+  display: block;
+  width: 24px;
+  height: 27px;
+}
+.ww2-send-lamp .lp-diya {
+  width: 100%;
+  height: 100%;
+}
+.ww2-done {
+  padding: 14px 0 6px;
+}
+.ww2-done:focus {
+  outline: none;
+}
+.ww2-done-text {
+  font-family: "Great Vibes", cursive;
+  font-size: clamp(1.8rem, 3.4vw, 2.3rem);
+  color: #f3cf73;
+}
+.ww2-link {
+  margin-top: 4px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #fbe7b0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ── the diya ── */
+.lp-diya {
+  display: block;
+  overflow: visible;
+}
+.lp-diya-flame,
+.lp-diya-core {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+.lp-diya-flame {
+  fill: #ff9a28;
+  filter: drop-shadow(0 0 4px #ffb347);
+}
+.lp-diya-core {
+  fill: #fff1b8;
+}
+.lp-diya.is-lit .lp-diya-flame,
+.lp-diya.is-lit .lp-diya-core {
+  opacity: 1;
+  transform: scale(1);
+  animation: lp-flicker 0.9s ease-in-out infinite alternate;
+}
+.lp-diya.is-lit .lp-diya-core {
+  animation-duration: 0.7s;
+  animation-direction: alternate-reverse;
+}
+@keyframes lp-flicker {
+  0% { transform: scale(1, 1) rotate(-2deg); }
+  50% { transform: scale(0.92, 1.08) rotate(1.5deg); }
+  100% { transform: scale(1.05, 0.94) rotate(-1deg); }
+}
+.lp-fly {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 320;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgb(255 190 90 / 0.8));
+}
+.lp-fly .lp-diya {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── the temple pond ── */
+.lp-pond {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 30%;
+}
+.lp-defs {
+  position: absolute;
+}
+/* the carved stone edge along the top */
+.lp-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: clamp(14px, 2.2svh, 22px);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 62px, rgb(40 30 20 / 0.6) 62px 64px),
+    linear-gradient(180deg, #b3a48f, #8c7d69 55%, #5b5041);
+  box-shadow: 0 5px 10px rgb(0 0 0 / 0.45), inset 0 1px 0 rgb(255 245 225 / 0.35);
+}
+.lp-edge::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 9px;
+  background: radial-gradient(circle at 50% 0, transparent 5px, #5b5041 5.5px 7.5px, transparent 8px) 0 0 / 18px 9px repeat-x;
+  opacity: 0.85;
+}
+/* still water: dark teal-maroon, soft ripples and reflections */
+.lp-water {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 50% 40% at 30% 30%, rgb(120 170 170 / 0.12), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 78% 60%, rgb(140 60 80 / 0.18), transparent 70%),
+    linear-gradient(180deg, #16343a, #1d2a33 40%, #2b1a26 75%, #3a1120);
+}
+.lp-ripples {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  pointer-events: none;
+}
+.lp-ripples--a {
+  background: repeating-linear-gradient(180deg, transparent 0 9px, rgb(200 235 235 / 0.06) 9px 10px, transparent 10px 15px);
+  -webkit-mask-image: repeating-linear-gradient(90deg, #000 0 80px, transparent 140px 200px, #000 260px 340px);
+  mask-image: repeating-linear-gradient(90deg, #000 0 80px, transparent 140px 200px, #000 260px 340px);
+  animation: lp-drift 38s linear infinite;
+}
+.lp-ripples--b {
+  background: repeating-linear-gradient(180deg, transparent 0 14px, rgb(255 220 200 / 0.05) 14px 15px, transparent 15px 22px);
+  -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 60px, #000 120px 220px, transparent 300px 360px);
+  mask-image: repeating-linear-gradient(90deg, transparent 0 60px, #000 120px 220px, transparent 300px 360px);
+  animation: lp-drift 56s linear infinite reverse;
+}
+@keyframes lp-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.lp-shine {
+  position: absolute;
+  inset: 18% -10% auto;
+  height: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 230 200 / 0.06) 30%, transparent 45%, rgb(255 230 200 / 0.05) 70%, transparent);
+  animation: lp-shine 9s ease-in-out infinite alternate;
+}
+@keyframes lp-shine {
+  from { opacity: 0.4; transform: translateX(-3%); }
+  to { opacity: 1; transform: translateX(3%); }
+}
+.lp-float {
+  position: absolute;
+  inset: 8% 0 0;
+}
+.lp-lotus,
+.lp-pad {
+  position: absolute;
+  width: 62px;
+  height: auto;
+  translate: -50% -50%;
+  scale: var(--s, 1);
+  animation: lp-bob 5.5s ease-in-out infinite alternate;
+}
+.lp-pad {
+  width: 52px;
+  opacity: 0.9;
+  animation-duration: 7s;
+}
+@keyframes lp-bob {
+  from { transform: translateY(-1.5px) rotate(-1.5deg); }
+  to { transform: translateY(1.5px) rotate(1.5deg); }
+}
+/* one floating lamp per wish */
+.lp-lamp {
+  position: absolute;
+  z-index: 1;
+  width: clamp(28px, 2.6vw, 38px);
+  aspect-ratio: 44 / 50;
+  translate: -50% -60%;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.lp-lamp.is-landing {
+  opacity: 0;
+}
+.lp-bob {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: lp-bob var(--b, 3s) ease-in-out var(--d, 0s) infinite alternate;
+}
+.lp-lamp-art {
+  width: 100%;
+  height: 100%;
+}
+/* its flame reflected in the water */
+.lp-reflect {
+  position: absolute;
+  left: 50%;
+  top: 92%;
+  width: 70%;
+  height: 120%;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 30% 50% at 50% 30%, rgb(255 190 90 / 0.6), rgb(255 150 60 / 0.18) 55%, transparent 75%);
+  animation: lp-glint 2.2s ease-in-out var(--d, 0s) infinite alternate;
+  pointer-events: none;
+}
+@keyframes lp-glint {
+  from { opacity: 0.45; transform: scaleX(0.85); }
+  to { opacity: 0.9; transform: scaleX(1.1); }
+}
+.lp-ring {
+  position: absolute;
+  left: 50%;
+  top: 88%;
+  width: 260%;
+  aspect-ratio: 3;
+  translate: -50% -50%;
+  border: 1.5px solid rgb(255 230 180 / 0.75);
+  border-radius: 50%;
+  animation: lp-ring 1.6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes lp-ring {
+  from { opacity: 0.95; transform: scale(0.2); }
+  to { opacity: 0; transform: scale(1.6); }
+}
+@media (max-width: 699px) {
+  .lp-lotus { width: 46px; }
+  .lp-pad { width: 38px; }
+}
+
+/* ── desktop sides: the same as the RSVP, the lamps standing on the pond's stone edge ── */
+.rs-sides--pond .rs-garlands {
+  height: 34%;
+}
+.rs-sides--pond .rs-medallion {
+  top: 30%;
+  width: min(200px, 78%);
+}
+.rs-sides--pond .rs-lamp {
+  bottom: 30%;
+  height: 33%;
+}
+.rs-sides--pond .rs-floor-kolam,
+.rs-sides--pond .rs-edge,
+.rs-sides--pond .rs-mini {
+  display: none;
+}
+
+/* ── View all wishes: a scrollable list of the leaves ── */
+.aw-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(14 2 5 / 0.72);
+}
+.aw-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 680px);
+  max-height: 86vh;
+  max-height: 86dvh;
+  border: 1.5px solid #d4a54a;
+  border-radius: 16px;
+  background: #4a0815;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.55);
+  overflow: hidden;
+}
+.aw-head {
+  position: relative;
+  padding: 18px 56px 12px;
+  text-align: center;
+  border-bottom: 1px solid rgb(212 165 74 / 0.4);
+}
+.aw-title {
+  font-family: Cinzel, "Cormorant Garamond", Georgia, serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  color: #f3cf73;
+}
+.aw-sub {
+  margin-top: 2px;
+  font-family: "EB Garamond", Georgia, serif;
+  font-style: italic;
+  color: #f1dfbd;
+}
+.aw-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #6a1220;
+  color: #fbe7b0;
+  box-shadow: 0 0 0 1px #d4a54a;
+}
+.aw-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 18px 16px 22px;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.pl-leaf--list {
+  width: 100%;
+  aspect-ratio: auto;
+  min-height: 0;
+  padding: 16px 11% 12px 10%;
+  gap: 6px;
+}
+.pl-leaf--list .pl-msg {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  font-size: clamp(15px, 3.4cqw, 18px);
+}
+.pl-leaf--list .pl-name {
+  font-size: clamp(20px, 4.4cqw, 26px);
+}
+.pl-leaf--list::before,
+.pl-leaf--list::after {
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+}
+
+/* animations off: the leaves and lamps stand still */
+@media (prefers-reduced-motion: reduce) {
+  .lp-ripples,
+  .lp-shine,
+  .lp-lotus,
+  .lp-pad,
+  .lp-bob,
+  .lp-reflect,
+  .lp-ring,
+  .lp-diya.is-lit .lp-diya-flame,
+  .lp-diya.is-lit .lp-diya-core {
+    animation: none;
+  }
+  .lp-diya-flame,
+  .lp-diya-core {
+    transition: none;
+  }
+}
+
+/* the side panels need the same frame width as the RSVP's to size themselves */
+@media (min-width: 901px) {
+  .ww2 {
+    --frameW: min(1100px, max(868px, calc(100vw - 460px)));
+  }
+}
