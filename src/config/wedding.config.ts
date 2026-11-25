@@ -272,7 +272,8 @@ const weddingConfig: WeddingConfig = {
       pin: "/audio/sfx/pin.mp3", // a wish pinned to the wall
       conch: "/audio/sfx/conch.mp3", // venue: the shankh
       elephant: "/audio/sfx/elephant.mp3", // finale: temple elephants walk in, neck bells
-      trumpet: "/audio/sfx/trumpet.mp3", // finale: an elephant trumpets
+      trumpet: "/audio/sfx/trumpet.mp3", // (not used now)
+      elestep: "/audio/sfx/elestep.wav", // hero: a soft elephant footstep with ankle bells
     },
   },
 

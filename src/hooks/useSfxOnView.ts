@@ -26,7 +26,8 @@ export function useSfxOnView(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         io.disconnect();
-        list.forEach(([name, opts]) => playSfx(name, opts));
+        const owner = el.closest("section") ?? el;
+        list.forEach(([name, opts]) => playSfx(name, { owner, ...opts }));
       },
       { threshold, rootMargin },
     );

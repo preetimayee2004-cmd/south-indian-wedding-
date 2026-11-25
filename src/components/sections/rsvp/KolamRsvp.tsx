@@ -144,7 +144,7 @@ export function KolamRsvp() {
     if (phase !== "open") return;
     setError("");
     setPhase("saving");
-    playSfx("tap", { gesture: true });
+    playSfx("tap", { gesture: true, owner: root.current });
     const c = KOLAM;
     // 1 · a white dot drops into the centre with a small bounce (it lifts out again if saving fails)
     if (!reduced) gsap.fromTo(q(".kr-cdot"), { autoAlpha: 1, y: -c.cut * 1.6 }, { y: 0, duration: 0.55, ease: "bounce.out" });
@@ -186,12 +186,12 @@ export function KolamRsvp() {
     const tl = gsap.timeline();
     tl.to(q(".kr-missing"), { autoAlpha: 0, duration: 0.3 }, 0);
     // 2 · its lines draw to join the rest
-    tl.call(() => playSfx("kolam", { volume: 0.35 }), undefined, 0);
+    tl.call(() => playSfx("kolam", { volume: 0.35, owner: root.current }), undefined, 0);
     tl.to(q(".kr-cross"), { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut", stagger: 0.08 }, 0);
     // 3 · the brass lamp appears on the centre dot and lights
     tl.fromTo(q(".kr-lamp"), { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 0.75);
     tl.call(() => {
-      playSfx("flame", { volume: 0.5 });
+      playSfx("flame", { volume: 0.5, owner: root.current });
       playSfx("bell", { volume: 0.5 });
       if (root.current) showerPetals(root.current, 2);
     }, undefined, 1.1);

@@ -6,6 +6,7 @@ import { useRevealed } from "@/context/IntroContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Cloud, Leaf, rand } from "@/components/scene/Decor";
 import { TempleStage } from "./hero/TempleStage";
+import { useElephantSteps } from "@/hooks/useElephantSteps";
 
 /** The solid sky colour sampled from the top of temple-hero.webp (the hero's only sky). */
 export const TEMPLE_SKY = "#0061C2";
@@ -38,6 +39,8 @@ export function TempleHeroScene({ tail = 1 }: { tail?: number }) {
   const { couple, wedding } = useWedding();
   const { guestName } = useGuest();
   const revealed = useRevealed();
+  // the only sound in the hero: the elephants' footsteps while they walk and the guest scrolls
+  useElephantSteps("invitation-hero");
   const first = couple.order === "bride-first" ? couple.bride : couple.groom;
   const second = couple.order === "bride-first" ? couple.groom : couple.bride;
 

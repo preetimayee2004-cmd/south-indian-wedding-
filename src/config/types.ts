@@ -35,7 +35,7 @@ export interface StoryMilestone {
 export type SfxName =
   | "seal" | "rustle" | "slide" | "whoosh" | "bell" | "tap" | "tick" | "thavil" | "stamp" | "pin" | "conch"
   | "elephant" | "trumpet" | "swish" | "step" | "reveal" | "door" | "wind" | "pop" | "breath" | "flame"
-  | "sweet" | "leaf" | "petals" | "kolam";
+  | "sweet" | "leaf" | "petals" | "kolam" | "elestep";
 
 export type EventTheme = "nalangu" | "mehendi" | "sangeet" | "muhurtham" | "reception";
 

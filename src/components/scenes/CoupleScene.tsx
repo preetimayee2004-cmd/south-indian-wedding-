@@ -4,7 +4,8 @@ import { useAudio } from "@/context/AudioContext";
 import { useWedding } from "@/context/WeddingContext";
 import { Scene, type Build } from "@/components/scene/Scene";
 import { Petal, rand } from "@/components/scene/Decor";
-import { gsap, refreshSoon } from "@/lib/gsap";
+import { gsap, refreshSoon, type ScrollTrigger } from "@/lib/gsap";
+import { lockScroll, scrollToTarget } from "@/lib/smooth";
 import { CloudMessage, type CloudRefs } from "./couple/CloudMessage";
 import { Toran } from "./couple/Toran";
 
@@ -73,6 +74,67 @@ const LAMPS: [number, number][] = [
 /** Couple-scene timeline, in screens of scroll (the section pins for 350vh). */
 const T = 3.5;
 const at = (f: number) => f * T;
+/** Screens of pinned scroll after they meet, while the ending plays in place. */
+const HOLD = 0.6;
+
+const SEEN_KEY = "wedding:couple-finished";
+const seenOnce = () => {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+};
+const markSeen = () => {
+  try {
+    sessionStorage.setItem(SEEN_KEY, "1");
+  } catch {
+    /* storage blocked: it may simply play again */
+  }
+};
+
+/** Block scroll input (wheel, touch, keys) while the ending plays. Returns the unlock. */
+function lockInput(): () => void {
+  const stop = (e: Event) => e.preventDefault();
+  const keys = (e: KeyboardEvent) => {
+    if ([" ", "PageDown", "PageUp", "ArrowDown", "ArrowUp", "Home", "End"].includes(e.key)) e.preventDefault();
+  };
+  lockScroll(true);
+  window.addEventListener("wheel", stop, { passive: false });
+  window.addEventListener("touchmove", stop, { passive: false });
+  window.addEventListener("keydown", keys);
+  return () => {
+    lockScroll(false);
+    window.removeEventListener("wheel", stop);
+    window.removeEventListener("touchmove", stop);
+    window.removeEventListener("keydown", keys);
+  };
+}
+
+/** The ending on its own, then a 1.2 s pause, then a 1.2 s glide to the next section (cancelled by any input). */
+function playFinish(finish: gsap.core.Timeline, section: HTMLElement) {
+  const unlock = lockInput();
+  finish.eventCallback("onComplete", () => {
+    unlock();
+    const EV = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
+    let cancelGlide = () => {};
+    const cancel = () => {
+      window.clearTimeout(wait);
+      cancelGlide();
+      EV.forEach((e) => window.removeEventListener(e, cancel));
+    };
+    EV.forEach((e) => window.addEventListener(e, cancel, { passive: true }));
+    const wait = window.setTimeout(() => {
+      // the next section with content after this one
+      let next = section.closest(".sec")?.nextElementSibling ?? null;
+      while (next && !next.querySelector("section")) next = next.nextElementSibling;
+      if (!next) return cancel();
+      cancelGlide = scrollToTarget(next as HTMLElement, { min: 1200, max: 1200 });
+      window.setTimeout(() => EV.forEach((e) => window.removeEventListener(e, cancel)), 1300);
+    }, 1200);
+  });
+  finish.play(0);
+}
 
 /**
  * The background, the bride and the groom on one stage (the couple-stage CSS
@@ -195,10 +257,12 @@ export function CoupleScene() {
     // They start walking in the moment the section comes onto the screen (its top at the
     // screen's bottom) and arrive a little after it pins (35% of the pinned scroll), from
     // beyond the edges to where they meet, smoothly with the scroll (and back in reverse).
+    // (filled in below, once the ending is built)
+    let onWalk: (self: ScrollTrigger) => void = () => undefined;
     const walkEnd = () => `top+=${Math.round(at(0.35) * window.innerHeight)} top`;
     const walkIn = gsap.timeline({
       defaults: { ease: "none" },
-      scrollTrigger: { trigger: section, start: "top bottom", end: walkEnd, scrub: 1.2, invalidateOnRefresh: true },
+      scrollTrigger: { trigger: section, start: "top bottom", end: walkEnd, scrub: 1.2, invalidateOnRefresh: true, onUpdate: (self) => onWalk(self) },
     });
     walkIn.fromTo(bride, { x: () => -(stage.offsetLeft + bride.offsetLeft + bride.offsetWidth + 24) }, { x: 0, duration: 1, ease: "power2.out" }, 0);
     walkIn.fromTo(groom, { x: () => window.innerWidth - (stage.offsetLeft + groom.offsetLeft) + 24 }, { x: 0, duration: 1, ease: "power2.out" }, 0);
@@ -217,7 +281,7 @@ export function CoupleScene() {
       // (only while the couple are actually on screen — never from a re-measure or a late catch-up)
       const box = stage.getBoundingClientRect();
       const onScreen = box.top < window.innerHeight && box.bottom > 0;
-      if (n > lastStep && step.t < 0.995 && onScreen) playSfx("step", { volume: 0.8, rate: n % 2 ? 0.92 : 1.08 });
+      if (n > lastStep && step.t < 0.995 && onScreen) playSfx("step", { volume: 0.8, rate: n % 2 ? 0.92 : 1.08, owner: section });
       lastStep = n;
       const fade = (1 - step.t) ** 1.5;
       gsap.set(refs.brideBob.current, { y: -6 * Math.abs(Math.sin(step.t * Math.PI * 7)) * fade });
@@ -225,71 +289,67 @@ export function CoupleScene() {
     };
     walkIn.fromTo(step, { t: 0 }, { t: 1, duration: 1, onUpdate: bob }, 0);
 
-    // 40–50%: she leans in 2° and back, offering the garland
-    tl.to(refs.brideTilt.current, { rotate: 2, duration: at(0.05), ease: "sine.inOut" }, at(0.4));
-    tl.to(refs.brideTilt.current, { rotate: 0, duration: at(0.05), ease: "sine.inOut" }, at(0.45));
-
-    // the lamps glow up as they meet
-    tl.fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: at(0.06), ease: "sine.out" }, at(0.36))
-      .to(lamps, { autoAlpha: 0.55, scale: 0.95, duration: at(0.04), ease: "sine.inOut" }, at(0.42))
-      .to(lamps, { autoAlpha: 1, scale: 1.1, duration: at(0.04), ease: "sine.inOut" }, at(0.46))
-      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: at(0.06), ease: "sine.inOut" }, at(0.5));
-
-    // Right as they meet, the two clouds merge into the big one
-    tl.to([c.left, c.right], { autoAlpha: 0, scale: 1.2, duration: at(0.04) }, at(0.35));
-    tl.fromTo(c.main, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: at(0.05), ease: "back.out(2)" }, at(0.36));
-
-    // "THE COUPLE", then the names write in letter by letter, the "&" in its lotus, then the flourish draws
-    tl.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: at(0.025), ease: "power2.out" }, at(0.45));
-    // a soft airy "fwip" once, the first time the names write in
-    let revealed = false;
-    tl.call(() => {
-      if (revealed) return;
-      revealed = true;
-      playSfx("reveal", { volume: 0.6 });
-    }, undefined, at(0.475));
-    const half = c.letters.length;
-    tl.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: at(0.02), stagger: at(0.11) / Math.max(1, half), ease: "power2.out" }, at(0.475));
-    tl.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: at(0.03), ease: "back.out(2)" }, at(0.52));
-    tl.fromTo(c.flourish, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: at(0.04), ease: "power1.inOut" }, at(0.58));
-
-    // Petals fall from under the cloud onto the couple, then keep falling lightly
+    // ── The moment they meet, the rest plays on its own (about 3.5 s), not with the scroll:
+    // the garland gesture, the cloud forms, the names write in, petals fall, the lamps glow.
+    const finish = gsap.timeline({ paused: true });
+    finish
+      .to(refs.brideTilt.current, { rotate: 2, duration: 0.35, ease: "sine.inOut" }, 0)
+      .to(refs.brideTilt.current, { rotate: 0, duration: 0.35, ease: "sine.inOut" }, 0.35);
+    finish
+      .to([c.left, c.right], { autoAlpha: 0, scale: 1.2, duration: 0.35 }, 0.15)
+      .fromTo(c.main, { autoAlpha: 0, scale: 0.9 }, { autoAlpha: 1, scale: 1, duration: 0.45, ease: "back.out(2)" }, 0.25);
+    finish.fromTo(c.label, { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.7);
+    finish.call(() => playSfx("reveal", { volume: 0.6, owner: section }), undefined, 0.9);
+    finish.fromTo(c.letters, { autoAlpha: 0, y: 8, scale: 0.85 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.22, stagger: 0.8 / Math.max(1, c.letters.length), ease: "power2.out" }, 0.9);
+    finish.fromTo(c.amp, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.55);
+    finish.fromTo(c.flourish, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" }, 1.85);
     c.petals.forEach((el, i) => {
       const fall = () => {
         const cloud = c.main!.getBoundingClientRect();
         const stageBox = refs.stage.current!.getBoundingClientRect();
         return Math.max(60, stageBox.top + stageBox.height * 0.9 - cloud.bottom);
       };
-      tl.fromTo(
+      finish.fromTo(
         el,
         { y: 0, x: 0, rotate: rand(i, 71) * 180, autoAlpha: 1 },
-        { y: fall, x: (rand(i, 73) - 0.5) * 80, rotate: `+=${200 + rand(i, 79) * 260}`, autoAlpha: 0.2, duration: at(0.08 + rand(i, 83) * 0.05), ease: "none" },
-        at(0.62 + (i / c.petals.length) * 0.05),
+        { y: fall, x: (rand(i, 73) - 0.5) * 80, rotate: `+=${200 + rand(i, 79) * 260}`, autoAlpha: 0.2, duration: 0.7 + rand(i, 83) * 0.4, ease: "none" },
+        2.15 + (i / c.petals.length) * 0.4,
       );
     });
-    tl.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: at(0.03) }, at(0.72));
+    finish.fromTo(c.rain, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 2.8);
+    finish
+      .fromTo(lamps, { autoAlpha: 0, scale: 0.7 }, { autoAlpha: 1, scale: 1.15, duration: 0.4, ease: "sine.out" }, 2.6)
+      .to(lamps, { autoAlpha: 0.85, scale: 1, duration: 0.5, ease: "sine.inOut" }, 3.0);
 
-    // Auto-scroll to family section when animation finishes
-    let autoScrolled = false;
-    tl.add(() => {
-      autoScrolled = false;
-    }, at(0.2));
-
-    tl.add(() => {
-      if (!autoScrolled) {
-        autoScrolled = true;
-        const fam = document.getElementById("family");
-        // only a gentle nudge forward while the guest is still at the couple scene —
-        // never pull them back up after a fast swipe past it (that felt like a jump/lag on phones)
-        const top = fam?.getBoundingClientRect().top ?? -1;
-        if (fam && top > 0 && top < window.innerHeight * 1.5) {
-          fam.scrollIntoView({ behavior: "smooth" });
-        }
+    // While they walk in, the scene follows the scroll; the moment they meet (the walk-in
+    // reaches its end, scrolling down, while the scene is on the screen) the rest plays as above
+    // with the scroll locked, then after 1.2 s the page glides to the next section — unless the
+    // guest scrolls or touches first. Once per visit; afterwards (or when arriving another way,
+    // e.g. scrolling back up) the scene is simply shown finished.
+    let started = false;
+    onWalk = (self: ScrollTrigger) => {
+      if (started || self.progress < 0.999) return;
+      started = true;
+      const box = section.getBoundingClientRect();
+      const pinned = box.top <= 2 && box.bottom >= window.innerHeight - 2;
+      if (seenOnce() || self.direction < 0 || !pinned) {
+        finish.progress(1);
+        return;
       }
-    }, at(0.78));
+      markSeen();
+      playFinish(finish, section);
+    };
+    const walkST = walkIn.scrollTrigger;
+    if (walkST) {
+      // already past the meeting point (a reload lower down the page): show it finished
+      if (walkST.progress >= 0.999) {
+        started = true;
+        finish.progress(1);
+      }
+    }
 
-    // hold to the end
-    tl.to({}, { duration: Math.max(0, T - tl.duration()) });
+    // the pin lasts while they walk in, plus a short hold for the ending to play in place
+    tl.to({}, { duration: Math.max(0, at(0.35) + HOLD - tl.duration()) });
 
   };
 

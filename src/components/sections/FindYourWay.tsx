@@ -1,7 +1,6 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent } from "react";
 import { useWedding } from "@/context/WeddingContext";
 import { useAudio } from "@/context/AudioContext";
-import { useSfxOnView } from "@/hooks/useSfxOnView";
 import { Container } from "@/components/layout/Container";
 import { GoldDivider } from "@/components/ui/GoldDivider";
 import { JourneyMap } from "./travel/JourneyMap";
@@ -162,8 +161,6 @@ function dateLine(iso: string, timeZone: string, muhurtham?: string) {
 export function FindYourWay() {
   const { venue, wedding, travelNotes = [], stay = [], contacts } = useWedding();
   const { playSfx } = useAudio();
-  // the shankh is blown as the mandap comes into view
-  useSfxOnView(".fw-hero-art", [["conch", { volume: 0.5 }]], { threshold: 0.5, rootMargin: "0px" });
   const reduced = usePrefersReducedMotion();
   const root = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
@@ -191,7 +188,6 @@ export function FindYourWay() {
         if (!reduced) gsap.set(leaves, { scaleY: 0.08, autoAlpha: 0, transformOrigin: "50% 0%" });
         const open = gsap.timeline({ paused: true });
         leaves.forEach((leaf, i) => {
-          open.call(() => playSfx("leaf", { volume: 0.5, rate: 0.92 + ((i * 7) % 5) * 0.04 }), undefined, i * 0.35);
           if (!reduced) open.to(leaf, { scaleY: 1, autoAlpha: 1, duration: 0.7, ease: "power2.out", clearProps: "transform" }, i * 0.35);
         });
         gsap.timeline({ scrollTrigger: { trigger: leaves[0].parentElement, start: "top 75%", once: true } }).call(() => void open.play());
@@ -202,7 +198,6 @@ export function FindYourWay() {
           bells.forEach((b, i) =>
             gsap.delayedCall(0.3 * i, () => {
               if (!reduced) b.classList.add("is-swaying");
-              playSfx("bell", { rate: BELL_PITCH[i % BELL_PITCH.length], volume: 0.45 });
             }),
           );
         });
@@ -355,7 +350,7 @@ export function FindYourWay() {
                     onClick={(e) => {
                       ring(e);
                       // each bell has its own voice
-                      playSfx("bell", { rate: BELL_PITCH[i % BELL_PITCH.length], volume: 0.75, gesture: true });
+                      playSfx("bell", { rate: BELL_PITCH[i % BELL_PITCH.length], volume: 0.75, gesture: true, owner: root.current });
                     }}
                     aria-label={`Ring the bell for ${c.name}`}
                   >

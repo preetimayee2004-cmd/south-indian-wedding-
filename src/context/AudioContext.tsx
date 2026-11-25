@@ -13,18 +13,31 @@ export interface SfxOptions {
   delay?: number;
   /** called straight from a tap: may wake the audio up itself */
   gesture?: boolean;
+  /** the section this sound belongs to: it stops when the guest leaves that section */
+  owner?: Element | null;
+  /** cut the sound off after this many seconds (with a short fade) */
+  cut?: number;
+  /** fade the sound slowly to silence over this many seconds (a long bell decay) */
+  fadeOut?: number;
 }
 
 interface AudioState {
-  /** A song is configured (the song button is hidden otherwise — no dead buttons). */
+  /** A song is configured. */
   hasMusic: boolean;
+  /** A song or any sound effect is configured (the sound button is hidden otherwise). */
+  hasSound: boolean;
   /** The song is playing right now. */
   playing: boolean;
-  /** Wake the audio up for the sound effects. Call from inside a tap. Never starts the song. */
+  /** All sound is off (remembered for this visit). */
+  muted: boolean;
+  /** The envelope was tapped: from now on sound may play. Call from inside that tap. Never starts the song. */
   start: () => void;
-  /** Song on/off — the only way the song plays. Call from a tap. Sound effects are not affected. */
+  /**
+   * The one sound button. Off → on: sound on and the song plays. On with the song not yet
+   * started → the song plays. On with the song playing → everything off (song and effects).
+   */
   toggle: () => void;
-  /** Sound effects always play (once the guest has tapped anything), whether the song is on or off. */
+  /** One effect at a time (a new one fades the last out), under the song, never while muted or hidden. */
   playSfx: (name: Sfx, opts?: SfxOptions) => void;
   /**
    * A looping effect (e.g. wind behind the paper plane), silent until `set` raises it.
@@ -44,6 +57,24 @@ export interface SfxLoop {
 export const NO_LOOP: SfxLoop = { set: () => undefined, stop: () => undefined };
 
 const Ctx = createContext<AudioState | null>(null);
+const MUTE_KEY = "wedding:sound-off";
+/** The song dips by this much while an effect plays. */
+const DUCK = 0.7;
+
+function readMuted(): boolean {
+  try {
+    return sessionStorage.getItem(MUTE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function writeMuted(v: boolean) {
+  try {
+    sessionStorage.setItem(MUTE_KEY, v ? "1" : "0");
+  } catch {
+    /* storage blocked */
+  }
+}
 const FADE_IN = 2.5;
 const FADE_OUT = 0.8;
 
@@ -75,8 +106,16 @@ function decode(ctx: BaseAudioContext, data: ArrayBuffer): Promise<AudioBuffer> 
  * - Music fades use a GainNode because iOS Safari ignores HTMLMediaElement.volume.
  */
 export function AudioProvider({ children }: { children: ReactNode }) {
-  const { audio } = useWedding();
+  const { audio, opening } = useWedding();
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(readMuted);
+  const mutedRef = useRef(muted);
+  /** The guest has tapped the envelope (or there is no envelope and they tapped the page). */
+  const tapped = useRef(false);
+  /** The one effect playing now. */
+  const current = useRef<{ src: AudioBufferSourceNode; gain: GainNode; owner: Element | null } | null>(null);
+  const owners = useRef(new Map<Element, IntersectionObserver>());
+  const duckTimer = useRef(0);
 
   const el = useRef<HTMLAudioElement | null>(null);
   const ctx = useRef<AudioContext | null>(null);
@@ -98,7 +137,7 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     const c = new C();
     ctx.current = c;
     fxGain.current = c.createGain();
-    fxGain.current.gain.value = fxVolume;
+    fxGain.current.gain.value = mutedRef.current ? 0 : fxVolume;
     fxGain.current.connect(c.destination);
     return c;
   }, [fxVolume]);
@@ -211,51 +250,150 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     setPlaying(false);
   }, [fadeTo]);
 
-  const start = useCallback(() => unlock(), [unlock]);
-
-  const toggle = useCallback(() => {
+  const start = useCallback(() => {
+    tapped.current = true;
     unlock();
-    if (!audio.music) return;
-    if (playing) {
-      wantSong.current = false;
-      pause();
-    } else {
-      wantSong.current = true;
-      play();
-    }
-  }, [audio.music, pause, play, playing, unlock]);
-
-  const playSfx = useCallback((name: Sfx, opts: SfxOptions = {}) => {
-    if (opts.gesture) unlock();
-    if (!unlocked.current) return; // browsers allow sound only after the guest's first tap
-    const c = ctx.current;
-    const out = fxGain.current;
-    if (!c || !out || c.state === "closed") return;
-    const asked = performance.now();
-    const fire = (b: AudioBuffer) => {
-      const late = (performance.now() - asked) / 1000;
-      if (late > 0.45) return; // too late to still match the moment
-      if (c.state !== "running") void c.resume().catch(() => undefined);
-      const src = c.createBufferSource();
-      src.buffer = b;
-      if (opts.rate) src.playbackRate.value = opts.rate;
-      let node: AudioNode = src;
-      if (opts.volume != null && opts.volume !== 1) {
-        const g = c.createGain();
-        g.gain.value = opts.volume;
-        src.connect(g);
-        node = g;
-      }
-      node.connect(out);
-      src.start(c.currentTime + Math.max(0, (opts.delay ?? 0) - late));
-    };
-    const ready = buffers.current.get(name);
-    if (ready) fire(ready);
-    else void pending.current.get(name)?.then((b) => b && fire(b));
   }, [unlock]);
 
+  /** Fade the playing effect out (0.2 s by default) and let the song come back up. */
+  const stopCurrent = useCallback((seconds = 0.2) => {
+    const cur = current.current;
+    const c = ctx.current;
+    if (!cur || !c) return;
+    current.current = null;
+    const t = c.currentTime;
+    try {
+      cur.gain.gain.cancelScheduledValues(t);
+      cur.gain.gain.setValueAtTime(cur.gain.gain.value, t);
+      cur.gain.gain.linearRampToValueAtTime(0, t + seconds);
+      cur.src.stop(t + seconds + 0.02);
+    } catch {
+      /* already stopped */
+    }
+  }, []);
+
+  /** The song dips while an effect plays and comes back after it. */
+  const duck = useCallback(
+    (down: boolean) => {
+      const g = musicGain.current;
+      const c = ctx.current;
+      if (!g || !c || !playing) return;
+      window.clearTimeout(duckTimer.current);
+      const apply = () => {
+        const t = c.currentTime;
+        g.gain.cancelScheduledValues(t);
+        g.gain.setValueAtTime(g.gain.value, t);
+        g.gain.linearRampToValueAtTime(down ? audio.volume * DUCK : audio.volume, t + (down ? 0.15 : 0.5));
+      };
+      if (down) apply();
+      else duckTimer.current = window.setTimeout(apply, 120); // unless the next effect follows right away
+    },
+    [audio.volume, playing],
+  );
+
+  const setAllMuted = useCallback(
+    (v: boolean) => {
+      mutedRef.current = v;
+      setMuted(v);
+      writeMuted(v);
+      const c = ctx.current;
+      if (fxGain.current && c) fxGain.current.gain.setTargetAtTime(v ? 0 : fxVolume, c.currentTime, 0.05);
+      if (v) stopCurrent(0.15);
+    },
+    [fxVolume, stopCurrent],
+  );
+
+  const toggle = useCallback(() => {
+    tapped.current = true;
+    unlock();
+    if (mutedRef.current) {
+      setAllMuted(false);
+      if (audio.music) {
+        wantSong.current = true;
+        play();
+      }
+    } else if (audio.music && !playing) {
+      wantSong.current = true;
+      play();
+    } else {
+      wantSong.current = false;
+      if (playing) pause();
+      setAllMuted(true);
+    }
+  }, [audio.music, pause, play, playing, setAllMuted, unlock]);
+
+  /** Stop this section's sound when the guest leaves it. */
+  const watchOwner = useCallback(
+    (owner: Element) => {
+      if (owners.current.has(owner) || typeof IntersectionObserver === "undefined") return;
+      const io = new IntersectionObserver((es) => {
+        if (es.some((e) => !e.isIntersecting) && current.current?.owner === owner) stopCurrent(0.2);
+      });
+      io.observe(owner);
+      owners.current.set(owner, io);
+    },
+    [stopCurrent],
+  );
+
+  const playSfx = useCallback(
+    (name: Sfx, opts: SfxOptions = {}) => {
+      if (!tapped.current || mutedRef.current || document.hidden) return; // nothing before the envelope, while off, or hidden
+      if (opts.gesture) unlock();
+      if (!unlocked.current) return;
+      const c = ctx.current;
+      const out = fxGain.current;
+      if (!c || !out || c.state === "closed") return;
+      if (opts.owner) watchOwner(opts.owner);
+      const asked = performance.now();
+      const fire = (b: AudioBuffer) => {
+        if (mutedRef.current || document.hidden) return;
+        const late = (performance.now() - asked) / 1000 - (opts.delay ?? 0);
+        if (late > 0.45) return; // too late to still match the moment
+        if (c.state !== "running") void c.resume().catch(() => undefined);
+        // one effect at a time: the last one fades out over 0.2 s
+        stopCurrent(0.2);
+        const src = c.createBufferSource();
+        src.buffer = b;
+        if (opts.rate) src.playbackRate.value = opts.rate;
+        const g = c.createGain();
+        const vol = opts.volume ?? 1;
+        const t = c.currentTime;
+        g.gain.setValueAtTime(vol, t);
+        let end: number | undefined;
+        if (opts.fadeOut) {
+          g.gain.linearRampToValueAtTime(0, t + opts.fadeOut);
+          end = t + opts.fadeOut + 0.05;
+        }
+        if (opts.cut) {
+          g.gain.setValueAtTime(vol, t + Math.max(0, opts.cut - 0.06));
+          g.gain.linearRampToValueAtTime(0, t + opts.cut);
+          end = Math.min(end ?? Infinity, t + opts.cut + 0.02);
+        }
+        src.connect(g).connect(out);
+        const me = { src, gain: g, owner: opts.owner ?? null };
+        current.current = me;
+        duck(true);
+        src.onended = () => {
+          if (current.current === me) current.current = null;
+          if (!current.current) duck(false);
+        };
+        src.start(t);
+        if (end != null) src.stop(end);
+      };
+      const run = (b: AudioBuffer) => {
+        const d = opts.delay ?? 0;
+        if (d > 0) window.setTimeout(() => fire(b), d * 1000);
+        else fire(b);
+      };
+      const ready = buffers.current.get(name);
+      if (ready) run(ready);
+      else void pending.current.get(name)?.then((b) => b && run(b));
+    },
+    [duck, stopCurrent, unlock, watchOwner],
+  );
+
   const startLoop = useCallback((name: Sfx): SfxLoop => {
-    if (!unlocked.current) return NO_LOOP;
+    if (!unlocked.current || !tapped.current || mutedRef.current) return NO_LOOP;
     const c = ctx.current;
     const out = fxGain.current;
     if (!c || !out || c.state === "closed" || !audio.sfx[name]) return NO_LOOP;
@@ -315,16 +453,18 @@ export function AudioProvider({ children }: { children: ReactNode }) {
 
   // Effects are automatic: the guest's first tap or key press anywhere wakes the audio up
   // (browsers allow no sound before that). This never starts the song.
+  const needsEnvelope = opening.enabled && !(typeof window !== "undefined" && new URLSearchParams(window.location.search).has("nointro"));
   useEffect(() => {
-    if (!hasSfx) return;
+    if (!hasSfx || needsEnvelope) return; // with the envelope, only its tap starts sound
     const evs = ["pointerdown", "touchend", "keydown"] as const;
     const wake = () => {
+      tapped.current = true;
       unlock();
       if (ctx.current?.state === "running") evs.forEach((e) => window.removeEventListener(e, wake, true));
     };
     evs.forEach((e) => window.addEventListener(e, wake, { capture: true, passive: true }));
     return () => evs.forEach((e) => window.removeEventListener(e, wake, true));
-  }, [hasSfx, unlock]);
+  }, [hasSfx, needsEnvelope, unlock]);
 
   // A soft wooden-bead "pop" on every button and chip (pm-btn, and anything marked data-pop):
   // one delegated listener for the whole page.
@@ -342,6 +482,13 @@ export function AudioProvider({ children }: { children: ReactNode }) {
   // Be polite: pause when the tab is hidden, resume when it returns.
   useEffect(() => {
     const onVis = () => {
+      const c = ctx.current;
+      if (document.hidden) {
+        stopCurrent(0.05);
+        if (fxGain.current && c) fxGain.current.gain.setTargetAtTime(0, c.currentTime, 0.02);
+      } else if (fxGain.current && c && !mutedRef.current) {
+        fxGain.current.gain.setTargetAtTime(fxVolume, c.currentTime, 0.1);
+      }
       if (document.hidden && playing) {
         pausedByVisibility.current = true;
         el.current?.pause();
@@ -353,19 +500,20 @@ export function AudioProvider({ children }: { children: ReactNode }) {
     };
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
-  }, [playing]);
+  }, [playing, fxVolume, stopCurrent]);
 
   useEffect(
     () => () => {
       el.current?.pause();
+      owners.current.forEach((io) => io.disconnect());
       void ctx.current?.close().catch(() => undefined);
     },
     [],
   );
 
   const value = useMemo<AudioState>(
-    () => ({ hasMusic: Boolean(audio.music), playing, start, toggle, playSfx, startLoop }),
-    [audio.music, playing, start, toggle, playSfx, startLoop],
+    () => ({ hasMusic: Boolean(audio.music), hasSound: Boolean(audio.music) || hasSfx, playing, muted, start, toggle, playSfx, startLoop }),
+    [audio.music, hasSfx, playing, muted, start, toggle, playSfx, startLoop],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -21,19 +21,20 @@ export function SoundIcon({ on }: { on: boolean }) {
   );
 }
 
-/** The song on/off (sound effects carry on either way). Renders nothing when no song is configured. */
+/** The one sound button: plays the song, or turns all sound off / back on. Hidden when nothing is configured. */
 export function MusicToggle() {
-  const { hasMusic, playing, toggle } = useAudio();
-  if (!hasMusic) return null;
+  const { hasSound, hasMusic, playing, muted, toggle } = useAudio();
+  if (!hasSound) return null;
   const on = playing;
+  const label = muted ? "Turn sound on" : hasMusic && !playing ? "Play the song" : "Mute all sound";
 
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-pressed={on}
-      aria-label={on ? "Pause the song" : "Play the song"}
-      title={on ? "Pause song" : "Play song"}
+      aria-pressed={!muted}
+      aria-label={label}
+      title={label}
       className="pm-sound fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-40 grid h-11 w-11 place-items-center rounded-full transition-transform duration-300 ease-silk active:scale-95"
     >
       <SoundIcon on={on} />

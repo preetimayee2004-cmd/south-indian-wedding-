@@ -136,7 +136,8 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
   const city = loveStory?.livesOn.city ?? wedding.city.split(",")[0];
   const { guestName } = useGuest();
   // the song plays only from its button; the envelope just wakes the sound effects
-  const { start: wakeAudio, toggle: toggleSong, playSfx, hasMusic, playing } = useAudio();
+  const { start: wakeAudio, toggle: toggleSong, playSfx, hasSound, hasMusic, playing, muted } = useAudio();
+  const soundLabel = muted ? "Turn sound on" : hasMusic && !playing ? "Play the song" : "Mute all sound";
   const reduced = usePrefersReducedMotion();
   const [busy, setBusy] = useState(false);
 
@@ -266,11 +267,10 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
       .to(card.current, { yPercent: -62, duration: 1.5, ease: "power2.out" }, 0.78)
       // …and grows into the hero
       .add(grow, 2.4)
-      // sounds, each on its moment: the flap lifts, the card slides out, air as it grows into the sky, a temple bell welcomes
+      // sounds, each on its moment: the flap lifts, the card slides out
       .call(() => playSfx("rustle"), undefined, 0.24)
       .call(() => playSfx("slide", { volume: 0.85 }), undefined, 0.8)
-      .call(() => playSfx("whoosh", { volume: 0.9 }), undefined, 2.35)
-      .call(() => playSfx("bell", { volume: 0.75 }), undefined, 3.75);
+      ; // (nothing as the card becomes the hero: the temple scene is silent)
   }, [busy, reduced, wakeAudio, playSfx, reveal, finish]);
 
   /** Skip the envelope: straight to the invitation. */
@@ -310,13 +310,13 @@ export function Opening({ onReveal, onDone }: OpeningProps) {
 
       {/* top right: the song on/off and skip (sound effects play either way) */}
       <div ref={ctrls} className="op-ctrls">
-        {hasMusic && (
+        {hasSound && (
           <button
             type="button"
             onClick={toggleSong}
-            aria-pressed={playing}
-            aria-label={playing ? "Pause the song" : "Play the song"}
-            title={playing ? "Pause song" : "Play song"}
+            aria-pressed={!muted}
+            aria-label={soundLabel}
+            title={soundLabel}
             className="op-ctrl op-ctrl--sound"
           >
             <SoundIcon on={playing} />

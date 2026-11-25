@@ -39,10 +39,8 @@ export function ThankYouScene() {
   const calUrl = calendarUrl(`${first.name} weds ${second.name} – Wedding`, wedding.dateISO, `${venue.name}, ${venue.address}`, muh?.endISO);
   const signature = loveNote?.signature ?? `${first.name} & ${second.name}`;
 
-  // petals fall as the section arrives (a soft rustle, once); reduced motion: just the sound
-  useSfxOnView(root, [["petals", { volume: 0.5 }]], { rootMargin: "0px 0px -35% 0px" });
-  // reduced motion: no walk-in, but the elephants are still heard
-  useSfxOnView(scene, [["elephant", { volume: 0.75 }], ["trumpet", { volume: 0.5, delay: 1.3 }]], { enabled: reduced });
+  // the closing sound: one soft temple bell strike with a long fade, once, as "Thank You" appears
+  useSfxOnView("#thanks-heading", [["bell", { volume: 0.3, fadeOut: 3 }]], { threshold: 0.6, rootMargin: "0px" });
 
   useLayoutEffect(() => {
     const el = root.current;
@@ -70,11 +68,9 @@ export function ThankYouScene() {
       // two temple elephants walk in — heavy steps, neck bells clanking — and one trumpets as the
       // couple's medallion rises between them
       const tl = gsap.timeline({ scrollTrigger: { trigger: el.querySelector(".fn-scene"), start: "top 85%", once: true } });
-      tl.call(() => playSfx("elephant", { volume: 0.75 }), undefined, 0)
-        .from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" }, 0)
+      tl.from(".fn-ele--l", { autoAlpha: 0, x: -30, duration: 1, ease: "power2.out" }, 0)
         .from(".fn-ele--r", { autoAlpha: 0, x: 30, duration: 1, ease: "power2.out" }, "<")
         .from(".fn-medal", { autoAlpha: 0, y: 18, scale: 0.85, duration: 0.8, ease: "back.out(1.8)" }, "-=0.5")
-        .call(() => playSfx("trumpet", { volume: 0.5 }), undefined, "<")
         .fromTo(".fn-glow", { autoAlpha: 0.4, scale: 0.9 }, { autoAlpha: 1, scale: 1.06, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
     }, el);
     return () => ctx.revert();
